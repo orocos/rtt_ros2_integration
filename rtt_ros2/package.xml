@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>rtt_ros2</name>
+  <version>0.0.0</version>
+  <description>
+    This package provides CMake helpers, scripts and launch files to find and use
+    Orocos RTT and OCL in a ROS 2 package and an RTT service plugin to find and
+    import ROS packages into Orocos.
+  </description>
+  <maintainer email="orocos-dev@orocos.org">Orocos Developers</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>ament_index_cpp</depend>
+  <depend>boost</depend>
+  <depend>libxml2</depend>
+  <exec_depend>ocl</exec_depend>
+  <depend>rtt</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,22 @@
+# Build artifacts (colcon)
+/bin/
+/build/
+/COLCON_IGNORE
+/.colcon_install_layout
+/env.sh
+/etc/
+/include/
+/lib/
+/local_setup.*
+/*_local_setup_util_*.py
+/log/
+/install/
+/setup.*
+/share/
+
+# Orocos-generated files
+orocos.log
+.tb_history
+
+# VSCode
+/.vscode/

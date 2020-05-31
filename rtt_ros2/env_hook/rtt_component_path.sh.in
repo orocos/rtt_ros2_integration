@@ -1,0 +1,1 @@
+ament_prepend_unique_value RTT_COMPONENT_PATH "$AMENT_CURRENT_PREFIX/lib/orocos"
