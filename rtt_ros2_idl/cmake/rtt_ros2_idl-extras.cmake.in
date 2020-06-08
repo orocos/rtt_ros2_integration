@@ -1,0 +1,25 @@
+# Copyright 2020 Intermodalics BVBA
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set(rtt_ros2_idl_generate_typekit_BIN
+  "${rtt_ros2_idl_DIR}/../../../lib/rtt_ros2_idl/generate_typekit")
+normalize_path(rtt_ros2_idl_generate_typekit_BIN
+  "${rtt_ros2_idl_generate_typekit_BIN}")
+
+set(rtt_ros2_idl_GENERATOR_FILES
+  "${rtt_ros2_idl_DIR}/../../../@PYTHON_INSTALL_DIR@/rtt_ros2_idl/__init__.py")
+normalize_path(rtt_ros2_idl_GENERATOR_FILES "${rtt_ros2_idl_GENERATOR_FILES}")
+
+set(rtt_ros2_idl_TEMPLATE_DIR "${rtt_ros2_idl_DIR}/../../../@PYTHON_INSTALL_DIR@/rtt_ros2_idl/resource")
+normalize_path(rtt_ros2_idl_TEMPLATE_DIR "${rtt_ros2_idl_TEMPLATE_DIR}")
