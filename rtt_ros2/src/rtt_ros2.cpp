@@ -109,8 +109,9 @@ bool import(const std::string & package)
     {
       std::string plugin_depends;
       std::string prefix_path;
-      if (ament_index_cpp::get_resource("rtt_ros2_plugin_depends", dep_name,
-        plugin_depends, &prefix_path))
+      if (ament_index_cpp::get_resource(
+          "rtt_ros2_plugin_depends", dep_name,
+          plugin_depends, &prefix_path))
       {
         // The package was found. Try to import it...
         deps_to_import.push_back(dep_name);

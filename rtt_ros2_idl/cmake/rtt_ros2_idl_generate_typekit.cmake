@@ -37,7 +37,7 @@ function(_rtt_ros2_generate_typekit _package)
   if(ARG_EXPORT)
     set(_export ${ARG_EXPORT})
   else()
-    set(_export export_${_target})
+    set(_export ${_target})
   endif()
 
   # Set CMAKE_BUILD_TYPE
@@ -131,6 +131,7 @@ function(_rtt_ros2_generate_typekit _package)
     ${_generated_header_files}
     ${_generated_source_files}
     EXPORT ${_export}
+    INCLUDES DESTINATION include/orocos
   )
   target_include_directories(${_target}
     PRIVATE
@@ -172,5 +173,9 @@ macro(rtt_ros2_generate_typekit _package)
 
   # Export include directories and interface
   ament_export_include_directories(include/orocos)
-  ament_export_interfaces(export_${_target})
+  if(COMMAND ament_export_targets)
+    ament_export_targets(${_target} HAS_LIBRARY_TARGET)
+  else()
+    ament_export_interfaces(${_target} HAS_LIBRARY_TARGET)
+  endif()
 endmacro()

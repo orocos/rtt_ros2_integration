@@ -24,7 +24,8 @@ find_package(rtt_ros2 REQUIRED)
 include_directories(include/orocos)
 orocos_library(rtt_ros2_node
   src/rtt_ros2_node.cpp
-  EXPORT export_rtt_ros2_node
+  EXPORT ${PROJECT_NAME}
+  INCLUDES DESTINATION include/orocos
 )
 ament_target_dependencies(rtt_ros2_node rclcpp)
 orocos_plugin(rtt_ros2_node_service
@@ -49,12 +50,17 @@ endif()
 # ament_export_dependencies(rtt_ros2)
 ament_export_dependencies(rclcpp)
 ament_export_include_directories(include/orocos)
-ament_export_interfaces(export_rtt_ros2_node HAS_LIBRARY_TARGET)
+if(COMMAND ament_export_targets)
+  ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+else()
+  ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+endif()
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()
 
 # orocos_generate_package() is deprecated for ROS 2.
 # Prefer cmake target export and import instead, in combination with
-# ament_export_interfaces() when building with ament_cmake.
+# ament_export_interfaces() or ament_export_targets() when building with
+# ament_cmake.
 orocos_generate_package()

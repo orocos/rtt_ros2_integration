@@ -27,7 +27,8 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 include_directories(include/orocos)
 orocos_library(rtt_ros2
   src/rtt_ros2.cpp
-  EXPORT export_rtt_ros2
+  EXPORT ${PROJECT_NAME}
+  INCLUDES DESTINATION include/orocos
 )
 # Note: Dependency ament_index_cpp is actually not PUBLIC, but
 # ament_target_dependencies() does not support PRIVATE...
@@ -63,7 +64,11 @@ ament_export_dependencies(ament_index_cpp)
 #ament_export_dependencies(Boost)  # exported in rtt_ros2-extras.cmake
 #ament_export_dependencies(LibXml2)  # exported in rtt_ros2-extras.cmake
 ament_export_include_directories(include/orocos)
-ament_export_interfaces(export_rtt_ros2 HAS_LIBRARY_TARGET)
+if(COMMAND ament_export_targets)
+  ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+else()
+  ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+endif()
 
 # linters
 if(BUILD_TESTING)
@@ -93,5 +98,6 @@ ament_package(
 
 # orocos_generate_package() is deprecated for ROS 2.
 # Prefer cmake target export and import instead, in combination with
-# ament_export_interfaces() when building with ament_cmake.
+# ament_export_interfaces() or ament_export_targets() when building with
+# ament_cmake.
 orocos_generate_package()
