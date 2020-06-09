@@ -26,6 +26,17 @@
 
 #include "gtest/gtest.h"
 
+/* True if the version of test_msgs is at least major.minor.patch */
+// (from https://github.com/ros2/rmw_cyclonedds/pull/51)
+#define test_msgs_VERSION_GTE(major, minor, patch) ( \
+    major<test_msgs_VERSION_MAJOR ? true \
+    : major> test_msgs_VERSION_MAJOR ? false \
+    : minor<test_msgs_VERSION_MINOR ? true \
+    : minor> test_msgs_VERSION_MINOR ? false \
+    : patch<test_msgs_VERSION_PATCH ? true \
+    : patch> test_msgs_VERSION_PATCH ? false \
+    : true)
+
 class TestTypekitEnvironment
   : public ::testing::Environment
 {
@@ -1130,7 +1141,11 @@ TEST_F(TestTypekit, Strings)
 
 TEST_F(TestTypekit, WStrings)
 {
+#if test_msgs_VERSION_GTE(0, 8, 0)
   EXPECT_EQ(wstrings_ds->getMemberNames().size(), 7);
+#else
+  EXPECT_EQ(wstrings_ds->getMemberNames().size(), 4);
+#endif
 
   const auto wstring_value =
     testGetMember(wstrings_ds, "wstring_value",
@@ -1142,6 +1157,8 @@ TEST_F(TestTypekit, WStrings)
     testGetSize(wstring_value.get()),
     wstrings_msg.wstring_value.size());
 
+  /* Fields have only been added in ROS eloquent (test_msgs >= 0.8.0) */
+#if test_msgs_VERSION_GTE(0, 8, 0)
   const auto wstring_value_default1 =
     testGetMember(wstrings_ds, "wstring_value_default1",
       wstrings_msg.wstring_value_default1);
@@ -1171,6 +1188,7 @@ TEST_F(TestTypekit, WStrings)
   EXPECT_EQ(
     testGetSize(wstring_value_default3.get()),
     wstrings_msg.wstring_value_default3.size());
+#endif  // test_msgs_VERSION_GTE(0, 8, 0)
 
   const auto array_of_wstrings =
     testGetMember(wstrings_ds, "array_of_wstrings",

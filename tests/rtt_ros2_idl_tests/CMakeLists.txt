@@ -45,3 +45,9 @@ target_link_libraries(test_typekit
   rtt_ros2::rtt_ros2
   rtt_ros2_test_msgs::rtt_test_msgs_typekit
 )
+target_compile_definitions(test_typekit
+  PRIVATE
+    test_msgs_VERSION_MAJOR=${test_msgs_VERSION_MAJOR}
+    test_msgs_VERSION_MINOR=${test_msgs_VERSION_MINOR}
+    test_msgs_VERSION_PATCH=${test_msgs_VERSION_PATCH}
+)

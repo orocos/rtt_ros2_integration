@@ -34,6 +34,9 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# export information to downstream packages
+ament_export_dependencies(test_msgs)
+
 # must be called *after* the targets to check exported libraries etc.
 ament_package()
 
