@@ -1,5 +1,7 @@
 # Orocos RTT / ROS Integration Packages
 
+[![Build Status](https://travis-ci.org/orocos/rtt_ros2_integration.svg?branch=master)](https://travis-ci.org/orocos/rtt_ros2_integration)
+
 ## Introduction
 
 This repository contains ROS 2 packages necessary for building [Orocos Real-Time Toolkit (RTT)](https://www.orocos.org)

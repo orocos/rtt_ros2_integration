@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(rtt_ros2_test_msgs)
 
+# Skip building this package if BUILD_TESTING is OFF
+find_package(ament_cmake REQUIRED)
 if(NOT BUILD_TESTING)
-  install(CODE "") # no-op
+  ament_package()
   return()
 endif()
 
@@ -31,6 +33,9 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+# export information to downstream packages
+ament_export_dependencies(test_msgs)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()

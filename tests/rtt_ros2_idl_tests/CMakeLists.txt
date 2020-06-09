@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(rtt_ros2_idl_tests)
 
+# Skip building this package if BUILD_TESTING is OFF
+find_package(ament_cmake REQUIRED)
 if(NOT BUILD_TESTING)
-  install(CODE "") # no-op
+  ament_package()
   return()
 endif()
 
@@ -42,4 +44,10 @@ orocos_configure_executable(test_typekit)
 target_link_libraries(test_typekit
   rtt_ros2::rtt_ros2
   rtt_ros2_test_msgs::rtt_test_msgs_typekit
+)
+target_compile_definitions(test_typekit
+  PRIVATE
+    test_msgs_VERSION_MAJOR=${test_msgs_VERSION_MAJOR}
+    test_msgs_VERSION_MINOR=${test_msgs_VERSION_MINOR}
+    test_msgs_VERSION_PATCH=${test_msgs_VERSION_PATCH}
 )
