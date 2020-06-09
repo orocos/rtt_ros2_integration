@@ -35,7 +35,8 @@ orocos_typekit(rtt_ros2_primitives
   src/typekit/ros2_uint64_type.cpp
   src/typekit/ros2_uint8_type.cpp
   src/typekit/ros2_wstring_type.cpp
-  EXPORT export_${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}
+  INCLUDES DESTINATION include/orocos
 )
 target_include_directories(rtt_ros2_primitives
   PRIVATE include/orocos
@@ -56,14 +57,19 @@ endif()
 # export information to downstream packages
 # ament_export_dependencies(rtt_ros2)
 ament_export_include_directories(include/orocos)
-ament_export_interfaces(export_${PROJECT_NAME})
+if(COMMAND ament_export_targets)
+  ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+else()
+  ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+endif()
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()
 
 # orocos_generate_package() is deprecated for ROS 2.
 # Prefer cmake target export and import instead, in combination with
-# ament_export_interfaces() when building with ament_cmake.
+# ament_export_interfaces() or ament_export_targets() when building with
+# ament_cmake.
 orocos_generate_package(
   # DEPENDS_TARGETS rtt_ros2
 )

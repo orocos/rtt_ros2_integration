@@ -24,6 +24,7 @@ env:
   matrix: # each line is a job
     - ROS_DISTRO="dashing" DOCKER_IMAGE="orocos/ros2:dashing-ros-base-bionic"
     - ROS_DISTRO="eloquent" DOCKER_IMAGE="orocos/ros2:eloquent-ros-base-bionic"
+    - ROS_DISTRO="foxy" DOCKER_IMAGE="orocos/ros2:foxy-ros-base-focal"
 
 # allow failures, e.g. for unsupported distros
 # matrix:

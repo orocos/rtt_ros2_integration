@@ -65,9 +65,9 @@ static inline const RTT::types::TypeInfo * findTypeInfoByValueType(
       return types->getTypeInfo<std::vector<ValueT>>();
       // return nullptr;
     }
-  } else {
-    return types->getTypeInfo<ValueT>();
   }
+
+  return types->getTypeInfo<ValueT>();
 }
 
 static inline const RTT::types::TypeInfo * findTypeInfoByName(
@@ -90,9 +90,9 @@ static inline const RTT::types::TypeInfo * findTypeInfoByName(
       return types->type(name + "[]");
       // return nullptr;
     }
-  } else {
-    return types->type(name);
   }
+
+  return types->type(name);
 }
 
 static inline const RTT::types::TypeInfo * findTypeInfo(
@@ -161,10 +161,11 @@ static inline const RTT::types::TypeInfo * findTypeInfo(
         const auto * const members =
           static_cast<const MessageMembers *>(rosidl_message_member->members_->data);
         const std::string type_name =
-          "/" + std::regex_replace(members->message_namespace_,
-            namespace_separator,
-            "/",
-            std::regex_constants::match_any) +
+          "/" + std::regex_replace(
+          members->message_namespace_,
+          namespace_separator,
+          "/",
+          std::regex_constants::match_any) +
           "/" + members->message_name_;
         ti = findTypeInfoByName(type_name, rosidl_message_member);
       }

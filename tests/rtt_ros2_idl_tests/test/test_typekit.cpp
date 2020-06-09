@@ -37,6 +37,17 @@
     : patch> test_msgs_VERSION_PATCH ? false \
     : true)
 
+/*
+  rosidl_generator_cpp::BoundedVector has been moved to
+  rosidl_runtime_cpp::BoundedVector since ROS 2 Foxy Fitzroy
+  (https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/#rosidl-generator-c-cpp-namespace-api-changes)
+*/
+#ifdef ROSIDL_RUNTIME_CPP__BOUNDED_VECTOR_HPP_
+using rosidl_runtime_cpp::BoundedVector;
+#else
+using rosidl_generator_cpp::BoundedVector;
+#endif
+
 class TestTypekitEnvironment
   : public ::testing::Environment
 {
@@ -154,7 +165,7 @@ protected:
   testGetMember(
     RTT::base::DataSourceBase::shared_ptr dsb,
     const std::string & member,
-    rosidl_generator_cpp::BoundedVector<T, N> & ref)
+    BoundedVector<T, N> & ref)
   {
     SCOPED_TRACE(
       ::testing::Message() << "Checking bounded dynamic array member '" << member << "'...");
@@ -166,7 +177,7 @@ protected:
       AssignableDataSource<std::vector<T>>::narrow(dsb->getMember(member).get());
     EXPECT_TRUE(data != nullptr);
     if (data == nullptr) {return {};}
-    // rosidl_generator_cpp::BoundedVector<T, N> is not (yet) known to the Orocos type system.
+    // BoundedVector<T, N> is not (yet) known to the Orocos type system.
     EXPECT_EQ(data->getTypeInfo(), Types()->getTypeInfo<std::vector<T>>());
     EXPECT_EQ(data->getParent(), dsb);
     EXPECT_EQ(&(data->rvalue()), reinterpret_cast<std::vector<T> *>(&ref));
@@ -484,8 +495,9 @@ TEST_F(TestTypekit, UnboundedSequences)
   EXPECT_EQ(testGetSize(string_values.get()), unbounded_sequences_msg.string_values.size());
 
   const auto basic_types_values =
-    testGetMember(unbounded_sequences_ds, "basic_types_values",
-      unbounded_sequences_msg.basic_types_values);
+    testGetMember(
+    unbounded_sequences_ds, "basic_types_values",
+    unbounded_sequences_msg.basic_types_values);
   EXPECT_EQ(
     testGetCapacity(basic_types_values.get()),
     unbounded_sequences_msg.basic_types_values.size());
@@ -494,8 +506,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.basic_types_values.size());
 
   const auto constants_values =
-    testGetMember(unbounded_sequences_ds, "constants_values",
-      unbounded_sequences_msg.constants_values);
+    testGetMember(
+    unbounded_sequences_ds, "constants_values",
+    unbounded_sequences_msg.constants_values);
   EXPECT_EQ(
     testGetCapacity(constants_values.get()),
     unbounded_sequences_msg.constants_values.capacity());
@@ -503,8 +516,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     testGetSize(constants_values.get()), unbounded_sequences_msg.constants_values.size());
 
   const auto defaults_values =
-    testGetMember(unbounded_sequences_ds, "defaults_values",
-      unbounded_sequences_msg.defaults_values);
+    testGetMember(
+    unbounded_sequences_ds, "defaults_values",
+    unbounded_sequences_msg.defaults_values);
   EXPECT_EQ(
     testGetCapacity(defaults_values.get()),
     unbounded_sequences_msg.defaults_values.capacity());
@@ -512,8 +526,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     testGetSize(defaults_values.get()), unbounded_sequences_msg.defaults_values.size());
 
   const auto bool_values_default =
-    testGetMember(unbounded_sequences_ds, "bool_values_default",
-      unbounded_sequences_msg.bool_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "bool_values_default",
+    unbounded_sequences_msg.bool_values_default);
   EXPECT_EQ(
     testGetCapacity(bool_values_default.get()),
     unbounded_sequences_msg.bool_values_default.capacity());
@@ -522,8 +537,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.bool_values_default.size());
 
   const auto byte_values_default =
-    testGetMember(unbounded_sequences_ds, "byte_values_default",
-      unbounded_sequences_msg.byte_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "byte_values_default",
+    unbounded_sequences_msg.byte_values_default);
   EXPECT_EQ(
     testGetCapacity(byte_values_default.get()),
     unbounded_sequences_msg.byte_values_default.capacity());
@@ -532,8 +548,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.byte_values_default.size());
 
   const auto char_values_default =
-    testGetMember(unbounded_sequences_ds, "char_values_default",
-      unbounded_sequences_msg.char_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "char_values_default",
+    unbounded_sequences_msg.char_values_default);
   EXPECT_EQ(
     testGetCapacity(char_values_default.get()),
     unbounded_sequences_msg.char_values_default.capacity());
@@ -542,8 +559,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.char_values_default.size());
 
   const auto float32_values_default =
-    testGetMember(unbounded_sequences_ds, "float32_values_default",
-      unbounded_sequences_msg.float32_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "float32_values_default",
+    unbounded_sequences_msg.float32_values_default);
   EXPECT_EQ(
     testGetCapacity(float32_values_default.get()),
     unbounded_sequences_msg.float32_values_default.capacity());
@@ -552,8 +570,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.float32_values_default.size());
 
   const auto float64_values_default =
-    testGetMember(unbounded_sequences_ds, "float64_values_default",
-      unbounded_sequences_msg.float64_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "float64_values_default",
+    unbounded_sequences_msg.float64_values_default);
   EXPECT_EQ(
     testGetCapacity(float64_values_default.get()),
     unbounded_sequences_msg.float64_values_default.capacity());
@@ -562,8 +581,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.float64_values_default.size());
 
   const auto int8_values_default =
-    testGetMember(unbounded_sequences_ds, "int8_values_default",
-      unbounded_sequences_msg.int8_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "int8_values_default",
+    unbounded_sequences_msg.int8_values_default);
   EXPECT_EQ(
     testGetCapacity(int8_values_default.get()),
     unbounded_sequences_msg.int8_values_default.capacity());
@@ -572,8 +592,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.int8_values_default.size());
 
   const auto uint8_values_default =
-    testGetMember(unbounded_sequences_ds, "uint8_values_default",
-      unbounded_sequences_msg.uint8_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "uint8_values_default",
+    unbounded_sequences_msg.uint8_values_default);
   EXPECT_EQ(
     testGetCapacity(uint8_values_default.get()),
     unbounded_sequences_msg.uint8_values_default.capacity());
@@ -582,8 +603,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.uint8_values_default.size());
 
   const auto int16_values_default =
-    testGetMember(unbounded_sequences_ds, "int16_values_default",
-      unbounded_sequences_msg.int16_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "int16_values_default",
+    unbounded_sequences_msg.int16_values_default);
   EXPECT_EQ(
     testGetCapacity(int16_values_default.get()),
     unbounded_sequences_msg.int16_values_default.size());
@@ -592,8 +614,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.int16_values_default.size());
 
   const auto uint16_values_default =
-    testGetMember(unbounded_sequences_ds, "uint16_values_default",
-      unbounded_sequences_msg.uint16_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "uint16_values_default",
+    unbounded_sequences_msg.uint16_values_default);
   EXPECT_EQ(
     testGetCapacity(uint16_values_default.get()),
     unbounded_sequences_msg.uint16_values_default.capacity());
@@ -602,8 +625,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.uint16_values_default.size());
 
   const auto int32_values_default =
-    testGetMember(unbounded_sequences_ds, "int32_values_default",
-      unbounded_sequences_msg.int32_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "int32_values_default",
+    unbounded_sequences_msg.int32_values_default);
   EXPECT_EQ(
     testGetCapacity(int32_values_default.get()),
     unbounded_sequences_msg.int32_values_default.capacity());
@@ -612,8 +636,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.int32_values_default.size());
 
   const auto uint32_values_default =
-    testGetMember(unbounded_sequences_ds, "uint32_values_default",
-      unbounded_sequences_msg.uint32_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "uint32_values_default",
+    unbounded_sequences_msg.uint32_values_default);
   EXPECT_EQ(
     testGetCapacity(uint32_values_default.get()),
     unbounded_sequences_msg.uint32_values_default.capacity());
@@ -622,8 +647,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.uint32_values_default.size());
 
   const auto int64_values_default =
-    testGetMember(unbounded_sequences_ds, "int64_values_default",
-      unbounded_sequences_msg.int64_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "int64_values_default",
+    unbounded_sequences_msg.int64_values_default);
   EXPECT_EQ(
     testGetCapacity(int64_values_default.get()),
     unbounded_sequences_msg.int64_values_default.capacity());
@@ -632,8 +658,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.int64_values_default.size());
 
   const auto uint64_values_default =
-    testGetMember(unbounded_sequences_ds, "uint64_values_default",
-      unbounded_sequences_msg.uint64_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "uint64_values_default",
+    unbounded_sequences_msg.uint64_values_default);
   EXPECT_EQ(
     testGetCapacity(uint64_values_default.get()),
     unbounded_sequences_msg.uint64_values_default.capacity());
@@ -642,8 +669,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.uint64_values_default.size());
 
   const auto string_values_default =
-    testGetMember(unbounded_sequences_ds, "string_values_default",
-      unbounded_sequences_msg.string_values_default);
+    testGetMember(
+    unbounded_sequences_ds, "string_values_default",
+    unbounded_sequences_msg.string_values_default);
   EXPECT_EQ(
     testGetCapacity(string_values_default.get()),
     unbounded_sequences_msg.string_values_default.capacity());
@@ -652,8 +680,9 @@ TEST_F(TestTypekit, UnboundedSequences)
     unbounded_sequences_msg.string_values_default.size());
 
   const auto alignment_check =
-    testGetMember(unbounded_sequences_ds, "alignment_check",
-      unbounded_sequences_msg.alignment_check);
+    testGetMember(
+    unbounded_sequences_ds, "alignment_check",
+    unbounded_sequences_msg.alignment_check);
 }
 
 TEST_F(TestTypekit, BoundedSequences)
@@ -731,8 +760,9 @@ TEST_F(TestTypekit, BoundedSequences)
   EXPECT_EQ(testGetSize(string_values.get()), bounded_sequences_msg.string_values.size());
 
   const auto basic_types_values =
-    testGetMember(bounded_sequences_ds, "basic_types_values",
-      bounded_sequences_msg.basic_types_values);
+    testGetMember(
+    bounded_sequences_ds, "basic_types_values",
+    bounded_sequences_msg.basic_types_values);
   EXPECT_EQ(
     testGetCapacity(basic_types_values.get()),
     bounded_sequences_msg.basic_types_values.size());
@@ -753,8 +783,9 @@ TEST_F(TestTypekit, BoundedSequences)
   EXPECT_EQ(testGetSize(defaults_values.get()), bounded_sequences_msg.defaults_values.size());
 
   const auto bool_values_default =
-    testGetMember(bounded_sequences_ds, "bool_values_default",
-      bounded_sequences_msg.bool_values_default);
+    testGetMember(
+    bounded_sequences_ds, "bool_values_default",
+    bounded_sequences_msg.bool_values_default);
   EXPECT_EQ(
     testGetCapacity(bool_values_default.get()),
     bounded_sequences_msg.bool_values_default.capacity());
@@ -763,8 +794,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.bool_values_default.size());
 
   const auto byte_values_default =
-    testGetMember(bounded_sequences_ds, "byte_values_default",
-      bounded_sequences_msg.byte_values_default);
+    testGetMember(
+    bounded_sequences_ds, "byte_values_default",
+    bounded_sequences_msg.byte_values_default);
   EXPECT_EQ(
     testGetCapacity(byte_values_default.get()),
     bounded_sequences_msg.byte_values_default.capacity());
@@ -773,8 +805,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.byte_values_default.size());
 
   const auto char_values_default =
-    testGetMember(bounded_sequences_ds, "char_values_default",
-      bounded_sequences_msg.char_values_default);
+    testGetMember(
+    bounded_sequences_ds, "char_values_default",
+    bounded_sequences_msg.char_values_default);
   EXPECT_EQ(
     testGetCapacity(char_values_default.get()),
     bounded_sequences_msg.char_values_default.capacity());
@@ -783,8 +816,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.char_values_default.size());
 
   const auto float32_values_default =
-    testGetMember(bounded_sequences_ds, "float32_values_default",
-      bounded_sequences_msg.float32_values_default);
+    testGetMember(
+    bounded_sequences_ds, "float32_values_default",
+    bounded_sequences_msg.float32_values_default);
   EXPECT_EQ(
     testGetCapacity(float32_values_default.get()),
     bounded_sequences_msg.float32_values_default.capacity());
@@ -793,8 +827,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.float32_values_default.size());
 
   const auto float64_values_default =
-    testGetMember(bounded_sequences_ds, "float64_values_default",
-      bounded_sequences_msg.float64_values_default);
+    testGetMember(
+    bounded_sequences_ds, "float64_values_default",
+    bounded_sequences_msg.float64_values_default);
   EXPECT_EQ(
     testGetCapacity(float64_values_default.get()),
     bounded_sequences_msg.float64_values_default.capacity());
@@ -803,8 +838,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.float64_values_default.size());
 
   const auto int8_values_default =
-    testGetMember(bounded_sequences_ds, "int8_values_default",
-      bounded_sequences_msg.int8_values_default);
+    testGetMember(
+    bounded_sequences_ds, "int8_values_default",
+    bounded_sequences_msg.int8_values_default);
   EXPECT_EQ(
     testGetCapacity(int8_values_default.get()),
     bounded_sequences_msg.int8_values_default.capacity());
@@ -813,8 +849,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.int8_values_default.size());
 
   const auto uint8_values_default =
-    testGetMember(bounded_sequences_ds, "uint8_values_default",
-      bounded_sequences_msg.uint8_values_default);
+    testGetMember(
+    bounded_sequences_ds, "uint8_values_default",
+    bounded_sequences_msg.uint8_values_default);
   EXPECT_EQ(
     testGetCapacity(uint8_values_default.get()),
     bounded_sequences_msg.uint8_values_default.capacity());
@@ -823,8 +860,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.uint8_values_default.size());
 
   const auto int16_values_default =
-    testGetMember(bounded_sequences_ds, "int16_values_default",
-      bounded_sequences_msg.int16_values_default);
+    testGetMember(
+    bounded_sequences_ds, "int16_values_default",
+    bounded_sequences_msg.int16_values_default);
   EXPECT_EQ(
     testGetCapacity(int16_values_default.get()),
     bounded_sequences_msg.int16_values_default.size());
@@ -833,8 +871,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.int16_values_default.size());
 
   const auto uint16_values_default =
-    testGetMember(bounded_sequences_ds, "uint16_values_default",
-      bounded_sequences_msg.uint16_values_default);
+    testGetMember(
+    bounded_sequences_ds, "uint16_values_default",
+    bounded_sequences_msg.uint16_values_default);
   EXPECT_EQ(
     testGetCapacity(uint16_values_default.get()),
     bounded_sequences_msg.uint16_values_default.capacity());
@@ -843,8 +882,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.uint16_values_default.size());
 
   const auto int32_values_default =
-    testGetMember(bounded_sequences_ds, "int32_values_default",
-      bounded_sequences_msg.int32_values_default);
+    testGetMember(
+    bounded_sequences_ds, "int32_values_default",
+    bounded_sequences_msg.int32_values_default);
   EXPECT_EQ(
     testGetCapacity(int32_values_default.get()),
     bounded_sequences_msg.int32_values_default.capacity());
@@ -853,8 +893,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.int32_values_default.size());
 
   const auto uint32_values_default =
-    testGetMember(bounded_sequences_ds, "uint32_values_default",
-      bounded_sequences_msg.uint32_values_default);
+    testGetMember(
+    bounded_sequences_ds, "uint32_values_default",
+    bounded_sequences_msg.uint32_values_default);
   EXPECT_EQ(
     testGetCapacity(uint32_values_default.get()),
     bounded_sequences_msg.uint32_values_default.capacity());
@@ -863,8 +904,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.uint32_values_default.size());
 
   const auto int64_values_default =
-    testGetMember(bounded_sequences_ds, "int64_values_default",
-      bounded_sequences_msg.int64_values_default);
+    testGetMember(
+    bounded_sequences_ds, "int64_values_default",
+    bounded_sequences_msg.int64_values_default);
   EXPECT_EQ(
     testGetCapacity(int64_values_default.get()),
     bounded_sequences_msg.int64_values_default.capacity());
@@ -873,8 +915,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.int64_values_default.size());
 
   const auto uint64_values_default =
-    testGetMember(bounded_sequences_ds, "uint64_values_default",
-      bounded_sequences_msg.uint64_values_default);
+    testGetMember(
+    bounded_sequences_ds, "uint64_values_default",
+    bounded_sequences_msg.uint64_values_default);
   EXPECT_EQ(
     testGetCapacity(uint64_values_default.get()),
     bounded_sequences_msg.uint64_values_default.capacity());
@@ -883,8 +926,9 @@ TEST_F(TestTypekit, BoundedSequences)
     bounded_sequences_msg.uint64_values_default.size());
 
   const auto string_values_default =
-    testGetMember(bounded_sequences_ds, "string_values_default",
-      bounded_sequences_msg.string_values_default);
+    testGetMember(
+    bounded_sequences_ds, "string_values_default",
+    bounded_sequences_msg.string_values_default);
   EXPECT_EQ(
     testGetCapacity(string_values_default.get()),
     bounded_sequences_msg.string_values_default.capacity());
@@ -901,8 +945,9 @@ TEST_F(TestTypekit, MultiNested)
   EXPECT_EQ(multi_nested_ds->getMemberNames().size(), 9);
 
   const auto array_of_arrays =
-    testGetMember(multi_nested_ds, "array_of_arrays",
-      multi_nested_msg.array_of_arrays);
+    testGetMember(
+    multi_nested_ds, "array_of_arrays",
+    multi_nested_msg.array_of_arrays);
   EXPECT_EQ(
     testGetCapacity(array_of_arrays.get()),
     multi_nested_msg.array_of_arrays.size());
@@ -911,8 +956,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.array_of_arrays.size());
 
   const auto array_of_bounded_sequences =
-    testGetMember(multi_nested_ds, "array_of_bounded_sequences",
-      multi_nested_msg.array_of_bounded_sequences);
+    testGetMember(
+    multi_nested_ds, "array_of_bounded_sequences",
+    multi_nested_msg.array_of_bounded_sequences);
   EXPECT_EQ(
     testGetCapacity(array_of_bounded_sequences.get()),
     multi_nested_msg.array_of_bounded_sequences.size());
@@ -921,8 +967,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.array_of_bounded_sequences.size());
 
   const auto array_of_unbounded_sequences =
-    testGetMember(multi_nested_ds, "array_of_unbounded_sequences",
-      multi_nested_msg.array_of_unbounded_sequences);
+    testGetMember(
+    multi_nested_ds, "array_of_unbounded_sequences",
+    multi_nested_msg.array_of_unbounded_sequences);
   EXPECT_EQ(
     testGetCapacity(array_of_unbounded_sequences.get()),
     multi_nested_msg.array_of_unbounded_sequences.size());
@@ -931,8 +978,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.array_of_unbounded_sequences.size());
 
   const auto bounded_sequence_of_arrays =
-    testGetMember(multi_nested_ds, "bounded_sequence_of_arrays",
-      multi_nested_msg.bounded_sequence_of_arrays);
+    testGetMember(
+    multi_nested_ds, "bounded_sequence_of_arrays",
+    multi_nested_msg.bounded_sequence_of_arrays);
   EXPECT_EQ(
     testGetCapacity(bounded_sequence_of_arrays.get()),
     multi_nested_msg.bounded_sequence_of_arrays.capacity());
@@ -941,8 +989,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.bounded_sequence_of_arrays.size());
 
   const auto bounded_sequence_of_bounded_sequences =
-    testGetMember(multi_nested_ds, "bounded_sequence_of_bounded_sequences",
-      multi_nested_msg.bounded_sequence_of_bounded_sequences);
+    testGetMember(
+    multi_nested_ds, "bounded_sequence_of_bounded_sequences",
+    multi_nested_msg.bounded_sequence_of_bounded_sequences);
   EXPECT_EQ(
     testGetCapacity(bounded_sequence_of_bounded_sequences.get()),
     multi_nested_msg.bounded_sequence_of_bounded_sequences.capacity());
@@ -951,8 +1000,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.bounded_sequence_of_bounded_sequences.size());
 
   const auto bounded_sequence_of_unbounded_sequences =
-    testGetMember(multi_nested_ds, "bounded_sequence_of_unbounded_sequences",
-      multi_nested_msg.bounded_sequence_of_unbounded_sequences);
+    testGetMember(
+    multi_nested_ds, "bounded_sequence_of_unbounded_sequences",
+    multi_nested_msg.bounded_sequence_of_unbounded_sequences);
   EXPECT_EQ(
     testGetCapacity(bounded_sequence_of_unbounded_sequences.get()),
     multi_nested_msg.bounded_sequence_of_unbounded_sequences.capacity());
@@ -961,8 +1011,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.bounded_sequence_of_unbounded_sequences.size());
 
   const auto unbounded_sequence_of_arrays =
-    testGetMember(multi_nested_ds, "unbounded_sequence_of_arrays",
-      multi_nested_msg.unbounded_sequence_of_arrays);
+    testGetMember(
+    multi_nested_ds, "unbounded_sequence_of_arrays",
+    multi_nested_msg.unbounded_sequence_of_arrays);
   EXPECT_EQ(
     testGetCapacity(unbounded_sequence_of_arrays.get()),
     multi_nested_msg.unbounded_sequence_of_arrays.capacity());
@@ -971,8 +1022,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.unbounded_sequence_of_arrays.size());
 
   const auto unbounded_sequence_of_bounded_sequences =
-    testGetMember(multi_nested_ds, "unbounded_sequence_of_bounded_sequences",
-      multi_nested_msg.unbounded_sequence_of_bounded_sequences);
+    testGetMember(
+    multi_nested_ds, "unbounded_sequence_of_bounded_sequences",
+    multi_nested_msg.unbounded_sequence_of_bounded_sequences);
   EXPECT_EQ(
     testGetCapacity(unbounded_sequence_of_bounded_sequences.get()),
     multi_nested_msg.unbounded_sequence_of_bounded_sequences.capacity());
@@ -981,8 +1033,9 @@ TEST_F(TestTypekit, MultiNested)
     multi_nested_msg.unbounded_sequence_of_bounded_sequences.size());
 
   const auto unbounded_sequence_of_unbounded_sequences =
-    testGetMember(multi_nested_ds, "unbounded_sequence_of_unbounded_sequences",
-      multi_nested_msg.unbounded_sequence_of_unbounded_sequences);
+    testGetMember(
+    multi_nested_ds, "unbounded_sequence_of_unbounded_sequences",
+    multi_nested_msg.unbounded_sequence_of_unbounded_sequences);
   EXPECT_EQ(
     testGetCapacity(unbounded_sequence_of_unbounded_sequences.get()),
     multi_nested_msg.unbounded_sequence_of_unbounded_sequences.capacity());
@@ -1019,8 +1072,9 @@ TEST_F(TestTypekit, Strings)
   EXPECT_EQ(strings_ds->getMemberNames().size(), 12);
 
   const auto string_value =
-    testGetMember(strings_ds, "string_value",
-      strings_msg.string_value);
+    testGetMember(
+    strings_ds, "string_value",
+    strings_msg.string_value);
   EXPECT_EQ(
     testGetCapacity(string_value.get()),
     strings_msg.string_value.capacity());
@@ -1029,8 +1083,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.string_value.size());
 
   const auto string_value_default1 =
-    testGetMember(strings_ds, "string_value_default1",
-      strings_msg.string_value_default1);
+    testGetMember(
+    strings_ds, "string_value_default1",
+    strings_msg.string_value_default1);
   EXPECT_EQ(
     testGetCapacity(string_value_default1.get()),
     strings_msg.string_value_default1.capacity());
@@ -1039,8 +1094,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.string_value_default1.size());
 
   const auto string_value_default2 =
-    testGetMember(strings_ds, "string_value_default2",
-      strings_msg.string_value_default2);
+    testGetMember(
+    strings_ds, "string_value_default2",
+    strings_msg.string_value_default2);
   EXPECT_EQ(
     testGetCapacity(string_value_default2.get()),
     strings_msg.string_value_default2.capacity());
@@ -1049,8 +1105,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.string_value_default2.size());
 
   const auto string_value_default3 =
-    testGetMember(strings_ds, "string_value_default3",
-      strings_msg.string_value_default3);
+    testGetMember(
+    strings_ds, "string_value_default3",
+    strings_msg.string_value_default3);
   EXPECT_EQ(
     testGetCapacity(string_value_default3.get()),
     strings_msg.string_value_default3.capacity());
@@ -1059,8 +1116,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.string_value_default3.size());
 
   const auto string_value_default4 =
-    testGetMember(strings_ds, "string_value_default4",
-      strings_msg.string_value_default4);
+    testGetMember(
+    strings_ds, "string_value_default4",
+    strings_msg.string_value_default4);
   EXPECT_EQ(
     testGetCapacity(string_value_default4.get()),
     strings_msg.string_value_default4.capacity());
@@ -1069,8 +1127,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.string_value_default4.size());
 
   const auto string_value_default5 =
-    testGetMember(strings_ds, "string_value_default5",
-      strings_msg.string_value_default5);
+    testGetMember(
+    strings_ds, "string_value_default5",
+    strings_msg.string_value_default5);
   EXPECT_EQ(
     testGetCapacity(string_value_default5.get()),
     strings_msg.string_value_default5.capacity());
@@ -1079,8 +1138,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.string_value_default5.size());
 
   const auto bounded_string_value =
-    testGetMember(strings_ds, "bounded_string_value",
-      strings_msg.bounded_string_value);
+    testGetMember(
+    strings_ds, "bounded_string_value",
+    strings_msg.bounded_string_value);
   EXPECT_EQ(
     testGetCapacity(bounded_string_value.get()),
     strings_msg.bounded_string_value.capacity());
@@ -1089,8 +1149,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.bounded_string_value.size());
 
   const auto bounded_string_value_default1 =
-    testGetMember(strings_ds, "bounded_string_value_default1",
-      strings_msg.bounded_string_value_default1);
+    testGetMember(
+    strings_ds, "bounded_string_value_default1",
+    strings_msg.bounded_string_value_default1);
   EXPECT_EQ(
     testGetCapacity(bounded_string_value_default1.get()),
     strings_msg.bounded_string_value_default1.capacity());
@@ -1099,8 +1160,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.bounded_string_value_default1.size());
 
   const auto bounded_string_value_default2 =
-    testGetMember(strings_ds, "bounded_string_value_default2",
-      strings_msg.bounded_string_value_default2);
+    testGetMember(
+    strings_ds, "bounded_string_value_default2",
+    strings_msg.bounded_string_value_default2);
   EXPECT_EQ(
     testGetCapacity(bounded_string_value_default2.get()),
     strings_msg.bounded_string_value_default2.capacity());
@@ -1109,8 +1171,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.bounded_string_value_default2.size());
 
   const auto bounded_string_value_default3 =
-    testGetMember(strings_ds, "bounded_string_value_default3",
-      strings_msg.bounded_string_value_default3);
+    testGetMember(
+    strings_ds, "bounded_string_value_default3",
+    strings_msg.bounded_string_value_default3);
   EXPECT_EQ(
     testGetCapacity(bounded_string_value_default3.get()),
     strings_msg.bounded_string_value_default3.capacity());
@@ -1119,8 +1182,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.bounded_string_value_default3.size());
 
   const auto bounded_string_value_default4 =
-    testGetMember(strings_ds, "bounded_string_value_default4",
-      strings_msg.bounded_string_value_default4);
+    testGetMember(
+    strings_ds, "bounded_string_value_default4",
+    strings_msg.bounded_string_value_default4);
   EXPECT_EQ(
     testGetCapacity(bounded_string_value_default4.get()),
     strings_msg.bounded_string_value_default4.capacity());
@@ -1129,8 +1193,9 @@ TEST_F(TestTypekit, Strings)
     strings_msg.bounded_string_value_default4.size());
 
   const auto bounded_string_value_default5 =
-    testGetMember(strings_ds, "bounded_string_value_default5",
-      strings_msg.bounded_string_value_default5);
+    testGetMember(
+    strings_ds, "bounded_string_value_default5",
+    strings_msg.bounded_string_value_default5);
   EXPECT_EQ(
     testGetCapacity(bounded_string_value_default5.get()),
     strings_msg.bounded_string_value_default5.capacity());
@@ -1148,8 +1213,9 @@ TEST_F(TestTypekit, WStrings)
 #endif
 
   const auto wstring_value =
-    testGetMember(wstrings_ds, "wstring_value",
-      wstrings_msg.wstring_value);
+    testGetMember(
+    wstrings_ds, "wstring_value",
+    wstrings_msg.wstring_value);
   EXPECT_EQ(
     testGetCapacity(wstring_value.get()),
     wstrings_msg.wstring_value.capacity());
@@ -1160,8 +1226,9 @@ TEST_F(TestTypekit, WStrings)
   /* Fields have only been added in ROS eloquent (test_msgs >= 0.8.0) */
 #if test_msgs_VERSION_GTE(0, 8, 0)
   const auto wstring_value_default1 =
-    testGetMember(wstrings_ds, "wstring_value_default1",
-      wstrings_msg.wstring_value_default1);
+    testGetMember(
+    wstrings_ds, "wstring_value_default1",
+    wstrings_msg.wstring_value_default1);
   EXPECT_EQ(
     testGetCapacity(wstring_value_default1.get()),
     wstrings_msg.wstring_value_default1.capacity());
@@ -1170,8 +1237,9 @@ TEST_F(TestTypekit, WStrings)
     wstrings_msg.wstring_value_default1.size());
 
   const auto wstring_value_default2 =
-    testGetMember(wstrings_ds, "wstring_value_default2",
-      wstrings_msg.wstring_value_default2);
+    testGetMember(
+    wstrings_ds, "wstring_value_default2",
+    wstrings_msg.wstring_value_default2);
   EXPECT_EQ(
     testGetCapacity(wstring_value_default2.get()),
     wstrings_msg.wstring_value_default2.capacity());
@@ -1180,8 +1248,9 @@ TEST_F(TestTypekit, WStrings)
     wstrings_msg.wstring_value_default2.size());
 
   const auto wstring_value_default3 =
-    testGetMember(wstrings_ds, "wstring_value_default3",
-      wstrings_msg.wstring_value_default3);
+    testGetMember(
+    wstrings_ds, "wstring_value_default3",
+    wstrings_msg.wstring_value_default3);
   EXPECT_EQ(
     testGetCapacity(wstring_value_default3.get()),
     wstrings_msg.wstring_value_default3.capacity());
@@ -1191,8 +1260,9 @@ TEST_F(TestTypekit, WStrings)
 #endif  // test_msgs_VERSION_GTE(0, 8, 0)
 
   const auto array_of_wstrings =
-    testGetMember(wstrings_ds, "array_of_wstrings",
-      wstrings_msg.array_of_wstrings);
+    testGetMember(
+    wstrings_ds, "array_of_wstrings",
+    wstrings_msg.array_of_wstrings);
   EXPECT_EQ(
     testGetCapacity(array_of_wstrings.get()),
     wstrings_msg.array_of_wstrings.size());
@@ -1201,8 +1271,9 @@ TEST_F(TestTypekit, WStrings)
     wstrings_msg.array_of_wstrings.size());
 
   const auto bounded_sequence_of_wstrings =
-    testGetMember(wstrings_ds, "bounded_sequence_of_wstrings",
-      wstrings_msg.bounded_sequence_of_wstrings);
+    testGetMember(
+    wstrings_ds, "bounded_sequence_of_wstrings",
+    wstrings_msg.bounded_sequence_of_wstrings);
   EXPECT_EQ(
     testGetCapacity(bounded_sequence_of_wstrings.get()),
     wstrings_msg.bounded_sequence_of_wstrings.capacity());
@@ -1211,8 +1282,9 @@ TEST_F(TestTypekit, WStrings)
     wstrings_msg.bounded_sequence_of_wstrings.size());
 
   const auto unbounded_sequence_of_wstrings =
-    testGetMember(wstrings_ds, "unbounded_sequence_of_wstrings",
-      wstrings_msg.unbounded_sequence_of_wstrings);
+    testGetMember(
+    wstrings_ds, "unbounded_sequence_of_wstrings",
+    wstrings_msg.unbounded_sequence_of_wstrings);
   EXPECT_EQ(
     testGetCapacity(unbounded_sequence_of_wstrings.get()),
     wstrings_msg.unbounded_sequence_of_wstrings.capacity());

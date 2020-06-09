@@ -20,7 +20,8 @@
 
 TEST(TestFind, find)
 {
-  EXPECT_EQ(rtt_ros2::find("rtt_ros2_tests"),
+  EXPECT_EQ(
+    rtt_ros2::find("rtt_ros2_tests"),
     CMAKE_INSTALL_PREFIX "/share/rtt_ros2_tests");
 }
 
