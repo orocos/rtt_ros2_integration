@@ -20,7 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2 REQUIRED)
 
 # build ros2-primitives typekit
-orocos_typekit(rtt_ros2_primitives
+orocos_typekit(rtt_ros2_primitives_typekit
   src/typekit/ros2_bool_type.cpp
   src/typekit/ros2_float32_type.cpp
   src/typekit/ros2_float64_type.cpp
@@ -38,7 +38,7 @@ orocos_typekit(rtt_ros2_primitives
   EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include/orocos
 )
-target_include_directories(rtt_ros2_primitives
+target_include_directories(rtt_ros2_primitives_typekit
   PRIVATE include/orocos
 )
 
