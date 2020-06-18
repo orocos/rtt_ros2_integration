@@ -17,14 +17,50 @@
 
 #include <iostream>
 
-#include "time_conversions.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/time.hpp"
+#include "rmw/types.h"
 
-std::ostream & operator<<(std::ostream & os, const rmw_time_t & t)
+#include "time_conversions.hpp"
+#include "wrapped_duration.hpp"
+
+namespace rtt_ros2_rcpcpp_typekit
+{
+
+static inline std::ostream & operator<<(std::ostream & os, const rclcpp::Time & t)
+{
+  return os << t.seconds();
+}
+
+static inline std::istream & operator>>(std::istream & is, rclcpp::Time & t)
+{
+  double d = 0.0;
+  if (is >> d) {
+    t = rtt_ros2_rclcpp_typekit::double_to_time(d);
+  }
+  return is;
+}
+
+static inline std::ostream & operator<<(std::ostream & os, const rclcpp::Duration & t)
+{
+  return os << t.seconds();
+}
+
+static inline std::istream & operator>>(std::istream & is, rclcpp::Duration & t)
+{
+  double d = 0.0;
+  if (is >> d) {
+    t = rtt_ros2_rclcpp_typekit::double_to_duration(d);
+  }
+  return is;
+}
+
+static inline std::ostream & operator<<(std::ostream & os, const rmw_time_t & t)
 {
   return os << rtt_ros2_rclcpp_typekit::rmw_time_t_to_double(t);
 }
 
-std::istream & operator>>(std::istream & is, rmw_time_t & t)
+static inline std::istream & operator>>(std::istream & is, rmw_time_t & t)
 {
   double d = 0.0;
   if (is >> d) {
@@ -32,5 +68,14 @@ std::istream & operator>>(std::istream & is, rmw_time_t & t)
   }
   return is;
 }
+
+}  // namespace rtt_ros2_rcpcpp_typekit
+
+// import streaming operators in namespace RTT for RTT::types::TypeStreamSelector
+namespace RTT
+{
+using rtt_ros2_rcpcpp_typekit::operator<<;
+using rtt_ros2_rcpcpp_typekit::operator>>;
+}  // namespace RTT
 
 #endif  // OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__TIME_IO_HPP_

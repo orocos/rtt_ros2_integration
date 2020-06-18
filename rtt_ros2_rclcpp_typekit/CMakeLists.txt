@@ -22,10 +22,13 @@ find_package(rtt_ros2 REQUIRED)
 
 # build ros2-primitives typekit
 orocos_typekit(rtt_ros2_rclcpp_typekit
+  src/ros2_duration_type.cpp
   src/ros2_node_options_type.cpp
   src/ros2_parameter_type.cpp
   src/ros2_parameter_value_type.cpp
+  src/ros2_publisher_options_type.cpp
   src/ros2_qos_type.cpp
+  src/ros2_time_type.cpp
   src/rtt_ros2_rclcpp_typekit.cpp
   EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include/orocos

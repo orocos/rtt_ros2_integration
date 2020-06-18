@@ -28,11 +28,11 @@ using namespace RTT::types;  // NOLINT(build/namespaces)
 namespace rtt_ros2_rclcpp_typekit
 {
 
-QoS::QoS()
-: QoS(rclcpp::KeepLast(0)) {}
+WrappedQoS::WrappedQoS()
+: rclcpp::QoS(rclcpp::KeepLast(0)) {}
 
 QoSTypeInfo::QoSTypeInfo()
-: PrimitiveTypeInfo<QoS>("/rclcpp/QoS")
+: PrimitiveTypeInfo<WrappedQoS>("/rclcpp/QoS")
 {}
 
 bool QoSTypeInfo::installTypeInfoObject(TypeInfo * ti)
@@ -42,7 +42,7 @@ bool QoSTypeInfo::installTypeInfoObject(TypeInfo * ti)
     this->getSharedPtr());
   assert(mthis);
   // Allow base to install first
-  PrimitiveTypeInfo<QoS>::installTypeInfoObject(ti);
+  PrimitiveTypeInfo<WrappedQoS>::installTypeInfoObject(ti);
   // Install the factories specific for this type
   ti->setMemberFactory(mthis);
 
@@ -70,16 +70,16 @@ std::vector<std::string> QoSTypeInfo::getMemberNames() const
 base::DataSourceBase::shared_ptr QoSTypeInfo::getMember(
   base::DataSourceBase::shared_ptr item, const std::string & name) const
 {
-  typename internal::AssignableDataSource<QoS>::shared_ptr adata =
-    boost::dynamic_pointer_cast<internal::AssignableDataSource<QoS>>(item);
+  typename internal::AssignableDataSource<WrappedQoS>::shared_ptr adata =
+    boost::dynamic_pointer_cast<internal::AssignableDataSource<WrappedQoS>>(item);
   // Use a copy in case our parent is not assignable:
   if (!adata) {
     // is it non-assignable ?
-    typename internal::DataSource<QoS>::shared_ptr data =
-      boost::dynamic_pointer_cast<internal::DataSource<QoS>>(item);
+    typename internal::DataSource<WrappedQoS>::shared_ptr data =
+      boost::dynamic_pointer_cast<internal::DataSource<WrappedQoS>>(item);
     if (data) {
       // create a copy
-      adata = new internal::ValueDataSource<QoS>(data->get() );
+      adata = new internal::ValueDataSource<WrappedQoS>(data->get() );
     }
   }
   if (!adata) {

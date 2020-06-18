@@ -23,7 +23,7 @@
 
 #include "rtt_ros2/getter_setter_datasource.hpp"
 
-#include "rtt_ros2_rclcpp_typekit/ros2_qos_type.hpp"
+#include "rtt_ros2_rclcpp_typekit/wrapped_qos.hpp"
 
 using namespace RTT;  // NOLINT(build/namespaces)
 using namespace RTT::types;  // NOLINT(build/namespaces)
@@ -180,14 +180,14 @@ base::DataSourceBase::shared_ptr NodeOptionsTypeInfo::getMember(
   }
 
   if (part_name == "parameter_event_qos") {
-    using FieldT = QoS;
+    using FieldT = WrappedQoS;
     using DataSourceT = rtt_ros2::GetterSetterDataSource<rclcpp::NodeOptions, FieldT>;
     const auto getter =
-      [](const rclcpp::NodeOptions & node_options) -> QoS {
-        return QoS(node_options.parameter_event_qos());
+      [](const rclcpp::NodeOptions & node_options) -> WrappedQoS {
+        return WrappedQoS(node_options.parameter_event_qos());
       };
     const auto setter =
-      [](rclcpp::NodeOptions & node_options, const QoS & qos) -> rclcpp::NodeOptions & {
+      [](rclcpp::NodeOptions & node_options, const WrappedQoS & qos) -> rclcpp::NodeOptions & {
         return node_options.parameter_event_qos(qos);
       };
     return new DataSourceT(adata, getter, setter);

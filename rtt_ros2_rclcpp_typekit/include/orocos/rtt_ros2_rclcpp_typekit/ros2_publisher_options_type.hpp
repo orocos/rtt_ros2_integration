@@ -12,29 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_QOS_TYPE_HPP_
-#define OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_QOS_TYPE_HPP_
+#ifndef OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_PUBLISHER_OPTIONS_TYPE_HPP_
+#define OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_PUBLISHER_OPTIONS_TYPE_HPP_
 
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "rclcpp/qos.hpp"
+#include "rclcpp/publisher_options.hpp"
 
 #include "rtt/types/MemberFactory.hpp"
 #include "rtt/types/PrimitiveTypeInfo.hpp"
 
-#include "wrapped_qos.hpp"
-
 namespace rtt_ros2_rclcpp_typekit
 {
 
-class QoSTypeInfo
-  : public RTT::types::PrimitiveTypeInfo<WrappedQoS>,
+class PublisherOptionsBaseTypeInfo
+  : public RTT::types::PrimitiveTypeInfo<rclcpp::PublisherOptionsBase>,
   public RTT::types::MemberFactory
 {
 public:
-  QoSTypeInfo();
+  PublisherOptionsBaseTypeInfo();
 
   bool installTypeInfoObject(RTT::types::TypeInfo * ti) override;
 
@@ -47,4 +44,4 @@ public:
 
 }  // namespace rtt_ros2_rclcpp_typekit
 
-#endif  // OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_QOS_TYPE_HPP_
+#endif  // OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_PUBLISHER_OPTIONS_TYPE_HPP_

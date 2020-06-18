@@ -18,9 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "rtt/internal/PartDataSource.hpp"
-#include "rtt/types/MemberFactory.hpp"
-#include "rtt/types/PrimitiveTypeInfo.hpp"
 #include "rtt/types/TemplateConstructor.hpp"
 #include "rtt/types/TypeInfoRepository.hpp"
 

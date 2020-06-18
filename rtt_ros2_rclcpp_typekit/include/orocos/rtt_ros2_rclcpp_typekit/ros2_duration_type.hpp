@@ -12,39 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_QOS_TYPE_HPP_
-#define OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_QOS_TYPE_HPP_
+#ifndef OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_DURATION_TYPE_HPP_
+#define OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_DURATION_TYPE_HPP_
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "rclcpp/qos.hpp"
+#include "rclcpp/duration.hpp"
 
-#include "rtt/types/MemberFactory.hpp"
 #include "rtt/types/PrimitiveTypeInfo.hpp"
 
-#include "wrapped_qos.hpp"
+#include "time_io.hpp"
+#include "wrapped_duration.hpp"
 
 namespace rtt_ros2_rclcpp_typekit
 {
 
-class QoSTypeInfo
-  : public RTT::types::PrimitiveTypeInfo<WrappedQoS>,
-  public RTT::types::MemberFactory
+class DurationTypeInfo
+  : public RTT::types::PrimitiveTypeInfo<WrappedDuration, true>
 {
 public:
-  QoSTypeInfo();
+  DurationTypeInfo();
 
   bool installTypeInfoObject(RTT::types::TypeInfo * ti) override;
-
-  std::vector<std::string> getMemberNames() const override;
-
-  RTT::base::DataSourceBase::shared_ptr getMember(
-    RTT::base::DataSourceBase::shared_ptr item,
-    const std::string & part_name) const override;
 };
 
 }  // namespace rtt_ros2_rclcpp_typekit
 
-#endif  // OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_QOS_TYPE_HPP_
+#endif  // OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__ROS2_DURATION_TYPE_HPP_

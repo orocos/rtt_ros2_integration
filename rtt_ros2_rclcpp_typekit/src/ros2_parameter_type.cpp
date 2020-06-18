@@ -19,8 +19,6 @@
 #include <vector>
 
 #include "rtt/internal/FusedFunctorDataSource.hpp"
-#include "rtt/types/MemberFactory.hpp"
-#include "rtt/types/PrimitiveTypeInfo.hpp"
 #include "rtt/types/TemplateConstructor.hpp"
 
 using namespace RTT;  // NOLINT(build/namespaces)

@@ -15,10 +15,70 @@
 #ifndef OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__TIME_CONVERSIONS_HPP_
 #define OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__TIME_CONVERSIONS_HPP_
 
+#include <chrono>
+
+#include "rclcpp/duration.hpp"
+#include "rclcpp/time.hpp"
 #include "rmw/types.h"
+
+#include "wrapped_duration.hpp"
 
 namespace rtt_ros2_rclcpp_typekit
 {
+
+static inline double time_to_double(const rclcpp::Time & t)
+{
+  return t.seconds();
+}
+
+static inline rclcpp::Time double_to_time(const double d)
+{
+  return rclcpp::Time(
+    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(d)).count());
+}
+
+static inline rclcpp::Time double_to_time2(const double d, rcl_clock_type_t clock)
+{
+  return rclcpp::Time(
+    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(d)).count(),
+    clock);
+}
+
+static inline int64_t time_to_int64(const rclcpp::Time & t)
+{
+  return t.nanoseconds();
+}
+
+static inline rclcpp::Time int64_to_time(const int64_t i)
+{
+  return rclcpp::Time(i);
+}
+
+static inline rclcpp::Time int64_to_time2(const int64_t i, rcl_clock_type_t clock)
+{
+  return rclcpp::Time(i, clock);
+}
+
+static inline double duration_to_double(const WrappedDuration & t)
+{
+  return t.seconds();
+}
+
+static inline WrappedDuration double_to_duration(const double d)
+{
+  return WrappedDuration(
+    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(d)).count());
+}
+
+static inline int64_t duration_to_int64(const WrappedDuration & t)
+{
+  return t.nanoseconds();
+}
+
+static inline WrappedDuration int64_to_duration(const int64_t i)
+{
+  return WrappedDuration(i);
+}
 
 static inline double rmw_time_t_to_double(const rmw_time_t & t)
 {
@@ -28,9 +88,24 @@ static inline double rmw_time_t_to_double(const rmw_time_t & t)
 
 static inline rmw_time_t double_to_rmw_time_t(const double d)
 {
+  if (d < 0) {throw std::invalid_argument("rmw_time_t cannot be negative");}
   rmw_time_t t;
   t.sec = static_cast<uint64_t>(d);
   t.nsec = static_cast<uint64_t>((d - static_cast<double>(t.sec)) * 1e9);
+  return t;
+}
+
+static inline uint64_t rmw_time_t_to_uint64(const rmw_time_t & t)
+{
+  return
+    static_cast<uint64_t>(t.sec) * 1000000000ull + static_cast<uint64_t>(t.nsec);
+}
+
+static inline rmw_time_t uint64_to_rmw_time_t(const uint64_t d)
+{
+  rmw_time_t t;
+  t.sec = static_cast<uint64_t>(d / 1000000000L);
+  t.nsec = static_cast<uint64_t>(d % 1000000000L);
   return t;
 }
 
