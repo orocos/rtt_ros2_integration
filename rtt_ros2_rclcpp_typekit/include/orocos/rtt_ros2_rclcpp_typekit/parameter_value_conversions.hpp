@@ -90,9 +90,9 @@ static inline const std::vector<uint8_t> & parameter_value_to_byte_array(
 }
 
 static inline rclcpp::ParameterValue byte_array_to_parameter_value(
-  const std::vector<uint8_t> & bye_array_value)
+  const std::vector<uint8_t> & byte_array_value)
 {
-  return rclcpp::ParameterValue(bye_array_value);
+  return rclcpp::ParameterValue(byte_array_value);
 }
 
 static inline const std::vector<bool> & parameter_value_to_bool_array(
