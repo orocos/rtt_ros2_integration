@@ -40,6 +40,12 @@ ament_target_dependencies(rtt_ros2_rclcpp_typekit
   rclcpp
   rtt_ros2
 )
+target_compile_definitions(rtt_ros2_rclcpp_typekit
+  PRIVATE
+    rclcpp_VERSION_MAJOR=${rclcpp_VERSION_MAJOR}
+    rclcpp_VERSION_MINOR=${rclcpp_VERSION_MINOR}
+    rclcpp_VERSION_PATCH=${rclcpp_VERSION_PATCH}
+)
 
 # install
 install(

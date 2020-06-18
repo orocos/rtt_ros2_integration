@@ -22,6 +22,7 @@
 #include "rtt/types/MemberFactory.hpp"
 #include "rtt/types/PrimitiveTypeInfo.hpp"
 
+#include "rtt_ros2_rclcpp_typekit/rclcpp_version.h"
 #include "rtt_ros2_rclcpp_typekit/wrapped_qos.hpp"
 
 using namespace RTT;  // NOLINT(build/namespaces)
@@ -59,7 +60,9 @@ std::vector<std::string> PublisherOptionsBaseTypeInfo::getMemberNames() const
     "use_intra_process_comm",
     "event_callbacks",
     "callback_group",
+#if rclcpp_VERSION_GTE(0, 8, 1)
     "rmw_implementation_payload",
+#endif
   };
 }
 
@@ -104,11 +107,13 @@ base::DataSourceBase::shared_ptr PublisherOptionsBaseTypeInfo::getMember(
     return new DataSourceT(adata->set().callback_group, item);
   }
 
+#if rclcpp_VERSION_GTE(0, 8, 1)
   if (part_name == "rmw_implementation_payload") {
     using FieldT = decltype(rclcpp::PublisherOptionsBase::rmw_implementation_payload);
     using DataSourceT = internal::PartDataSource<FieldT>;
     return new DataSourceT(adata->set().rmw_implementation_payload, item);
   }
+#endif
 
   return base::DataSourceBase::shared_ptr();
 }

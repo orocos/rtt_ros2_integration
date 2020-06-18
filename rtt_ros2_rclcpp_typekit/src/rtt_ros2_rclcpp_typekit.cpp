@@ -22,6 +22,7 @@
 #include "rtt/types/OperatorTypes.hpp"
 #include "rtt/types/TypekitPlugin.hpp"
 
+#include "rtt_ros2_rclcpp_typekit/rclcpp_version.h"
 #include "rtt_ros2_rclcpp_typekit/ros2_duration_type.hpp"
 #include "rtt_ros2_rclcpp_typekit/ros2_node_options_type.hpp"
 #include "rtt_ros2_rclcpp_typekit/ros2_parameter_type.hpp"
@@ -63,10 +64,12 @@ public:
       new PrimitiveTypeInfo<
         std::shared_ptr<rclcpp::callback_group::CallbackGroup>>(
         "/rclcpp/CallbackGroup"));
+#if rclcpp_VERSION_GTE(0, 8, 1)
     types->addType(
       new PrimitiveTypeInfo<
         std::shared_ptr<rclcpp::detail::RMWImplementationSpecificPublisherPayload>>(
         "/rclcpp/RMWImplementationSpecificPublisherPayload"));
+#endif
 
     types->addType(new PrimitiveTypeInfo<rmw_time_t, true>("rmw_time_t"));
     types->addType(new PrimitiveTypeInfo<rcl_allocator_t>("rcl_allocator_t"));
