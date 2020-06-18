@@ -18,12 +18,12 @@
 /* True if the version of rclcpp is at least major.minor.patch */
 // (from https://github.com/ros2/rmw_cyclonedds/pull/51)
 #define rclcpp_VERSION_GTE(major, minor, patch) ( \
-    major<rclcpp_VERSION_MAJOR ? true \
-    : major> rclcpp_VERSION_MAJOR ? false \
-    : minor<rclcpp_VERSION_MINOR ? true \
-    : minor> rclcpp_VERSION_MINOR ? false \
-    : patch<rclcpp_VERSION_PATCH ? true \
-    : patch> rclcpp_VERSION_PATCH ? false \
+    (major < rclcpp_VERSION_MAJOR) ? true \
+    : (major > rclcpp_VERSION_MAJOR) ? false \
+    : (minor < rclcpp_VERSION_MINOR) ? true \
+    : (minor > rclcpp_VERSION_MINOR) ? false \
+    : (patch < rclcpp_VERSION_PATCH) ? true \
+    : (patch > rclcpp_VERSION_PATCH) ? false \
     : true)
 
 #endif  // OROCOS__RTT_ROS2_RCLCPP_TYPEKIT__RCLCPP_VERSION_H_

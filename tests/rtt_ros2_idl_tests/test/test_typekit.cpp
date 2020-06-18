@@ -29,12 +29,12 @@
 /* True if the version of test_msgs is at least major.minor.patch */
 // (from https://github.com/ros2/rmw_cyclonedds/pull/51)
 #define test_msgs_VERSION_GTE(major, minor, patch) ( \
-    major<test_msgs_VERSION_MAJOR ? true \
-    : major> test_msgs_VERSION_MAJOR ? false \
-    : minor<test_msgs_VERSION_MINOR ? true \
-    : minor> test_msgs_VERSION_MINOR ? false \
-    : patch<test_msgs_VERSION_PATCH ? true \
-    : patch> test_msgs_VERSION_PATCH ? false \
+    (major < test_msgs_VERSION_MAJOR) ? true \
+    : (major > test_msgs_VERSION_MAJOR) ? false \
+    : (minor < test_msgs_VERSION_MINOR) ? true \
+    : (minor > test_msgs_VERSION_MINOR) ? false \
+    : (patch < test_msgs_VERSION_PATCH) ? true \
+    : (patch > test_msgs_VERSION_PATCH) ? false \
     : true)
 
 /*
