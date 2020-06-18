@@ -68,6 +68,7 @@ else()
   ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 endif()
 rtt_ros2_export_plugin_depend(rtt_ros2_primitives_typekit)
+rtt_ros2_export_plugin_depend(rtt_ros2_builtin_interfaces_typekit)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()

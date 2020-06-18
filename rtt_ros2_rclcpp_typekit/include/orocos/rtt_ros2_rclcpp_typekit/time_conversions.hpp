@@ -26,6 +26,16 @@
 namespace rtt_ros2_rclcpp_typekit
 {
 
+static inline builtin_interfaces::msg::Time time_to_msg(const rclcpp::Time & t)
+{
+  return static_cast<builtin_interfaces::msg::Time>(t);
+}
+
+static inline rclcpp::Time msg_to_time(const builtin_interfaces::msg::Time & msg)
+{
+  return rclcpp::Time(msg);
+}
+
 static inline double time_to_double(const rclcpp::Time & t)
 {
   return t.seconds();
@@ -57,6 +67,16 @@ static inline rclcpp::Time int64_to_time(const int64_t i)
 static inline rclcpp::Time int64_to_time2(const int64_t i, rcl_clock_type_t clock)
 {
   return rclcpp::Time(i, clock);
+}
+
+static inline builtin_interfaces::msg::Duration duration_to_msg(const WrappedDuration & t)
+{
+  return static_cast<builtin_interfaces::msg::Duration>(t);
+}
+
+static inline WrappedDuration msg_to_duration(const builtin_interfaces::msg::Duration & msg)
+{
+  return WrappedDuration(msg);
 }
 
 static inline double duration_to_double(const WrappedDuration & t)

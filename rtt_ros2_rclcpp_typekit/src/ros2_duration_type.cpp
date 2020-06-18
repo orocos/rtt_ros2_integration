@@ -48,9 +48,19 @@ bool DurationTypeInfo::installTypeInfoObject(TypeInfo * ti)
   // ti->setStreamFactory(mthis);
 
   // Conversions
-  // Define conversions for int64_t first, because Orocos implicit converts from int64 to double!
   const auto types = TypeInfoRepository::Instance();
   {
+    const auto built_interfaces_msg_duration_ti =
+      types->getTypeInfo<builtin_interfaces::msg::Duration>();
+    assert(built_interfaces_msg_duration_ti != nullptr);
+    if (built_interfaces_msg_duration_ti != nullptr) {
+      built_interfaces_msg_duration_ti->addConstructor(newConstructor(&duration_to_msg, true));
+    }
+    ti->addConstructor(newConstructor(&msg_to_duration, true));
+  }
+  {
+    // Note: Define conversions for int64_t before double, because Orocos implicit converts from
+    // int64_t to double, but not from double to int64_t.
     const auto int64_ti = types->getTypeInfo<int64_t>();
     assert(int64_ti != nullptr);
     if (int64_ti != nullptr) {
