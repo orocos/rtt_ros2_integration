@@ -60,10 +60,17 @@ public:
     types->addType(
       new PrimitiveTypeInfo<rclcpp::PublisherEventCallbacks>(
         "/rclcpp/PublisherEventCallbacks"));
+#if rclcpp_VERSION_GTE(0, 9, 0)
+    types->addType(
+      new PrimitiveTypeInfo<
+        std::shared_ptr<rclcpp::CallbackGroup>>(
+        "/rclcpp/CallbackGroup"));
+#else
     types->addType(
       new PrimitiveTypeInfo<
         std::shared_ptr<rclcpp::callback_group::CallbackGroup>>(
         "/rclcpp/CallbackGroup"));
+#endif
 #if rclcpp_VERSION_GTE(0, 8, 1)
     types->addType(
       new PrimitiveTypeInfo<
