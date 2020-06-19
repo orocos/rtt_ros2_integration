@@ -17,6 +17,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "rclcpp/executors.hpp"
 
@@ -101,20 +102,23 @@ void Node::spin(unsigned int number_of_threads)
     " (" << actual_number_of_threads << " " <<
   (actual_number_of_threads > 1 ? "threads" : "thread") << ")." <<
     RTT::endlog();
+
+  executor_ = std::move(executor);
 }
 
 void Node::cancel()
 {
-  if (executor_ != nullptr) {
+  const auto executor = std::move(executor_);
+  if (executor != nullptr) {
     RTT::log(RTT::Info) <<
       "Shutting down ROS node spinner for node " << node_->get_fully_qualified_name() <<
       "..." << RTT::endlog();
-    executor_->cancel();
+    executor->cancel();
   }
   if (thread_.joinable()) {
     thread_.join();
+    thread_ = std::thread();
   }
-  executor_.reset();
 }
 
 }  // namespace rtt_ros2_node
