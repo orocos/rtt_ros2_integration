@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rtt_ros2_primitives_typekit)
+project(rtt_ros2_rclcpp_typekit)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -17,29 +17,34 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(rtt_ros2 REQUIRED)
 
 # build ros2-primitives typekit
-orocos_typekit(rtt_ros2_primitives_typekit
-  src/typekit/ros2_bool_type.cpp
-  src/typekit/ros2_float32_type.cpp
-  src/typekit/ros2_float64_type.cpp
-  src/typekit/ros2_int16_type.cpp
-  src/typekit/ros2_int32_type.cpp
-  src/typekit/ros2_int64_type.cpp
-  src/typekit/ros2_int8_type.cpp
-  src/typekit/ros2_primitives_typekit.cpp
-  src/typekit/ros2_string_type.cpp
-  src/typekit/ros2_uint16_type.cpp
-  src/typekit/ros2_uint32_type.cpp
-  src/typekit/ros2_uint64_type.cpp
-  src/typekit/ros2_uint8_type.cpp
-  src/typekit/ros2_wstring_type.cpp
+orocos_typekit(rtt_ros2_rclcpp_typekit
+  src/ros2_duration_type.cpp
+  src/ros2_node_options_type.cpp
+  src/ros2_parameter_type.cpp
+  src/ros2_parameter_value_type.cpp
+  src/ros2_publisher_options_type.cpp
+  src/ros2_qos_type.cpp
+  src/ros2_time_type.cpp
+  src/rtt_ros2_rclcpp_typekit.cpp
   EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include/orocos
 )
-target_include_directories(rtt_ros2_primitives_typekit
+target_include_directories(rtt_ros2_rclcpp_typekit
   PRIVATE include/orocos
+)
+ament_target_dependencies(rtt_ros2_rclcpp_typekit
+  rclcpp
+  rtt_ros2
+)
+target_compile_definitions(rtt_ros2_rclcpp_typekit
+  PRIVATE
+    rclcpp_VERSION_MAJOR=${rclcpp_VERSION_MAJOR}
+    rclcpp_VERSION_MINOR=${rclcpp_VERSION_MINOR}
+    rclcpp_VERSION_PATCH=${rclcpp_VERSION_PATCH}
 )
 
 # install
@@ -62,6 +67,8 @@ if(COMMAND ament_export_targets)
 else()
   ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 endif()
+rtt_ros2_export_plugin_depend(rtt_ros2_primitives_typekit)
+rtt_ros2_export_plugin_depend(rtt_ros2_builtin_interfaces_typekit)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()
