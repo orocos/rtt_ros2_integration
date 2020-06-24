@@ -22,6 +22,7 @@
 #include "rclcpp/executors.hpp"
 
 #include "rtt/TaskContext.hpp"
+#include "rtt/internal/GlobalService.hpp"
 
 namespace rtt_ros2_node
 {
@@ -119,6 +120,47 @@ void Node::cancel()
     thread_.join();
     thread_ = std::thread();
   }
+}
+
+Node::shared_ptr getNodeService(RTT::TaskContext * tc)
+{
+  Node::shared_ptr node;
+
+  if (tc != nullptr) {
+    // Try to find the service by name
+    node = boost::dynamic_pointer_cast<Node>(tc->provides()->getService("Node"));
+    if (node != nullptr) {
+      return node;
+    }
+
+    // Try to find the service by type
+    for (const auto & name : tc->provides()->getProviderNames()) {
+      node = boost::dynamic_pointer_cast<Node>(tc->provides()->getService(name));
+      if (node != nullptr) {
+        return node;
+      }
+    }
+  }
+
+  // Try global service ros.Node
+  RTT::Service::shared_ptr ros = RTT::internal::GlobalService::Instance()->getService("ros");
+  if (ros != nullptr) {
+    node = boost::dynamic_pointer_cast<Node>(ros->getService("Node"));
+    if (node != nullptr) {
+      return node;
+    }
+  }
+
+  return nullptr;
+}
+
+rclcpp::Node::SharedPtr getNode(RTT::TaskContext * tc)
+{
+  Node::shared_ptr node = getNodeService(tc);
+  if (node == nullptr) {
+    return nullptr;
+  }
+  return node->node();
 }
 
 }  // namespace rtt_ros2_node
