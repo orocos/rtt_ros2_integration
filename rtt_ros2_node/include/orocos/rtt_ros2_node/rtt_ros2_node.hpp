@@ -30,6 +30,8 @@ namespace rtt_ros2_node
 struct Node : public RTT::Service
 {
 public:
+  using shared_ptr = boost::shared_ptr<Node>;
+
   explicit Node(RTT::TaskContext * owner = nullptr);
   Node(
     const rclcpp::NodeOptions & options = rclcpp::NodeOptions(),
@@ -56,6 +58,23 @@ protected:
   rclcpp::executor::Executor::SharedPtr executor_;
   std::thread thread_;
 };
+
+/// Retrieve a pointer to the rtt_ros2_node::Node service to be used for the given TaskContext.
+/**
+ * @param tc The TaskContext instance for which to retrieve a Node pointer. If nullptr, consider
+ *           only the global (process-wide) node.
+ * @returns the Node instance loaded as a RTT service in the given TaskContext,
+ * or falls back to the global (process-wide) Node loaded into the GlobalService.
+ * If none of both is loaded, the function returns nullptr.
+ */
+Node::shared_ptr getNodeService(RTT::TaskContext * tc = nullptr);
+
+/// Retrieve a rclcpp::Node::SharedPtr to be used for the given TaskContext.
+/**
+ * @sa \ref getNodeService()
+ * @returns getNodeService(tc) ? getNodeService(tc)->node() : nullptr
+ */
+rclcpp::Node::SharedPtr getNode(RTT::TaskContext * tc = nullptr);
 
 }  // namespace rtt_ros2_node
 
