@@ -12,4 +12,105 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 #include "rtt_ros2_params/rtt_ros2_params.hpp"
+#include "rtt_ros2_node/rtt_ros2_node.hpp"
+
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/parameter.hpp>
+#include <rclcpp/parameter_value.hpp>
+
+#include "rtt/internal/GlobalService.hpp"
+
+#include <rtt/TaskContext.hpp>
+
+namespace rtt_ros2_params {
+
+Params::Params(RTT::TaskContext *owner)
+  : RTT::Service("Params", owner) {
+  std::cout << "Parameter service instantiated! in " << getName() << std::endl;
+
+  std::cout << "Name of the owner: " << owner->getName() << std::endl;
+  // getName() returns the name of the Service, NOT the TC owner (the component it belongs to)
+  // owner->getName() fails
+  // owner->
+  const auto check = owner->provides()->hasService("ros");
+  std::cout << check << std::endl;
+
+  this->doc("RTT Service for synchronizing ROS2 parameters with the properties of a corresponding RTT component");
+  this->setValue(new RTT::Constant<int>("TheAnswer", 42));
+
+
+
+
+
+  // base::DataSourceBase::shared_ptr ds;
+  // if (!ds) {
+  //   sresult << "(null)";
+  //   return;
+  // }
+  // ds->reset();
+  // ds->evaluate();
+  // DataSource<RTT::PropertyBag>* dspbag = DataSource<RTT::PropertyBag>::narrow(ds.get());
+  // RTT::PropertyBag bag( dspbag->get() );
+
+
+  // Create a Property<> wrapper around the propertybag
+  // RTT::PropertyBag *properties = service->properties();
+  // RTT::internal::AssignableDataSource<RTT::PropertyBag>::shared_ptr datasource(new RTT::internal::ReferenceDataSource<RTT::PropertyBag>(*properties));
+  // RTT::Property<RTT::PropertyBag> prop(this->getOwner()->getName(),"",datasource);
+
+  // addOperation("check_ros2_node", &Params::check_ros2_node, this, RTT::ClientThread);
+  addOperation("get_parameter", &Params::get_parameter, this, RTT::ClientThread)
+    .doc("Gets a parameter from the parameter server")
+    .arg("name", "Name of the parameter to retrieve")
+    .arg("namespace", "Node scope to retrieve the parameter from, e.g.: \"\" (locally), \"~\" (private) \"/\" (absolute)");
+
+}
+
+Params::~Params() {
+
+}
+
+bool Params::check_ros2_node_in_component() {
+  return getOwner()->provides()->hasService("Node");
+}
+
+bool Params::check_ros2_node_in_global() {
+  return RTT::internal::GlobalService::Instance()->hasService("ros");
+}
+
+bool Params::get_parameter(const std::string name, const std::string ns) {
+  RTT::log(RTT::Info) << "[" << getName() << "] Retrieving the parameter \"" << name << "\" from namespace: " << RTT::endlog();
+
+  // We won't need this anymore, since the node is already provided by rtt_ros2_node::getNode()
+  if (check_ros2_node_in_component()) {
+    RTT::log(RTT::Info) << "[" << getName() << "] Using the component service for ROS2" << RTT::endlog();
+  } else if (check_ros2_node_in_global()) {
+    RTT::log(RTT::Info) << "[" << getName() << "] Using the global service for ROS2" << RTT::endlog();
+  } else {
+    RTT::log(RTT::Warning) << "[" << getName() << "] No ROS2 node was found within Orocos, please import \"rtt_ros2_node\"" << RTT::endlog();
+  }
+
+  rclcpp::Node::SharedPtr rosnode = nullptr;
+  if (RTT::internal::GlobalService::Instance()->hasService("ros")) {
+    const auto node = boost::dynamic_pointer_cast<rtt_ros2_node::Node>(RTT::internal::GlobalService::Instance()->provides()->getService("ros"));
+    RTT::log(RTT::Info) << "[" << getName() << "] Global service ROS2 named " << (nullptr != node ? node->getName() : "NULL") << RTT::endlog();
+    rosnode = rtt_ros2_node::getNode(getOwner());
+  }
+
+  rclcpp::ParameterValue paramvalue;
+
+  if (nullptr != rosnode) {
+    rosnode->get_parameter(name, paramvalue);
+    
+  } else {
+    RTT::log(RTT::Warning) << "[" << getName() << "] The ROS2 node doesn't exist, no parameter can be retreieved." << RTT::endlog();
+    return false;
+  }
+
+
+  return true;
+}
+
+} // namespace rtt_ros2_params

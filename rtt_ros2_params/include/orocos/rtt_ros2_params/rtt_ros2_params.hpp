@@ -16,5 +16,26 @@
 #define OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
 
 
+#include "rtt/Service.hpp"
+
+namespace rtt_ros2_params {
+
+class Params : public RTT::Service {
+  public:
+    Params(RTT::TaskContext *owner);
+    virtual ~Params();
+
+  protected:
+    bool get_parameter(const std::string name, const std::string ns);
+
+  private:
+    bool check_ros2_node_in_component();
+    bool check_ros2_node_in_global();
+
+    RTT::TaskContext *owner_;
+
+}; // class Params
+
+} // namespace rtt_ros2_params
 
 #endif // OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
