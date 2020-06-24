@@ -74,6 +74,12 @@ Node::Node(
     !node_name.empty() ? node_name : default_node_name_from_owner(owner),
     namespace_, options);
 
+  this->addOperation("spin", &Node::spin, this)
+  .doc("Start a single or multi-threaded spinner for this node")
+  .arg("number_of_threads", "The number of spinner threads (0 = hardware concurrency)");
+  this->addOperation("cancel", &Node::cancel, this)
+  .doc("Cancel all operations and stop the spinner threads for this node");
+
   // eventually start a spinner
   const auto number_of_threads =
     node_->declare_parameter<int>("spinner_threads", 0);  // 0 = hardware concurrency
