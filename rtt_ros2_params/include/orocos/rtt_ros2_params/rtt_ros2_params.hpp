@@ -18,6 +18,12 @@
 
 #include "rtt/Service.hpp"
 
+
+
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/parameter.hpp>
+#include <rclcpp/parameter_value.hpp>
+
 namespace rtt_ros2_params {
 
 class Params : public RTT::Service {
@@ -26,11 +32,14 @@ class Params : public RTT::Service {
     virtual ~Params();
 
   protected:
-    bool get_parameter(const std::string name, const std::string ns);
+    rclcpp::ParameterValue getParameter(const std::string param_name);
+    bool loadProperty(const std::string param_name, const std::string property_name);
 
   private:
     bool check_ros2_node_in_component();
     bool check_ros2_node_in_global();
+
+    std::map<std::string, rclcpp::ParameterValue > orphan_params_;
 
     RTT::TaskContext *owner_;
 

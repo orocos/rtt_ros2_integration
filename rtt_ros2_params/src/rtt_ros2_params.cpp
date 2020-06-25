@@ -23,6 +23,7 @@
 #include "rtt/internal/GlobalService.hpp"
 
 #include <rtt/TaskContext.hpp>
+#include <rtt/Property.hpp>
 
 namespace rtt_ros2_params {
 
@@ -61,11 +62,15 @@ Params::Params(RTT::TaskContext *owner)
   // RTT::Property<RTT::PropertyBag> prop(this->getOwner()->getName(),"",datasource);
 
   // addOperation("check_ros2_node", &Params::check_ros2_node, this, RTT::ClientThread);
-  addOperation("get_parameter", &Params::get_parameter, this, RTT::ClientThread)
+  addOperation("getParameter", &Params::getParameter, this, RTT::ClientThread)
     .doc("Gets a parameter from the parameter server")
-    .arg("name", "Name of the parameter to retrieve")
-    .arg("namespace", "Node scope to retrieve the parameter from, e.g.: \"\" (locally), \"~\" (private) \"/\" (absolute)");
+    .arg("name", "Name of the parameter to retrieve");
+    //.arg("namespace", "Node scope to retrieve the parameter from, e.g.: \"\" (locally), \"~\" (private) \"/\" (absolute)");
 
+  addOperation("loadProperty", &Params::loadProperty, this, RTT::ClientThread)
+    .doc("Loads a parameter from the parameter server into a Property")
+    .arg("parameter_name", "Name of the parameter to retrieve")
+    .arg("property_name", "Name of the property to load into");
 }
 
 Params::~Params() {
@@ -80,10 +85,11 @@ bool Params::check_ros2_node_in_global() {
   return RTT::internal::GlobalService::Instance()->hasService("ros");
 }
 
-bool Params::get_parameter(const std::string name, const std::string ns) {
-  RTT::log(RTT::Info) << "[" << getName() << "] Retrieving the parameter \"" << name << "\" from namespace: " << RTT::endlog();
+rclcpp::ParameterValue Params::getParameter(const std::string param_name) {
+  RTT::log(RTT::Info) << "[" << getName() << "] Retrieving the parameter \"" << param_name << "\"" << RTT::endlog();
 
   // We won't need this anymore, since the node is already provided by rtt_ros2_node::getNode()
+  // Only here now for debugging reasons
   if (check_ros2_node_in_component()) {
     RTT::log(RTT::Info) << "[" << getName() << "] Using the component service for ROS2" << RTT::endlog();
   } else if (check_ros2_node_in_global()) {
@@ -94,23 +100,68 @@ bool Params::get_parameter(const std::string name, const std::string ns) {
 
   rclcpp::Node::SharedPtr rosnode = nullptr;
   if (RTT::internal::GlobalService::Instance()->hasService("ros")) {
-    const auto node = boost::dynamic_pointer_cast<rtt_ros2_node::Node>(RTT::internal::GlobalService::Instance()->provides()->getService("ros"));
-    RTT::log(RTT::Info) << "[" << getName() << "] Global service ROS2 named " << (nullptr != node ? node->getName() : "NULL") << RTT::endlog();
+    // const auto node = boost::dynamic_pointer_cast<rtt_ros2_node::Node>(RTT::internal::GlobalService::Instance()->provides()->getService("ros"));
+    // RTT::log(RTT::Info) << "[" << getName() << "] Global service ROS2 named " << (nullptr != node ? node->getName() : "NULL") << RTT::endlog();
     rosnode = rtt_ros2_node::getNode(getOwner());
   }
 
   rclcpp::ParameterValue paramvalue;
 
   if (nullptr != rosnode) {
-    rosnode->get_parameter(name, paramvalue);
-    
+    rosnode->get_parameter(param_name, paramvalue);
   } else {
-    RTT::log(RTT::Warning) << "[" << getName() << "] The ROS2 node doesn't exist, no parameter can be retreieved." << RTT::endlog();
+    RTT::log(RTT::Warning) << "[" << getName() << "] The ROS2 node doesn't exist, no parameter can be retrieved." << RTT::endlog();
+  }
+
+  return paramvalue;
+}
+
+bool Params::loadProperty(const std::string param_name, const std::string property_name) {
+
+  const rclcpp::ParameterValue paramvalue = getParameter(param_name);
+  if (rclcpp::PARAMETER_NOT_SET == paramvalue.get_type()) {
+    RTT::log(RTT::Warning) << "[" << getName() << "] The parameter \"" << param_name << "\" couldn't be retrieved" << RTT::endlog();
     return false;
   }
 
+  if (nullptr != getOwner()->properties()->getProperty(property_name)) {
+    RTT::log(RTT::Info) << "[" << getName() << "] " << getOwner()->provides()->getName() << " has a property " << property_name << RTT::endlog();
+  } else {
+    RTT::log(RTT::Info) << "[" << getName() << "] " << getOwner()->provides()->getName() << " has NO property " << property_name << RTT::endlog();
+    for (const auto property : getOwner()->properties()->getProperties() ) {
+      RTT::log(RTT::Info) << property->getName() << RTT::endlog();
+    }
+  }
 
-  return true;
+  // prop will be RTT::base::PropertyBase*
+  // I want to convert and transfer the content of a RTT::Property<rclcpp::ParameterValue>* into RTT::base::PropertyBase*
+  auto prop = getOwner()->properties()->getProperty(property_name);
+  RTT::Property<rclcpp::ParameterValue>* prop_paramvalue = dynamic_cast<RTT::Property<rclcpp::ParameterValue>*>(prop);
+  if (nullptr == prop) {
+    // Try to find it among orphan parameters (previously loaded, without a component interface)
+    if (orphan_params_.find(property_name) == orphan_params_.end()) {
+      orphan_params_[property_name] = paramvalue;
+      this->addProperty(property_name, orphan_params_[property_name])
+        .doc("Property loaded from ROS2 param: " + param_name);
+      prop = getProperty(property_name);
+    } else {
+      orphan_params_[property_name] = paramvalue;
+      prop = getProperty(property_name);
+    }
+    return true;
+
+  } else {
+    RTT::log(RTT::Info) << "[" << getName() << "] The property " << property_name << " existed" << RTT::endlog();
+    if (nullptr == prop_paramvalue) {
+      RTT::log(RTT::Info) << "[" << getName() << "] But cannot be casted into rclcpp::ParamValue" << RTT::endlog();
+      return false;
+    } else {
+      prop_paramvalue->set(paramvalue);
+    }
+    return true;
+  }
+
+  return false;
 }
 
 } // namespace rtt_ros2_params
