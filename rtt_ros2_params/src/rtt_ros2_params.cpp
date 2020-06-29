@@ -15,6 +15,7 @@
 
 #include "rtt_ros2_params/rtt_ros2_params.hpp"
 #include "rtt_ros2_node/rtt_ros2_node.hpp"
+#include "rtt_ros2_rclcpp_typekit/ros2_parameter_value_type.hpp"
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/parameter.hpp>
@@ -118,7 +119,7 @@ rclcpp::ParameterValue Params::getParameter(const std::string param_name) {
 
 bool Params::loadProperty(const std::string param_name, const std::string property_name) {
 
-  const rclcpp::ParameterValue paramvalue = getParameter(param_name);
+  rclcpp::ParameterValue paramvalue = getParameter(param_name);
   if (rclcpp::PARAMETER_NOT_SET == paramvalue.get_type()) {
     RTT::log(RTT::Warning) << "[" << getName() << "] The parameter \"" << param_name << "\" couldn't be retrieved" << RTT::endlog();
     return false;
@@ -154,6 +155,49 @@ bool Params::loadProperty(const std::string param_name, const std::string proper
     RTT::log(RTT::Info) << "[" << getName() << "] The property " << property_name << " existed" << RTT::endlog();
     if (nullptr == prop_paramvalue) {
       RTT::log(RTT::Info) << "[" << getName() << "] But cannot be casted into rclcpp::ParamValue" << RTT::endlog();
+
+      // Use here base::DataSourceBase::shared_ptr convert(base::DataSourceBase::shared_ptr arg) const;
+      // prop->getDataSource()->getTypeInfo()->convert(RTT::internal::DataSource<rclcpp::ParameterValue>(paramvalue));
+      const RTT::base::DataSourceBase::shared_ptr property_ds = prop->getDataSource();
+      // const RTT::types::TypeInfo* property_ti = prop->getDataSource()->getTypeInfo(); // Need if doing two steps .update( property_ti->convert() )
+      // rtt_ros2_rclcpp_typekit::
+      // RTT::internal::ValueDataSource<rclcpp::ParameterValue>::shared_ptr param_ds = boost::make_shared<RTT::internal::ValueDataSource<rclcpp::ParameterValue> >(paramvalue);
+
+      rtt_ros2_rclcpp_typekit::ParameterValueTypeInfo param_typeinfo;
+      const RTT::internal::ValueDataSource<rclcpp::ParameterValue> param_vds(paramvalue);
+      RTT::internal::ReferenceDataSource<rclcpp::ParameterValue> param_rds = RTT::internal::ReferenceDataSource<rclcpp::ParameterValue>(paramvalue);
+      param_rds.ref();
+
+      // RTT::log(RTT::Info) << "[" << getName() << "] Target property " << prop->getName() << " of type " << property_ti->getTypeName() << RTT::endlog();
+      // RTT::log(RTT::Info) << "[" << getName() << "] Source parameter " << param_name << " of type " << param_typeinfo.getTypeName() << " or " << param_vds.getTypeInfo()->getTypeName() << RTT::endlog();
+
+      // Assign the param_ds to the property_ds
+
+      // property_ds->update(property_ti->convert(&param_vds));
+      // RTT::base::DataSourceBase::shared_ptr converted_ds = property_ti->convert(param_vds.getParent());
+      // // property_ds->update(property_ti->convert(param_vds.getParent()));
+      // auto converted = property_ti->convert(new RTT::internal::ReferenceDataSource<rclcpp::ParameterValue>(paramvalue));
+      // auto converted = property_ti->convert( &param_rds );
+
+      try {
+        if (property_ds->update(&param_rds)) {
+          // conversion successful
+          RTT::log(RTT::Info) << "[" << getName() << "] Property " << getOwner()->provides()->getName() << "." << property_name << " loaded successfully from ROS2 parameter " << param_name << RTT::endlog();
+          return true;
+        } else {
+          // conversion failed
+          RTT::log(RTT::Warning) << "[" << getName() << "] Property " << getOwner()->provides()->getName() << "." << property_name << " failed to convert from ROS2 parameter " << param_name << RTT::endlog();
+          return false;
+        }
+      } catch (std::exception e) {
+        RTT::log(RTT::Error) << "The property " << getOwner()->provides()->getName() << "." << property_name << " could not be converted from ROS2 parameter " << param_name << ". Exception caught: " << e.what() << RTT::endlog();
+        return false;
+      }
+
+      // param_ds.get(paramvalue);
+      // auto param_typeinfo_ex = boost::make_shared<RTT::types::TypeInfo>(param_typeinfo);
+      // param_typeinfo_ex->construct(paramvalue);
+
       return false;
     } else {
       prop_paramvalue->set(paramvalue);

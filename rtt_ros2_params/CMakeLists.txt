@@ -20,6 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rtt_ros2 REQUIRED)
 find_package(rtt_ros2_node REQUIRED)
+find_package(rtt_ros2_rclcpp_typekit REQUIRED)
 
 # setup targets
 include_directories(include/orocos)
@@ -28,7 +29,7 @@ orocos_library(rtt_ros2_params
   EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include/orocos
 )
-ament_target_dependencies(rtt_ros2_params rclcpp rtt_ros2_node)
+ament_target_dependencies(rtt_ros2_params rclcpp rtt_ros2_node rtt_ros2_rclcpp_typekit)
 orocos_plugin(rtt_ros2_params_service
   src/rtt_ros2_params_service.cpp
 )
