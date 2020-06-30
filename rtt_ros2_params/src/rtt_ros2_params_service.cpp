@@ -34,21 +34,14 @@ static void loadGlobalROSService()
   if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
     RTT::log(RTT::Error) << "ROS2 node needs to be loaded before loading ROS2 params" <<
       RTT::endlog();
-      // std::cout << "Name of owner of global service is: " << RTT::internal::GlobalService::Instance()->getOwner()->getName() << std::endl;
-      // const auto deployer_component = RTT::internal::GlobalService::Instance()->getOwner()->getPeer("Deployer");
-      // deployer_component->import("rtt_ros2_node");
-    // return;
   }
 
   RTT::Service::shared_ptr params =
     RTT::internal::GlobalService::Instance()->provides("params");
   params->doc("ROS2 params operations and services");
 
-  // Call rclcpp::init()
-//   rclcpp::InitOptions init_options;
-//   init_options.shutdown_on_sigint = false;
   RTT::log(RTT::Info) <<
-    "Initializing interface to ROS2 params with" << //: \"" << __os_main_argc() << "\" command-line arguments." <<
+    "Initializing interface to ROS2 params" << //: \"" << __os_main_argc() << "\" command-line arguments." <<
     RTT::endlog();
 }
 
@@ -65,16 +58,9 @@ static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
 
   const auto params = boost::make_shared<Params>(tc);
 
+  // Operations are loaded from the Constructor of Params
   // params->addOperation("check_ros2_node", &Params::check_ros2_node, params, RTT::ClientThread)
-  //   .doc("Checks wheter the component has a ROS2 service attached to it");
-
-
-// ros->addOperation("create_named_node_with_namespace", &create_named_node_with_namespace)
-//   .doc(
-//     "Creates a new process-wide ROS node (with explicit namespace).")
-//   .arg("node_name", "Name of the node")
-//   .arg("namespace", "Namespace of the node");
-
+  //   .doc("Checks whether the component has a ROS2 service attached to it");
 
   tc->provides()->addService(std::move(params));
   return true;
