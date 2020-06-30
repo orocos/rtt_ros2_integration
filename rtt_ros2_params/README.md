@@ -26,7 +26,10 @@ Then, the service can be loaded into a component named `<component>` with:
 
 `<component>` will have a new service named `Params` that provides the operations described. These operations can be called with:
 ```
-<component>.Params.setParam( <args> )
+<component>.Params.setParameter( <args> )
+<component>.Params.getParameter( <args> )
+<component>.Params.loadProperty( <args> )
+<component>.Params.storeProperty( <args> )
 ```
 
 ## Requriements

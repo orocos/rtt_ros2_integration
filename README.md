@@ -29,6 +29,10 @@ The packages in this repository provide:
   [ROS 2 topics](https://index.ros.org/doc/ros2/Tutorials/Topics/Understanding-ROS2-Topics/) for
   real-time safe inter-process communication.
 
+* [**rtt\_ros2\_params**](rtt_ros2_params) Provides ROS 2 parameters interface to manipulate
+  parameters as in [ROS 2 parameters](https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/)
+  and load/store them from/to Orocos properties.
+
 ## Contributing
 
 Any contribution to this repository is appreciated, whether they are new features, bug fixes,
@@ -61,3 +65,5 @@ Many thanks to all contributors to the original [rtt_ros_integration](https://gi
 - ...and [others](https://github.com/orocos/rtt_ros_integration/graphs/contributors).
 
 Your work and your ideas have been the foundation of this new implementation for ROS 2.
+
+- [rtt\_ros2\_integration contributors](https://github.com/orocos/rtt_ros2_integration/graphs/contributors)
