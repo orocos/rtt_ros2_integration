@@ -106,7 +106,6 @@ function(_rtt_ros2_generate_typekit _package)
 
   # Generate typekit
   set(target_dependencies
-    "${rtt_ros2_idl_generate_typekit_BIN}"
     ${rtt_ros2_idl_GENERATOR_FILES}
     "${rtt_ros2_idl_TEMPLATE_DIR}/msg_Types.hpp.em"
     "${rtt_ros2_idl_TEMPLATE_DIR}/msg_typekit.cpp.em"
@@ -116,7 +115,7 @@ function(_rtt_ros2_generate_typekit _package)
   )
   add_custom_command(
     OUTPUT ${_generated_header_files} ${_generated_source_files}
-    COMMAND ${PYTHON_EXECUTABLE} ${rtt_ros2_idl_generate_typekit_BIN}
+    COMMAND ${PYTHON_EXECUTABLE} -m rtt_ros2_idl
       --package "${_package}"
       --messages ${_messages}
       --services ${_services}

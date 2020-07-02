@@ -26,10 +26,6 @@ ament_python_install_package(${PROJECT_NAME}
 )
 
 # install
-install(PROGRAMS
-  bin/generate_typekit
-  DESTINATION lib/${PROJECT_NAME}
-)
 install(
   DIRECTORY include/
   DESTINATION include
