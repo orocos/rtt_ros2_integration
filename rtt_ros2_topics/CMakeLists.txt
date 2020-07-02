@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rtt_ros2_idl)
+project(rtt_ros2_topics)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -19,6 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rtt_ros2 REQUIRED)
+find_package(rtt_ros2_node REQUIRED)
 
 # setup Python module
 ament_python_install_package(${PROJECT_NAME}
@@ -26,10 +27,6 @@ ament_python_install_package(${PROJECT_NAME}
 )
 
 # install
-install(PROGRAMS
-  bin/generate_typekit
-  DESTINATION lib/${PROJECT_NAME}
-)
 install(
   DIRECTORY include/
   DESTINATION include
@@ -43,16 +40,15 @@ endif()
 
 # export information to downstream packages
 ament_export_dependencies(rosidl_cmake)
-ament_export_dependencies(rosidl_generator_cpp)
-ament_export_dependencies(rosidl_typesupport_introspection_cpp)
 ament_export_dependencies(rtt_ros2)
+ament_export_dependencies(rtt_ros2_node)
 ament_export_include_directories(include/orocos)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package(
   CONFIG_EXTRAS
     cmake/${PROJECT_NAME}-extras.cmake.in
-    cmake/${PROJECT_NAME}-generate_typekit.cmake
+    cmake/${PROJECT_NAME}-generate_ros_transport.cmake
 )
 
 # orocos_generate_package() is deprecated for ROS 2.
@@ -60,5 +56,5 @@ ament_package(
 # ament_export_interfaces() or ament_export_targets() when building with
 # ament_cmake.
 orocos_generate_package(
-  DEPENDS_TARGETS rtt_ros2
+  DEPENDS_TARGETS rtt_ros2 rtt_ros2_node
 )
