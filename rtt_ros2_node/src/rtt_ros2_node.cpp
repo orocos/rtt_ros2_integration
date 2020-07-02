@@ -82,7 +82,7 @@ Node::Node(
 
   // eventually start a spinner
   const auto number_of_threads =
-    node_->declare_parameter<int>("spinner_threads", 0);  // 0 = hardware concurrency
+    node_->declare_parameter<int>("spinner_threads", 1);  // 0 = hardware concurrency
   if (number_of_threads >= 0) {
     spin(static_cast<unsigned int>(number_of_threads));
   }
