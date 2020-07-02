@@ -89,9 +89,18 @@ public:
   }
 
 protected:
+  static RTT::ConnPolicy getPolicy(int buffer_size, bool latch)
+  {
+    if (buffer_size == 1) {
+      return rtt_ros2_topics::topic({}, latch);
+    } else {
+      return rtt_ros2_topics::topicBuffered({}, buffer_size, latch);
+    }
+  }
+
   void createOutputStreams(int buffer_size, bool latch)
   {
-    RTT::ConnPolicy policy = rtt_ros2_topics::topicBuffered({}, buffer_size, latch);
+    RTT::ConnPolicy policy = getPolicy(buffer_size, latch);
 
     policy.name_id = "~/arrays";
     ASSERT_TRUE(arrays_out_.createStream(policy));
@@ -113,7 +122,7 @@ protected:
 
   void createInputStreams(int buffer_size, bool latch)
   {
-    RTT::ConnPolicy policy = rtt_ros2_topics::topicBuffered({}, buffer_size, latch);
+    RTT::ConnPolicy policy = getPolicy(buffer_size, latch);
 
     policy.name_id = "~/arrays";
     ASSERT_TRUE(arrays_in_.createStream(policy));
