@@ -17,10 +17,12 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "rclcpp/executors.hpp"
 
 #include "rtt/TaskContext.hpp"
+#include "rtt/internal/GlobalService.hpp"
 
 namespace rtt_ros2_node
 {
@@ -72,6 +74,12 @@ Node::Node(
     !node_name.empty() ? node_name : default_node_name_from_owner(owner),
     namespace_, options);
 
+  this->addOperation("spin", &Node::spin, this)
+  .doc("Start a single or multi-threaded spinner for this node")
+  .arg("number_of_threads", "The number of spinner threads (0 = hardware concurrency)");
+  this->addOperation("cancel", &Node::cancel, this)
+  .doc("Cancel all operations and stop the spinner threads for this node");
+
   // eventually start a spinner
   const auto number_of_threads =
     node_->declare_parameter<int>("spinner_threads", 0);  // 0 = hardware concurrency
@@ -101,20 +109,64 @@ void Node::spin(unsigned int number_of_threads)
     " (" << actual_number_of_threads << " " <<
   (actual_number_of_threads > 1 ? "threads" : "thread") << ")." <<
     RTT::endlog();
+
+  executor_ = std::move(executor);
 }
 
 void Node::cancel()
 {
-  if (executor_ != nullptr) {
+  const auto executor = std::move(executor_);
+  if (executor != nullptr) {
     RTT::log(RTT::Info) <<
       "Shutting down ROS node spinner for node " << node_->get_fully_qualified_name() <<
       "..." << RTT::endlog();
-    executor_->cancel();
+    executor->cancel();
   }
   if (thread_.joinable()) {
     thread_.join();
+    thread_ = std::thread();
   }
-  executor_.reset();
+}
+
+Node::shared_ptr getNodeService(RTT::TaskContext * tc)
+{
+  Node::shared_ptr node;
+
+  if (tc != nullptr) {
+    // Try to find the service by name
+    node = boost::dynamic_pointer_cast<Node>(tc->provides()->getService("Node"));
+    if (node != nullptr) {
+      return node;
+    }
+
+    // Try to find the service by type
+    for (const auto & name : tc->provides()->getProviderNames()) {
+      node = boost::dynamic_pointer_cast<Node>(tc->provides()->getService(name));
+      if (node != nullptr) {
+        return node;
+      }
+    }
+  }
+
+  // Try global service ros.Node
+  RTT::Service::shared_ptr ros = RTT::internal::GlobalService::Instance()->getService("ros");
+  if (ros != nullptr) {
+    node = boost::dynamic_pointer_cast<Node>(ros->getService("Node"));
+    if (node != nullptr) {
+      return node;
+    }
+  }
+
+  return nullptr;
+}
+
+rclcpp::Node::SharedPtr getNode(RTT::TaskContext * tc)
+{
+  Node::shared_ptr node = getNodeService(tc);
+  if (node == nullptr) {
+    return nullptr;
+  }
+  return node->node();
 }
 
 }  // namespace rtt_ros2_node

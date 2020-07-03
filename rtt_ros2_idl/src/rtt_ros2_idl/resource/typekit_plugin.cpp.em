@@ -25,7 +25,7 @@ extern template class rtt_ros2_idl::RosIntrospectionTypeInfo<@(pkg_name)::action
 extern template class rtt_ros2_idl::RosIntrospectionTypeInfo<@(pkg_name)::action::@(action_name)::Result>;
 @[end for]@
 
-namespace rtt_@(pkg_name) {
+namespace rtt_ros2_@(pkg_name) {
 
 class TypekitPlugin : public RTT::types::TypekitPlugin
 {
@@ -56,11 +56,11 @@ public:
 
   std::string getName() override
   {
-    static const std::string name = "ros-@(pkg_name)";
+    static const std::string name = "ros2-@(pkg_name)";
     return name;
   }
 };
 
-}  // namespace rtt_@(pkg_name)
+}  // namespace rtt_ros2_@(pkg_name)
 
-ORO_TYPEKIT_PLUGIN(rtt_@(pkg_name)::TypekitPlugin)
+ORO_TYPEKIT_PLUGIN(rtt_ros2_@(pkg_name)::TypekitPlugin)
