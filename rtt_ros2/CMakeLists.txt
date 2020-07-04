@@ -20,8 +20,20 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 find_package(LibXml2 REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(OROCOS-RTT REQUIRED COMPONENTS rtt-marshalling rtt-scripting)
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
+
+# generate detail headers
+foreach(generated_header
+  include/orocos/${PROJECT_NAME}/detail/rclcpp_version.h
+)
+  configure_file(
+    ${generated_header}.in
+    ${CMAKE_BINARY_DIR}/${generated_header}
+    @ONLY
+  )
+endforeach()
 
 # setup targets
 include_directories(include/orocos)
@@ -56,6 +68,10 @@ install(
 )
 install(
   DIRECTORY include/
+  DESTINATION include
+)
+install(
+  DIRECTORY ${CMAKE_BINARY_DIR}/include/
   DESTINATION include
 )
 

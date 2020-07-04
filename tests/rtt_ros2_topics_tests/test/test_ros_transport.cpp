@@ -44,6 +44,15 @@
     : (patch > test_msgs_VERSION_PATCH) ? false \
     : true)
 
+// MessageInitialization is an alias for either
+// rosidl_generator_cpp::MessageInitialization or rosidl_runtime_cpp::MessageInitialization
+// depending on the ROS version.
+#ifdef ROSIDL_RUNTIME_CPP__MESSAGE_INITIALIZATION_HPP_
+using rosidl_runtime_cpp::MessageInitialization;
+#else
+using rosidl_generator_cpp::MessageInitialization;
+#endif
+
 class TestRosTransportEnvironment
   : public ::testing::Environment
 {
@@ -172,7 +181,7 @@ protected:
   {
     static constexpr auto kTimeout = std::chrono::seconds(1);
     {
-      Arrays received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      Arrays received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(arrays_in_, received, kTimeout));
       if (success) {
@@ -180,7 +189,7 @@ protected:
       }
     }
     {
-      BasicTypes received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      BasicTypes received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(basic_types_in_, received, kTimeout));
       if (success) {
@@ -188,7 +197,7 @@ protected:
       }
     }
     {
-      BoundedSequences received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      BoundedSequences received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(bounded_sequences_in_, received, kTimeout));
       if (success) {
@@ -196,7 +205,7 @@ protected:
       }
     }
     {
-      MultiNested received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      MultiNested received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(multi_nested_in_, received, kTimeout));
       if (success) {
@@ -204,7 +213,7 @@ protected:
       }
     }
     {
-      Nested received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      Nested received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(nested_in_, received, kTimeout));
       if (success) {
@@ -212,7 +221,7 @@ protected:
       }
     }
     {
-      Strings received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      Strings received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(strings_in_, received, kTimeout));
       if (success) {
@@ -220,7 +229,7 @@ protected:
       }
     }
     {
-      UnboundedSequences received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      UnboundedSequences received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(unbounded_sequences_in_, received, kTimeout));
       if (success) {
@@ -228,7 +237,7 @@ protected:
       }
     }
     {
-      WStrings received{rosidl_generator_cpp::MessageInitialization::SKIP};
+      WStrings received{MessageInitialization::SKIP};
       bool success = false;
       EXPECT_TRUE(success = readPortWithTimeout(wstrings_in_, received, kTimeout));
       if (success) {
@@ -328,7 +337,7 @@ TEST_F(TestRosTransport, PublishSubscribeQueue)
   // Read from input ports and check the samples
   static constexpr auto kTimeout = std::chrono::seconds(1);
   for (int32_t i = 0; i < 10; ++i) {
-    BasicTypes received{rosidl_generator_cpp::MessageInitialization::SKIP};
+    BasicTypes received{MessageInitialization::SKIP};
     ASSERT_TRUE(readPortWithTimeout(basic_types_in_, received, kTimeout));
     EXPECT_EQ(received.int32_value, i);
   }
