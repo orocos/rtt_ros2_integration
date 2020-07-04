@@ -22,8 +22,11 @@ class RosTransportPlugin : public RTT::types::TransportPlugin
  public:
   bool registerTransport(std::string, RTT::types::TypeInfo * ti)
   {
+    if (ti == nullptr) {return false;}
+    const auto * type_info = ti->getTypeId();
+    if (type_info == nullptr) {return false;}
 @[for msg_name in messages]@
-    if (ti->getTypeId() == &typeid(@(pkg_name)::msg::@(msg_name))) {
+    if (*type_info == typeid(@(pkg_name)::msg::@(msg_name))) {
       return ti->addProtocol(
         ORO_ROS2_PROTOCOL_ID,
         new rtt_ros2_topics::RosTypeTransporter<@(pkg_name)::msg::@(msg_name)>());
