@@ -24,6 +24,7 @@
 #include "rclcpp/context.hpp"
 #include "rclcpp/logger.hpp"
 #include "rclcpp/exceptions.hpp"
+#include "rclcpp/macros.hpp"
 #include "rclcpp/waitable.hpp"
 
 namespace rtt_ros2_topics

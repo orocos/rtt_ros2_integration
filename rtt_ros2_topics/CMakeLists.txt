@@ -18,6 +18,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(rtt_ros2 REQUIRED)
 find_package(rtt_ros2_node REQUIRED)
 
@@ -35,11 +36,16 @@ install(
 # linters
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  # TODO: check why cppcheck fails on foxy
+  list(APPEND AMENT_LINT_AUTO_EXCLUDE
+    ament_cmake_cppcheck
+  )
   ament_lint_auto_find_test_dependencies()
 endif()
 
 # export information to downstream packages
 ament_export_dependencies(rosidl_cmake)
+ament_export_dependencies(rclcpp)
 ament_export_dependencies(rtt_ros2)
 ament_export_dependencies(rtt_ros2_node)
 ament_export_include_directories(include/orocos)
