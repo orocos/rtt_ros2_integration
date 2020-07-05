@@ -18,10 +18,10 @@ if(NOT COMMAND string_camel_case_to_lower_case_underscore)
 endif()
 
 #
-# Generate a RTT transport plugin for ROS message types.
+# Generate an RTT transport plugin for ROS message types.
 #
 function(_rtt_ros2_generate_ros_transport _package)
-  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES" ${ARGN})
+  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES;EXCLUDE_MESSAGES" ${ARGN})
 
   # Find the requested package if it was not found before,
   if(NOT ${_package}_FOUND)
@@ -46,6 +46,11 @@ function(_rtt_ros2_generate_ros_transport _package)
     message(STATUS "[rtt_ros2_topics] Setting CMAKE_BUILD_TYPE to ${CMAKE_BUILD_TYPE} for target ${_target}")
   endif()
 
+  # Add plugin dependencies
+  rtt_ros2_export_plugin_depend(rtt_ros2_node)
+  set(${PROJECT_NAME}_EXEC_DEPENDS "${${PROJECT_NAME}_EXEC_DEPENDS}" PARENT_SCOPE)
+  set(${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS "${${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS}" PARENT_SCOPE)
+
   # Find all (selected) types in the given package.
   set(_include_dir "${${_package}_DIR}/../../../include/${_package}")
   normalize_path(_include_dir "${_include_dir}")
@@ -60,30 +65,30 @@ function(_rtt_ros2_generate_ros_transport _package)
     get_filename_component(_type "${_file}" NAME_WE)
     string_camel_case_to_lower_case_underscore("${_type}" _header_name)
     if(_path STREQUAL "msg" AND _extension STREQUAL ".msg")
-      if(NOT DEFINED ARG_MESSAGES OR ${_type} IN_LIST ARG_MESSAGES)
+      if((NOT DEFINED ARG_MESSAGES OR ${_type} IN_LIST ARG_MESSAGES)
+          AND NOT ${_type} IN_LIST ARG_EXCLUDE_MESSAGES)
         list(APPEND _messages ${_type})
       endif()
     endif()
   endforeach()
   list(APPEND _generated_source_files "${_output_dir}/ros_transport_plugin.cpp")
 
-  # Generate ROS transport plugin library
-  set(target_dependencies
-    ${rtt_ros2_topics_GENERATOR_FILES}
-    "${rtt_ros2_topics_TEMPLATE_DIR}/ros_transport_plugin.cpp.em"
-    "${_cpp_headers}"
-  )
+  # Generate source and header files
   add_custom_command(
     OUTPUT ${_generated_header_files} ${_generated_source_files}
     COMMAND ${PYTHON_EXECUTABLE} -m rtt_ros2_topics
       --package "${_package}"
       --messages ${_messages}
       --output-dir "${_output_dir}"
-    DEPENDS ${target_dependencies}
+    DEPENDS
+      ${rtt_ros2_topics_GENERATOR_FILES}
+      "${rtt_ros2_topics_TEMPLATE_DIR}/ros_transport_plugin.cpp.em"
+      "${_cpp_headers}"
     COMMENT "Generating RTT ROS transport plugin for ${_package}"
     VERBATIM
   )
 
+  # Build the transport library target
   orocos_typekit(${_target}
     ${_generated_header_files}
     ${_generated_source_files}
@@ -108,7 +113,7 @@ function(_rtt_ros2_generate_ros_transport _package)
   # Install headers
   install(
     DIRECTORY ${_output_dir}/
-    DESTINATION include/orocos/${_package}/typekit/
+    DESTINATION include/orocos/${_package}/typekit
     FILES_MATCHING PATTERN "*.hpp"
   )
   ament_export_include_directories(include/orocos)
@@ -142,5 +147,4 @@ macro(rtt_ros2_generate_ros_transport _package)
   else()
     ament_export_interfaces(${_target} HAS_LIBRARY_TARGET)
   endif()
-  rtt_ros2_export_plugin_depend(rtt_ros2_node)
 endmacro()
