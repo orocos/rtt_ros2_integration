@@ -21,7 +21,6 @@
 #include "rtt/plugin/ServicePlugin.hpp"
 
 #include <boost/make_shared.hpp>
-#include <boost/bind.hpp>
 
 namespace rtt_ros2_params {
 

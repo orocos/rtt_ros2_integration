@@ -12,20 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include "rtt_ros2_params/rtt_ros2_params.hpp"
-#include "rtt_ros2_node/rtt_ros2_node.hpp"
-#include "rtt_ros2_rclcpp_typekit/ros2_parameter_value_type.hpp"
 
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp/parameter.hpp>
-#include <rclcpp/parameter_value.hpp>
-#include <rcl_interfaces/msg/set_parameters_result.hpp>
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/parameter.hpp"
+#include "rclcpp/parameter_value.hpp"
 
 #include "rtt/internal/GlobalService.hpp"
+#include "rtt/Property.hpp"
+#include "rtt/TaskContext.hpp"
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Property.hpp>
+#include "rtt_ros2_node/rtt_ros2_node.hpp"
 
 namespace rtt_ros2_params {
 
@@ -92,28 +89,21 @@ bool Params::setParameter(const std::string param_name, const rclcpp::ParameterV
   
   rclcpp::Node::SharedPtr rosnode;
   if (get_ros2_node(rosnode)) {
-    rcl_interfaces::msg::SetParametersResult ret;
-    if (rosnode->has_parameter(param_name)) {
-      // Update the parameter
-      try {
-        ret = rosnode->set_parameter(rclcpp::Parameter(param_name, paramvalue));
-      } catch (std::exception e) {
-        RTT::log(RTT::Error) << "[" << getName() << "] The parameter failed to be set, reason: " << e.what() << RTT::endlog();
-      }
-    } else {
+    if (!rosnode->has_parameter(param_name)) {
       // Create new parameter
-      // rosnode->set_parameter_if_not_set(param_name, paramvalue); // This is obsolete, found in API b3
       RTT::log(RTT::Warning) << "[" << getName() << "] The parameter did not exist, creating one" << RTT::endlog();
-      try {
-        rosnode->declare_parameter(param_name);
-        ret = rosnode->set_parameter(rclcpp::Parameter(param_name, paramvalue));
-      } catch (std::exception e) {
-        RTT::log(RTT::Error) << "[" << getName() << "] The parameter failed to be set, reason: " << e.what() << RTT::endlog();
-      }
+      rosnode->declare_parameter(param_name);
     }
-    if (!ret.successful) {
-      RTT::log(RTT::Error) << "[" << getName() << "] The parameter " << param_name << " couldn't be set with reason: " << ret.reason << RTT::endlog();
-      return false;
+
+    // Update the parameter
+    try {
+      const auto result = rosnode->set_parameter(rclcpp::Parameter(param_name, paramvalue));
+      if (!result.successful) {
+        RTT::log(RTT::Error) << "[" << getName() << "] The parameter " << param_name << " couldn't be set with reason: " << result.reason << RTT::endlog();
+        return false;
+      }
+    } catch (std::exception & e) {
+      RTT::log(RTT::Error) << "[" << getName() << "] The parameter failed to be set, reason: " << e.what() << RTT::endlog();
     }
   } else {
     RTT::log(RTT::Error) << "[" << getName() << "] The ROS2 node doesn't exist, no parameter can be set. Import rtt_ros2_node first and use the \"ros2_node\" service." << RTT::endlog();
@@ -140,7 +130,6 @@ bool Params::loadProperty(const std::string param_name, const std::string proper
   }
 
   auto prop = getOwner()->properties()->getProperty(property_name);
-  RTT::Property<rclcpp::ParameterValue>* prop_paramvalue = dynamic_cast<RTT::Property<rclcpp::ParameterValue>*>(prop);
   if (nullptr == prop) {
     // Try to find it among orphan parameters (previously loaded, without a component interface)
     if (orphan_params_.find(property_name) == orphan_params_.end()) {
@@ -155,16 +144,15 @@ bool Params::loadProperty(const std::string param_name, const std::string proper
     }
     return true;
   } else {
+    RTT::Property<rclcpp::ParameterValue> prop_paramvalue = prop;
+
     // The property exists on the Owner's interface
     RTT::log(RTT::Debug) << "[" << getName() << "] The property " << property_name << " existed" << RTT::endlog();
-    if (nullptr == prop_paramvalue) {
+    if (!prop_paramvalue.ready()) {
       RTT::log(RTT::Debug) << "[" << getName() << "] But " << property_name << " cannot be casted into rclcpp::ParamValue" << RTT::endlog();
 
-      const RTT::base::DataSourceBase::shared_ptr property_ds = prop->getDataSource();
-      rtt_ros2_rclcpp_typekit::ParameterValueTypeInfo param_typeinfo;
-      const RTT::internal::ValueDataSource<rclcpp::ParameterValue> param_vds(paramvalue);
-      RTT::internal::ReferenceDataSource<rclcpp::ParameterValue> param_rds = RTT::internal::ReferenceDataSource<rclcpp::ParameterValue>(paramvalue);
-      param_rds.ref();
+      const auto property_ds = prop->getDataSource();
+      RTT::internal::ReferenceDataSource<rclcpp::ParameterValue> param_rds(paramvalue);
 
       try {
         if (property_ds->update(&param_rds)) {
@@ -183,7 +171,7 @@ bool Params::loadProperty(const std::string param_name, const std::string proper
       return false;
     } else {
       // This is the rare case in which the Property was already of type rclcpp::ParameterValue
-      prop_paramvalue->set(paramvalue);
+      prop_paramvalue.set(paramvalue);
     }
     return true;
   }
@@ -202,13 +190,13 @@ bool Params::storeProperty(const std::string property_name, const std::string pa
     return false;
   }
 
-  rclcpp::ParameterValue paramvalue;
   RTT::base::DataSourceBase::shared_ptr property_bds = prop->getDataSource();
-  RTT::internal::ValueDataSource<rclcpp::ParameterValue> param_vds(paramvalue);
-  param_vds.update(&(*property_bds));
+  RTT::internal::ValueDataSource<rclcpp::ParameterValue> param_vds;
 
-  paramvalue = param_vds.get();
-  return setParameter(param_name, paramvalue);
+  // TODO: check whether the conversion was successful!
+  param_vds.update(property_bds.get());
+
+  return setParameter(param_name, param_vds.get());
 }
 
 // Helper function to get the ROS2 node

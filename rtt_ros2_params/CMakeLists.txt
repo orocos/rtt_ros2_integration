@@ -20,22 +20,24 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rtt_ros2 REQUIRED)
 find_package(rtt_ros2_node REQUIRED)
-find_package(rtt_ros2_rclcpp_typekit REQUIRED)
-find_package(rcl_interfaces REQUIRED)
 
 # setup targets
 include_directories(include/orocos)
+
 orocos_library(rtt_ros2_params
   src/rtt_ros2_params.cpp
   EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include/orocos
 )
-ament_target_dependencies(rtt_ros2_params rclcpp rtt_ros2_node rtt_ros2_rclcpp_typekit rcl_interfaces)
+target_link_libraries(rtt_ros2_params rtt_ros2_node::rtt_ros2_node)
+ament_target_dependencies(rtt_ros2_params
+  rclcpp
+)
+
 orocos_plugin(rtt_ros2_params_service
   src/rtt_ros2_params_service.cpp
 )
 target_link_libraries(rtt_ros2_params_service rtt_ros2_params)
-ament_target_dependencies(rtt_ros2_params_service rclcpp)
 
 # install
 install(
@@ -58,6 +60,8 @@ if(COMMAND ament_export_targets)
 else()
   ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 endif()
+rtt_ros2_export_plugin_depend(rtt_ros2_node)
+rtt_ros2_export_plugin_depend(rtt_ros2_rclcpp_typekit)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()
