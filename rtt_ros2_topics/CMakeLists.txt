@@ -27,6 +27,21 @@ ament_python_install_package(${PROJECT_NAME}
   PACKAGE_DIR src/${PROJECT_NAME}
 )
 
+# setup targets
+include_directories(include/orocos)
+
+# rtt_ros2_topics is a pure interface target (no library). It is only to export the installed
+# include directory as a target for target_link_libraries().
+add_library(rtt_ros2_topics INTERFACE)
+install(TARGETS rtt_ros2_topics
+  EXPORT ${PROJECT_NAME}
+  INCLUDES DESTINATION include/orocos
+)
+
+orocos_plugin(rtt_ros2_topics_service
+  src/rtt_ros2_topics_service.cpp
+)
+
 # install
 install(
   DIRECTORY include/
@@ -49,6 +64,11 @@ ament_export_dependencies(rclcpp)
 ament_export_dependencies(rtt_ros2)
 ament_export_dependencies(rtt_ros2_node)
 ament_export_include_directories(include/orocos)
+if(COMMAND ament_export_targets)
+  ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+else()
+  ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+endif()
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package(

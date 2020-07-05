@@ -64,3 +64,13 @@ target_compile_definitions(test_ros_transport
     test_msgs_VERSION_MINOR=${test_msgs_VERSION_MINOR}
     test_msgs_VERSION_PATCH=${test_msgs_VERSION_PATCH}
 )
+
+ament_add_gtest(test_topics_service test/test_topics_service.cpp)
+orocos_configure_executable(test_topics_service)
+ament_target_dependencies(test_topics_service
+  rtt_ros2_topics
+)
+target_link_libraries(test_topics_service
+  rtt_ros2::rtt_ros2
+  rtt_ros2_topics::rtt_ros2_topics
+)

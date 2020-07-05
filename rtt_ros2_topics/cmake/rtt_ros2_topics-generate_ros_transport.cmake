@@ -48,6 +48,7 @@ function(_rtt_ros2_generate_ros_transport _package)
 
   # Add plugin dependencies
   rtt_ros2_export_plugin_depend(rtt_ros2_node)
+  rtt_ros2_export_plugin_depend(rtt_ros2_topics)
   set(${PROJECT_NAME}_EXEC_DEPENDS "${${PROJECT_NAME}_EXEC_DEPENDS}" PARENT_SCOPE)
   set(${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS "${${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS}" PARENT_SCOPE)
 
