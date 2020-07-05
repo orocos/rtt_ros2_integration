@@ -23,7 +23,7 @@ endif()
 # rosidl_generator_cpp and rtt_ros2_idl.
 #
 function(_rtt_ros2_generate_typekit _package)
-  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES;SERVICES;ACTIONS;DEPENDENCIES;EXCLUDE_MESSAGES;EXCLUDE_SERVICES;EXCLUDE_ACTIONS" ${ARGN})
+  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES;SERVICES;ACTIONS;EXCLUDE_MESSAGES;EXCLUDE_SERVICES;EXCLUDE_ACTIONS" ${ARGN})
 
   # Find the requested package if it was not found before,
   if(NOT ${_package}_FOUND)
@@ -48,17 +48,19 @@ function(_rtt_ros2_generate_typekit _package)
     message(STATUS "[rtt_ros2_idl] Setting CMAKE_BUILD_TYPE to ${CMAKE_BUILD_TYPE} for target ${_target}")
   endif()
 
-  # Find and add dependencies
-  set(_target_dependencies rtt_ros2_idl)
+  # Add plugin dependencies (other typekit packages)
+  # Run-time dependencies of ${_package} become RTT plugin dependencies of the generated typekit
+  # package.
   rtt_ros2_export_plugin_depend(rtt_ros2_primitives_typekit)
-  foreach(_dep ${ARG_DEPENDENCIES})
-    if(NOT ${_dep}_FOUND)
-      find_package(${_dep} REQUIRED)
+  ament_index_get_resource(${_package}_RUN_DEPENDENCIES "package_run_dependencies" "${_package}")
+  ament_index_get_resources(_interface_packages "rosidl_interfaces")
+  foreach(_dep ${${_package}_RUN_DEPENDENCIES})
+    # Does package ${_dep} provides interfaces? If yes, add plugin dependency rtt_ros2_${_dep}.
+    if(_dep IN_LIST _interface_packages)
+      rtt_ros2_export_plugin_depend(rtt_ros2_${_dep})
     endif()
-    list(APPEND _target_dependencies ${_dep})
-    rtt_ros2_export_plugin_depend(${_dep})
   endforeach()
-  list(APPEND _target_dependencies "${_package}")
+  set(${PROJECT_NAME}_EXEC_DEPENDS "${${PROJECT_NAME}_EXEC_DEPENDS}" PARENT_SCOPE)
   set(${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS "${${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS}" PARENT_SCOPE)
 
   # Find all (selected) types in the given package.
@@ -107,15 +109,7 @@ function(_rtt_ros2_generate_typekit _package)
   list(APPEND _generated_header_files "${_output_dir}/Types.hpp")
   list(APPEND _generated_source_files "${_output_dir}/typekit_plugin.cpp")
 
-  # Generate typekit
-  set(target_dependencies
-    ${rtt_ros2_idl_GENERATOR_FILES}
-    "${rtt_ros2_idl_TEMPLATE_DIR}/msg_Types.hpp.em"
-    "${rtt_ros2_idl_TEMPLATE_DIR}/msg_typekit.cpp.em"
-    "${rtt_ros2_idl_TEMPLATE_DIR}/Types.hpp.em"
-    "${rtt_ros2_idl_TEMPLATE_DIR}/typekit_plugin.cpp.em"
-    "${_cpp_headers}"
-  )
+  # Generate source and header files
   add_custom_command(
     OUTPUT ${_generated_header_files} ${_generated_source_files}
     COMMAND ${PYTHON_EXECUTABLE} -m rtt_ros2_idl
@@ -124,11 +118,18 @@ function(_rtt_ros2_generate_typekit _package)
       --services ${_services}
       --actions ${_actions}
       --output-dir "${_output_dir}"
-    DEPENDS ${target_dependencies}
+    DEPENDS
+      ${rtt_ros2_idl_GENERATOR_FILES}
+      "${rtt_ros2_idl_TEMPLATE_DIR}/msg_Types.hpp.em"
+      "${rtt_ros2_idl_TEMPLATE_DIR}/msg_typekit.cpp.em"
+      "${rtt_ros2_idl_TEMPLATE_DIR}/Types.hpp.em"
+      "${rtt_ros2_idl_TEMPLATE_DIR}/typekit_plugin.cpp.em"
+      "${_cpp_headers}"
     COMMENT "Generating RTT typekit plugin for ${_package}"
     VERBATIM
   )
 
+  # Build the typekit library target
   orocos_typekit(${_target}
     ${_generated_header_files}
     ${_generated_source_files}
@@ -138,10 +139,10 @@ function(_rtt_ros2_generate_typekit _package)
   target_include_directories(${_target}
     PRIVATE
       ${_output_dir}
-      ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
   )
   ament_target_dependencies(${_target}
-    ${_target_dependencies}
+    ${_package}
+    rtt_ros2_idl
   )
 
   # Install headers
