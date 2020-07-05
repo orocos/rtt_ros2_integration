@@ -6,6 +6,15 @@ find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2_idl REQUIRED)
 find_package(rtt_ros2_topics REQUIRED)
 
+# install typekit package template and create_typekit_package script
+install(
+  DIRECTORY template
+  DESTINATION share/${PROJECT_NAME}/
+)
+install(PROGRAMS scripts/create_typekit_package
+  DESTINATION lib/${PROJECT_NAME}/
+)
+
 # linters
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
