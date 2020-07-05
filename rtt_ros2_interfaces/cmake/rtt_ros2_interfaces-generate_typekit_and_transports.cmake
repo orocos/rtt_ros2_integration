@@ -13,7 +13,7 @@
 # limitations under the License.
 
 #
-# Generate a RTT typekit and ROS transport plugin for ROS interface packages.
+# Generate an RTT typekit and ROS transport plugin for ROS interface packages.
 #
 macro(rtt_ros2_generate_typekit_and_transports _package)
   rtt_ros2_generate_typekit(${_package} ${ARGN})
