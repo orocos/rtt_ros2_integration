@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rtt_ros2_builtin_interfaces_typekit CXX)
+project(rtt_ros2_builtin_interfaces CXX)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
