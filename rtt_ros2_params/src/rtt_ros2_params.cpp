@@ -106,7 +106,7 @@ bool Params::setParameter(const std::string param_name, const rclcpp::ParameterV
       RTT::log(RTT::Error) << "[" << getName() << "] The parameter failed to be set, reason: " << e.what() << RTT::endlog();
     }
   } else {
-    RTT::log(RTT::Error) << "[" << getName() << "] The ROS2 node doesn't exist, no parameter can be set. Import rtt_ros2_node first and use the \"ros2_node\" service." << RTT::endlog();
+    RTT::log(RTT::Error) << "[" << getName() << "] The ROS2 node doesn't exist, no parameter can be set. Import rtt_ros2_node first and use the \"ros2-node\" service." << RTT::endlog();
     return false;
   }
   return true;
@@ -133,7 +133,7 @@ bool Params::loadProperty(const std::string param_name, const std::string proper
   if (nullptr == prop) {
     // Try to find it among orphan parameters (previously loaded, without a component interface)
     if (orphan_params_.find(property_name) == orphan_params_.end()) {
-      // When totally new, then create an orphan property, i.e. owned by the ros2_params service
+      // When totally new, then create an orphan property, i.e. owned by the ros2-params service
       orphan_params_[property_name] = paramvalue;
       this->addProperty(property_name, orphan_params_[property_name])
         .doc("Property loaded from ROS2 param: " + param_name);
@@ -208,7 +208,7 @@ bool Params::get_ros2_node(rclcpp::Node::SharedPtr &node_ptr) {
   } else if (check_ros2_node_in_global()) {
     RTT::log(RTT::Debug) << "[" << getName() << "] Using the global service for ROS2" << RTT::endlog();
   } else {
-    RTT::log(RTT::Warning) << "[" << getName() << "] No ROS2 node was found within Orocos, please import \"rtt_ros2_node\" and use the \"ros2_node\" service" << RTT::endlog();
+    RTT::log(RTT::Warning) << "[" << getName() << "] No ROS2 node was found within Orocos, please import \"rtt_ros2_node\" and use the \"ros2-node\" service" << RTT::endlog();
   }
 
   node_ptr = nullptr;
