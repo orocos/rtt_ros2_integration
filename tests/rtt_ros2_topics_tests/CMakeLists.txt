@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(rtt_ros2_topics_tests)
 
 # Skip building this package if BUILD_TESTING is OFF
-find_package(ament_cmake REQUIRED)
+option(BUILD_TESTING "Build the testing tree." ON)
 if(NOT BUILD_TESTING)
   ament_package()
   return()
