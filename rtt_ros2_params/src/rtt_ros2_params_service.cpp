@@ -15,12 +15,12 @@
 #include <string>
 #include <utility>
 
-#include "rtt_ros2_params/rtt_ros2_params.hpp"
-
 #include "rtt/internal/GlobalService.hpp"
 #include "rtt/plugin/ServicePlugin.hpp"
 
 #include "boost/make_shared.hpp"
+
+#include "rtt_ros2_params/rtt_ros2_params.hpp"
 
 namespace rtt_ros2_params
 {
@@ -33,14 +33,23 @@ bool has_node()
 static void loadGlobalROSService()
 {
   if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
-    RTT::log(RTT::Error) <<
-      "ROS2 node needs to be loaded before loading ROS2 params" <<
+    RTT::internal::GlobalService::Instance()->provides("ros");
+    if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
+      RTT::log(RTT::Error) <<
+        "ROS2 node needs to be loaded before loading ROS2 params" <<
+        RTT::endlog();
+      return;
+    }
+  }
+  auto ros = RTT::internal::GlobalService::Instance()->provides("ros");
+  RTT::Service::shared_ptr params = boost::make_shared<rtt_ros2_params::Params>(nullptr);
+  params->doc("ROS2 params operations and services");
+
+  if (!ros->addService(params)) {
+    // No ROS, but we checked this earlier
+    RTT::log(RTT::Error) << "The global ROS service could not load paramter support" <<
       RTT::endlog();
   }
-
-  RTT::Service::shared_ptr params =
-    RTT::internal::GlobalService::Instance()->provides("params");
-  params->doc("ROS2 params operations and services");
 
   RTT::log(RTT::Info) <<
     "Initializing interface to ROS2 params" <<
@@ -59,10 +68,6 @@ static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
   }
 
   const auto params = boost::make_shared<Params>(tc);
-
-  // Operations are loaded from the Constructor of Params
-  // params->addOperation("check_ros2_node", &Params::check_ros2_node, params, RTT::ClientThread)
-  //   .doc("Checks whether the component has a ROS2 service attached to it");
 
   tc->provides()->addService(std::move(params));
   return true;

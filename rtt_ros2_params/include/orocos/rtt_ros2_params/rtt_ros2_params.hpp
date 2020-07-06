@@ -34,17 +34,17 @@ public:
   virtual ~Params();
 
 protected:
-  rclcpp::ParameterValue getParameter(const std::string param_name);
-  bool setParameter(const std::string param_name, const rclcpp::ParameterValue paramvalue);
-  bool loadProperty(const std::string param_name, const std::string property_name);
-  bool storeProperty(const std::string property_name, const std::string param_name);
+  rclcpp::ParameterValue getParameter(const std::string& name);
+  bool setParameter(const std::string& name, const rclcpp::ParameterValue& value);
+  bool loadProperty(const std::string& property_name, const std::string& param_name = std::string());
+  bool storeProperty(const std::string& property_name, const std::string& param_name);
 
 private:
   bool check_ros2_node_in_component();
   bool check_ros2_node_in_global();
-  bool get_ros2_node(rclcpp::Node::SharedPtr & node_ptr);
+  // bool get_ros2_node(rclcpp::Node::SharedPtr& node_ptr);
 
-  std::map<std::string, rclcpp::ParameterValue> orphan_params_;
+  std::map<std::string, rclcpp::ParameterValue> orphan_properties_;
 
   RTT::TaskContext * owner_;
 };  // class Params
