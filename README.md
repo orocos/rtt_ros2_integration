@@ -65,5 +65,3 @@ Many thanks to all contributors to the original [rtt_ros_integration](https://gi
 - ...and [others](https://github.com/orocos/rtt_ros_integration/graphs/contributors).
 
 Your work and your ideas have been the foundation of this new implementation for ROS 2.
-
-- [rtt\_ros2\_integration contributors](https://github.com/orocos/rtt_ros2_integration/graphs/contributors)
