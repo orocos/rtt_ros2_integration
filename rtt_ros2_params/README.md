@@ -7,7 +7,7 @@
 ROS2 provides a slightly different infrastructure to deal with parameters compared to ROS 1. An introduction guide can be found in [Understanding ROS2 parameters](https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/).
 The main difference is that there is no longer a centralized parameter server, but instead, parameters are maintained per node.
 
-## `ros2_params` service
+## `ros2-params` service
 
 This package provides a new Orocos service called `ros2_params` that can be loaded globally and per Orocos component. The service provides 4 operations:
 * `getParameter()`: loads a parameter from the ROS2 node parameter facility and returns its value.
@@ -24,7 +24,7 @@ import("rtt_ros2_params")
 
 Then, the service can be loaded into a component named `<component>` with:
 ```
-<component>.loadService('ros2_params')
+<component>.loadService('ros2-params')
 ```
 
 `<component>` will have a new service named `Params` that provides the operations described. These operations can be called with:

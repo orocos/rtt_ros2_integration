@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
+#include <string>
 #include <utility>
 
 #include "rtt_ros2_params/rtt_ros2_params.hpp"
@@ -20,19 +20,21 @@
 #include "rtt/internal/GlobalService.hpp"
 #include "rtt/plugin/ServicePlugin.hpp"
 
-#include <boost/make_shared.hpp>
-#include <boost/bind.hpp>
+#include "boost/make_shared.hpp"
 
-namespace rtt_ros2_params {
+namespace rtt_ros2_params
+{
 
-bool has_node() {
+bool has_node()
+{
   return true;
 }
 
 static void loadGlobalROSService()
 {
   if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
-    RTT::log(RTT::Error) << "ROS2 node needs to be loaded before loading ROS2 params" <<
+    RTT::log(RTT::Error) <<
+      "ROS2 node needs to be loaded before loading ROS2 params" <<
       RTT::endlog();
   }
 
@@ -41,7 +43,7 @@ static void loadGlobalROSService()
   params->doc("ROS2 params operations and services");
 
   RTT::log(RTT::Info) <<
-    "Initializing interface to ROS2 params" << //: \"" << __os_main_argc() << "\" command-line arguments." <<
+    "Initializing interface to ROS2 params" <<
     RTT::endlog();
 }
 
@@ -76,9 +78,9 @@ bool loadRTTPlugin(RTT::TaskContext * tc)
     return loadROSServiceIntoTaskContext(tc);
   }
 }
-std::string getRTTPluginName() {return "ros2_params";}
+std::string getRTTPluginName() {return "ros2-params";}
 std::string getRTTTargetName() {return OROCOS_TARGET_NAME;}
 
-} // extern "C"
+}  // extern "C"
 
-} // namespace rtt_ros2_params
+}  // namespace rtt_ros2_params

@@ -15,39 +15,40 @@
 #ifndef OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
 #define OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
 
+#include <map>
+#include <string>
 
 #include "rtt/Service.hpp"
 
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/parameter.hpp"
+#include "rclcpp/parameter_value.hpp"
 
+namespace rtt_ros2_params
+{
 
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp/parameter.hpp>
-#include <rclcpp/parameter_value.hpp>
+class Params : public RTT::Service
+{
+public:
+  explicit Params(RTT::TaskContext * owner);
+  virtual ~Params();
 
-namespace rtt_ros2_params {
+protected:
+  rclcpp::ParameterValue getParameter(const std::string param_name);
+  bool setParameter(const std::string param_name, const rclcpp::ParameterValue paramvalue);
+  bool loadProperty(const std::string param_name, const std::string property_name);
+  bool storeProperty(const std::string property_name, const std::string param_name);
 
-class Params : public RTT::Service {
-  public:
-    Params(RTT::TaskContext *owner);
-    virtual ~Params();
+private:
+  bool check_ros2_node_in_component();
+  bool check_ros2_node_in_global();
+  bool get_ros2_node(rclcpp::Node::SharedPtr & node_ptr);
 
-  protected:
-    rclcpp::ParameterValue getParameter(const std::string param_name);
-    bool setParameter(const std::string param_name, const rclcpp::ParameterValue paramvalue);
-    bool loadProperty(const std::string param_name, const std::string property_name);
-    bool storeProperty(const std::string property_name, const std::string param_name);
+  std::map<std::string, rclcpp::ParameterValue> orphan_params_;
 
-  private:
-    bool check_ros2_node_in_component();
-    bool check_ros2_node_in_global();
-    bool get_ros2_node(rclcpp::Node::SharedPtr &node_ptr);
+  RTT::TaskContext * owner_;
+};  // class Params
 
-    std::map<std::string, rclcpp::ParameterValue > orphan_params_;
+}  // namespace rtt_ros2_params
 
-    RTT::TaskContext *owner_;
-
-}; // class Params
-
-} // namespace rtt_ros2_params
-
-#endif // OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
+#endif  // OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
