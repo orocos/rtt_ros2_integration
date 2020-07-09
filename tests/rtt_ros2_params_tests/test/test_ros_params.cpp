@@ -110,19 +110,19 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
   ASSERT_TRUE(global_params->getOperation("setParameter"));
   ASSERT_FALSE(global_params->getOperation("nonExistantOperation"));
   RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
-    setparam_operation = global_params->getOperation("setParameter");
+  setparam_operation = global_params->getOperation("setParameter");
   ASSERT_FALSE(
     setparam_operation.call("fake_parameter", rclcpp::ParameterValue(42)));
 
   // Check get non-existant parameters
   ASSERT_TRUE(global_params->getOperation("getParameter"));
   RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
-    getparam_operation = global_params->getOperation("getParameter");
+  getparam_operation = global_params->getOperation("getParameter");
   ASSERT_EQ(
     rclcpp::PARAMETER_NOT_SET,
     getparam_operation.call("fake_parameter").get_type()
   );
-  
+
   // Check setting a parameter (INTEGER)
   rtt_ros2_node::getNode(this)->declare_parameter("int_parameter");
   ASSERT_TRUE(
@@ -142,7 +142,7 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
   rclcpp::ParameterValue new_bool = getparam_operation.call("bool_parameter");
   ASSERT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
   ASSERT_EQ(new_bool.get<bool>(), true);
-  
+
 }
 
 TEST_F(TestRosParams, TestComponentNodeParams)
@@ -161,25 +161,25 @@ TEST_F(TestRosParams, TestComponentNodeParams)
 
   // Test member function
   assign_properties(42, true);
-  
+
   // Check set non-existant parameters
   ASSERT_TRUE(local_params->getOperation("setParameter"));
   ASSERT_FALSE(local_params->getOperation("nonExistantOperation"));
   RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
-    setparam_operation = local_params->getOperation("setParameter");
+  setparam_operation = local_params->getOperation("setParameter");
   ASSERT_FALSE(
     setparam_operation.call("fake_parameter", rclcpp::ParameterValue(42)));
 
   // Check get non-existant parameters
   ASSERT_TRUE(local_params->getOperation("getParameter"));
   RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
-    getparam_operation = local_params->getOperation("getParameter");
+  getparam_operation = local_params->getOperation("getParameter");
   ASSERT_EQ(
     rclcpp::PARAMETER_NOT_SET,
     getparam_operation.call("fake_parameter").get_type()
   );
 
-    // Check setting a parameter (INTEGER)
+  // Check setting a parameter (INTEGER)
   rtt_ros2_node::getNode(this)->declare_parameter("int_parameter");
   ASSERT_TRUE(
     setparam_operation.call("int_parameter", rclcpp::ParameterValue(41)));
@@ -202,7 +202,7 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   // Check storing a parameter provoke failure
   ASSERT_TRUE(local_params->getOperation("storeProperty"));
   RTT::OperationCaller<bool(std::string, std::string)>
-    storeprop_operation = local_params->getOperation("storeProperty");
+  storeprop_operation = local_params->getOperation("storeProperty");
   ASSERT_FALSE(storeprop_operation.call("fake_property", "int_parameter"));
   ASSERT_FALSE(storeprop_operation.call("int_property", "fake_parameter"));
 
@@ -219,13 +219,13 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   // Check loading a parameter common
   ASSERT_TRUE(local_params->getOperation("loadProperty"));
   RTT::OperationCaller<bool(std::string, std::string)>
-    loadprop_operation = local_params->getOperation("loadProperty");
+  loadprop_operation = local_params->getOperation("loadProperty");
   ASSERT_FALSE(loadprop_operation.call("fake_property", "fake_parameter"));
   ASSERT_TRUE(loadprop_operation.call("fake_property", "int_parameter"));
 
   // TODO(spd-intermodalics): Fix the loading of existing parameters
   // which works OK in scripting, but NOK on C++
-  
+
   // Check loading a parameter (INTEGER)
   this->int_member_ = 41;
   // ASSERT_TRUE(loadprop_operation.call("int_property", "int_parameter"));
