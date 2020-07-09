@@ -43,8 +43,8 @@ Params::Params(RTT::TaskContext * owner)
     getName() << RTT::endlog();
 
   this->doc(
-    "RTT Service for synchronizing ROS 2 parameters with the properties of a corresponding "
-    "RTT component");
+    "RTT Service for synchronizing ROS 2 parameters with the properties of a"
+    " corresponding RTT component");
 
   addOperation("getParameter", &Params::getParameter, this, RTT::ClientThread)
   .doc("Gets the value of a ROS 2 parameter")
@@ -61,7 +61,9 @@ Params::Params(RTT::TaskContext * owner)
     .arg("parameter_name", "Name of the parameter to retrieve")
     .arg("property_name", "Name of the property to load into");
 
-    addOperation("storeProperty", &Params::storeProperty, this, RTT::ClientThread)
+    addOperation(
+      "storeProperty",
+      &Params::storeProperty, this, RTT::ClientThread)
     .doc("Stores a property into a node parameter server")
     .arg("property_name", "Name of the property to store")
     .arg("parameter_name", "Name of the parameter to store into");
@@ -80,7 +82,7 @@ bool Params::check_ros2_node_in_global()
   return RTT::internal::GlobalService::Instance()->hasService("ros");
 }
 
-rclcpp::ParameterValue Params::getParameter(const std::string& name)
+rclcpp::ParameterValue Params::getParameter(const std::string & name)
 {
   RTT::Logger::In in(getName());
 
@@ -103,7 +105,9 @@ rclcpp::ParameterValue Params::getParameter(const std::string& name)
   return parameter_value;
 }
 
-bool Params::setParameter(const std::string& name, const rclcpp::ParameterValue& value)
+bool Params::setParameter(
+  const std::string & name,
+  const rclcpp::ParameterValue & value)
 {
   RTT::Logger::In in(getName());
 
@@ -123,7 +127,8 @@ bool Params::setParameter(const std::string& name, const rclcpp::ParameterValue&
 
     // Update the parameter
     try {
-      const auto result = rosnode->set_parameter(rclcpp::Parameter(name, value));
+      const auto result = rosnode->set_parameter(
+        rclcpp::Parameter(name, value));
       if (!result.successful) {
         RTT::log(RTT::Error) <<
           "Failed to set ROS parameter " << name << ": " <<
@@ -134,7 +139,7 @@ bool Params::setParameter(const std::string& name, const rclcpp::ParameterValue&
       RTT::log(RTT::Error) <<
         "Failed to create parameter " << name << ": " <<
         e.what() << RTT::endlog();
-        return false;
+      return false;
     }
   } else {
     RTT::log(RTT::Error) <<
@@ -146,7 +151,9 @@ bool Params::setParameter(const std::string& name, const rclcpp::ParameterValue&
   return true;
 }
 
-bool Params::loadProperty(const std::string& property_name, const std::string& param_name)
+bool Params::loadProperty(
+  const std::string & property_name,
+  const std::string & param_name)
 {
   RTT::Logger::In in(getName());
 
@@ -161,7 +168,7 @@ bool Params::loadProperty(const std::string& property_name, const std::string& p
   if (nullptr == getOwner()) {
     // Case in which the service is GlobalService
     RTT::log(RTT::Error) << "[" << getName() << "] No owner found, properties "
-    "cannot be loaded in GlobalService" << RTT::endlog();
+      "cannot be loaded in GlobalService" << RTT::endlog();
     return false;
   }
   auto prop = getOwner()->properties()->getProperty(property_name);
@@ -181,9 +188,11 @@ bool Params::loadProperty(const std::string& property_name, const std::string& p
   }
 
   if (nullptr == prop) {
-    // Try to find it among orphan parameters (previously loaded, without a component interface)
+    // Try to find it among orphan parameters
+    // (previously loaded, without a component interface)
     if (orphan_properties_.find(property_name) == orphan_properties_.end()) {
-      // When totally new, then create an orphan property, i.e. owned by the ros2-params service
+      // When totally new, then create an orphan property,
+      // i.e. owned by the ros2-params service
       orphan_properties_[property_name] = paramvalue;
       this->addProperty(property_name, orphan_properties_[property_name])
       .doc("Property loaded from ROS2 param: " + param_name);
@@ -201,24 +210,27 @@ bool Params::loadProperty(const std::string& property_name, const std::string& p
 
     RTT::Property<rclcpp::ParameterValue> prop_paramvalue = prop;
     const auto property_ds = prop->getDataSource();
-    RTT::internal::ReferenceDataSource<rclcpp::ParameterValue> param_rds(paramvalue);
+    RTT::internal::ReferenceDataSource<rclcpp::ParameterValue> param_rds(
+      paramvalue);
     try {
       if (property_ds->update(&param_rds)) {
         // conversion successful
         RTT::log(RTT::Debug) <<
           "Property " <<
           getOwner()->provides()->getName() << "." << property_name <<
-          " loaded successfully from ROS parameter " << param_name << RTT::endlog();
+          " loaded successfully from ROS parameter " <<
+          param_name << RTT::endlog();
         return true;
       } else {
         // conversion failed
         RTT::log(RTT::Warning) <<
           "Property " <<
           getOwner()->provides()->getName() << "." << property_name <<
-          " failed to convert from ROS parameter " << param_name << RTT::endlog();
+          " failed to convert from ROS parameter " <<
+          param_name << RTT::endlog();
         return false;
       }
-    } catch (const RTT::internal::bad_assignment& /*ba*/) {
+    } catch (const RTT::internal::bad_assignment & /*ba*/) {
       RTT::log(RTT::Error) <<
         "Failed to convert  " <<
         getOwner()->provides()->getName() << "." << property_name <<
@@ -230,11 +242,14 @@ bool Params::loadProperty(const std::string& property_name, const std::string& p
   }
 }
 
-bool Params::storeProperty(const std::string& property_name, const std::string& param_name)
+bool Params::storeProperty(
+  const std::string & property_name,
+  const std::string & param_name)
 {
   RTT::Logger::In in(getName());
 
-  const RTT::base::PropertyBase * prop = getOwner()->properties()->getProperty(property_name);
+  const RTT::base::PropertyBase * prop = getOwner()->properties()->getProperty(
+    property_name);
   if (nullptr != prop) {
     RTT::log(RTT::Debug) <<
       getOwner()->provides()->getName() <<

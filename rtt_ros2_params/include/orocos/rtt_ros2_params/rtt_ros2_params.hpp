@@ -34,10 +34,16 @@ public:
   virtual ~Params();
 
 protected:
-  rclcpp::ParameterValue getParameter(const std::string& name);
-  bool setParameter(const std::string& name, const rclcpp::ParameterValue& value);
-  bool loadProperty(const std::string& property_name, const std::string& param_name = std::string());
-  bool storeProperty(const std::string& property_name, const std::string& param_name);
+  rclcpp::ParameterValue getParameter(const std::string & name);
+  bool setParameter(
+    const std::string & name,
+    const rclcpp::ParameterValue & value);
+  bool loadProperty(
+    const std::string & property_name,
+    const std::string & param_name = std::string());
+  bool storeProperty(
+    const std::string & property_name,
+    const std::string & param_name);
 
 private:
   bool check_ros2_node_in_component();
