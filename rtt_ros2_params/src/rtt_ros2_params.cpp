@@ -38,9 +38,15 @@ Params::Params(RTT::TaskContext * owner)
     "Parameter service instantiated! in " << getName() <<
     RTT::endlog();
 
-  RTT::log(RTT::Debug) <<
-    "Name of the owner: " << owner->getName() <<
-    getName() << RTT::endlog();
+  if (nullptr != owner) {
+    RTT::log(RTT::Debug) <<
+      "Name of the owner: " << owner->getName() <<
+      getName() << RTT::endlog();
+  } else {
+    RTT::log(RTT::Debug) <<
+      "Instantiated in Global Service" <<
+      getName() << RTT::endlog();
+  }
 
   this->doc(
     "RTT Service for synchronizing ROS 2 parameters with the properties of a"

@@ -42,7 +42,8 @@ static void loadGlobalROSService()
     }
   }
   auto ros = RTT::internal::GlobalService::Instance()->provides("ros");
-  RTT::Service::shared_ptr params = boost::make_shared<rtt_ros2_params::Params>(nullptr);
+  RTT::Service::shared_ptr params =
+    boost::make_shared<rtt_ros2_params::Params>(nullptr);
   params->doc("ROS2 params operations and services");
 
   if (!ros->addService(params)) {
