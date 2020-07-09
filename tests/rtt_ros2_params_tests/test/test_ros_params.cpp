@@ -142,7 +142,6 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
   rclcpp::ParameterValue new_bool = getparam_operation.call("bool_parameter");
   ASSERT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
   ASSERT_EQ(new_bool.get<bool>(), true);
-
 }
 
 TEST_F(TestRosParams, TestComponentNodeParams)
@@ -235,7 +234,6 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   this->bool_member_ = false;
   // ASSERT_TRUE(loadprop_operation.call("bool_property", "bool_parameter"));
   // ASSERT_EQ(true, this->bool_member_);
-
 }
 
 int main(int argc, char ** argv)
