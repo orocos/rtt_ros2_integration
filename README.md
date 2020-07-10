@@ -63,7 +63,12 @@ and some code snippets have been taken from contributions made by the following 
 
 This work has been funded with support from
 
-[Houston Mechatronics](https://www.houstonmechatronics.com/)
+<a href="https://www.houstonmechatronics.com/">
+  <img src="https://s27934.pcdn.co/wp-content/uploads/2020/03/HMI_LOGO_OLD_Black_01-1.png"
+       alt="Houston Mechatronics Logo" height="60">
+
+  Houston Mechatronics
+</a>
 
 and
 
