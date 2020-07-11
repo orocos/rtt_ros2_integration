@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import pathlib
+import sys
+
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 from rosidl_cmake import expand_template
 
@@ -95,3 +98,28 @@ def generate_typekit(package, output_dir, messages=[], services=[], actions=[]):
         data=data,
         output_file=(output_dir / "typekit_plugin.cpp"),
         template_basepath=TEMPLATE_DIR)
+
+
+def main(argv=sys.argv[1:]):
+    parser = argparse.ArgumentParser(
+        description='Generate an RTT typekit from message, service and action types in a ROS '
+                    'interface package.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        '--package', required=True,
+        help='The name of the package')
+    parser.add_argument(
+        '--messages', metavar='MESSAGE', nargs='*',
+        help='The message types to generate typekit for')
+    parser.add_argument(
+        '--services', metavar='SERVICE', nargs='*',
+        help='The service types to generate typekit for')
+    parser.add_argument(
+        '--actions', metavar='ACTION', nargs='*',
+        help='The action types to generate typekit for')
+    parser.add_argument(
+        '--output-dir', required=True,
+        help='The base directory to create typekit files in')
+    args = parser.parse_args(argv)
+
+    return generate_typekit(**vars(args))

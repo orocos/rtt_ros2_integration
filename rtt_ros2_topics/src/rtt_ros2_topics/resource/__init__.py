@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(rtt_ros2_idl_GENERATOR_FILES
-  "${rtt_ros2_idl_DIR}/../../../@PYTHON_INSTALL_DIR@/rtt_ros2_idl/__init__.py")
-normalize_path(rtt_ros2_idl_GENERATOR_FILES "${rtt_ros2_idl_GENERATOR_FILES}")
+import pathlib
 
-set(rtt_ros2_idl_TEMPLATE_DIR "${rtt_ros2_idl_DIR}/../../../@PYTHON_INSTALL_DIR@/rtt_ros2_idl/resource")
-normalize_path(rtt_ros2_idl_TEMPLATE_DIR "${rtt_ros2_idl_TEMPLATE_DIR}")
+
+TEMPLATE_DIR = pathlib.Path(__file__).parent

@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(rtt_ros2_idl_GENERATOR_FILES
-  "${rtt_ros2_idl_DIR}/../../../@PYTHON_INSTALL_DIR@/rtt_ros2_idl/__init__.py")
-normalize_path(rtt_ros2_idl_GENERATOR_FILES "${rtt_ros2_idl_GENERATOR_FILES}")
-
-set(rtt_ros2_idl_TEMPLATE_DIR "${rtt_ros2_idl_DIR}/../../../@PYTHON_INSTALL_DIR@/rtt_ros2_idl/resource")
-normalize_path(rtt_ros2_idl_TEMPLATE_DIR "${rtt_ros2_idl_TEMPLATE_DIR}")
+#
+# Generate a RTT typekit and ROS transport plugin for ROS interface packages.
+#
+macro(rtt_ros2_generate_typekit_and_transports _package)
+  rtt_ros2_generate_typekit(${_package} ${ARGN})
+  rtt_ros2_generate_ros_transport(${_package} ${ARGN})
+endmacro()

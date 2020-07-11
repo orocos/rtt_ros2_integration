@@ -24,18 +24,15 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rtt_ros2_idl REQUIRED)
+find_package(rtt_ros2_interfaces REQUIRED)
 
-rtt_ros2_generate_typekit(test_msgs)
+rtt_ros2_generate_typekit_and_transports(test_msgs)
 
 # linters
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-# export information to downstream packages
-ament_export_dependencies(test_msgs)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package()
@@ -45,5 +42,5 @@ ament_package()
 # ament_export_interfaces() or ament_export_targets() when building with
 # ament_cmake.
 orocos_generate_package(
-  DEPENDS_TARGETS rtt_ros2_idl
+  DEPENDS_TARGETS rtt_ros2_interfaces
 )

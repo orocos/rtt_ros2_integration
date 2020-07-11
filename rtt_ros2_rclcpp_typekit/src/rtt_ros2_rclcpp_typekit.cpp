@@ -22,7 +22,7 @@
 #include "rtt/types/OperatorTypes.hpp"
 #include "rtt/types/TypekitPlugin.hpp"
 
-#include "rtt_ros2_rclcpp_typekit/rclcpp_version.h"
+#include "rtt_ros2/detail/rclcpp_version.h"
 #include "rtt_ros2_rclcpp_typekit/ros2_duration_type.hpp"
 #include "rtt_ros2_rclcpp_typekit/ros2_node_options_type.hpp"
 #include "rtt_ros2_rclcpp_typekit/ros2_parameter_type.hpp"

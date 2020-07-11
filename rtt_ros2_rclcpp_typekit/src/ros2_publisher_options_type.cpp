@@ -22,7 +22,7 @@
 #include "rtt/types/MemberFactory.hpp"
 #include "rtt/types/PrimitiveTypeInfo.hpp"
 
-#include "rtt_ros2_rclcpp_typekit/rclcpp_version.h"
+#include "rtt_ros2/detail/rclcpp_version.h"
 #include "rtt_ros2_rclcpp_typekit/wrapped_qos.hpp"
 
 using namespace RTT;  // NOLINT(build/namespaces)
