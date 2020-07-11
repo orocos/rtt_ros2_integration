@@ -25,13 +25,17 @@
 namespace rtt_ros2_topics
 {
 
+/// Returns a ConnPolicy object for streaming to or from the given ROS topic.
 /**
- * Returns a ConnPolicy object for streaming to or from the given ROS topic.
  * Only a single data object is buffered within RTT and ROS, which replaces all earlier samples
  * that have not been actually published or read yet.
- * If the topic is empty, use the port name converted to lower case with underscores.
+ *
+ * @param topic The topic (copied to field name_id).
+ *              If empty, use the port name converted to lower case with underscores.
+ * @param latch If true, new subscribers will see old messages published before, i.e.
+ *              set durability to transient local (copied to field init).
  */
-static RTT::ConnPolicy topic(std::string topic, bool latch = false)
+static RTT::ConnPolicy topic(std::string topic = std::string(), bool latch = false)
 {
   RTT::ConnPolicy policy = RTT::ConnPolicy::data();
   policy.init = latch;
@@ -40,10 +44,26 @@ static RTT::ConnPolicy topic(std::string topic, bool latch = false)
   return policy;
 }
 
+/// Returns a ConnPolicy object for streaming to or from the given ROS topic (latched).
 /**
- * Returns a ConnPolicy object for buffered streaming to or from the given ROS topic.
- * At least size elements are kept in RTT and ROS buffers/queues.
- * If the topic is empty, use the port name converted to lower case with underscores.
+ * @sa topic(std::string topic, bool latch), but defaults to latch == true.
+ *
+ * @param topic The topic (copied to field name_id).
+ *              If empty, use the port name converted to lower case with underscores.
+ */
+static RTT::ConnPolicy topicLatched(std::string topic = std::string())
+{
+  return rtt_ros2_topics::topic(topic, true);
+}
+
+/// Returns a ConnPolicy object for buffered streaming to or from the given ROS topic.
+/**
+ * @param topic The topic (copied to field name_id).
+ *              If empty, use the port name converted to lower case with underscores.
+ * @param size  The size of buffers created by RTT and queues in the ROS middleware (depth)
+ *              (copied to field size).
+ * @param latch If true, new subscribers will see old messages published before, i.e.
+ *              set durability to transient local (copied to field init).
  */
 static RTT::ConnPolicy topicBuffered(std::string topic, int size, bool latch = false)
 {
@@ -54,17 +74,23 @@ static RTT::ConnPolicy topicBuffered(std::string topic, int size, bool latch = f
   return policy;
 }
 
+/// Returns a ConnPolicy object for direct (unbuffered) streaming to a given ROS topic (publishing).
 /**
- * Returns a ConnPolicy object for direct (unbuffered) streaming to a given ROS topic (publishing).
  * The returned policy is invalid for input ports/subscribers.
  * No data is buffered by RTT. The publish() method is called in the thread of the writing
  * TaskContext (not real-time safe if rclcpp publishers are not real-time safe).
- * If the topic is empty, use the port name converted to lower case with underscores.
+ *
+ * @param topic The topic (copied to field name_id).
+ *              If empty, use the port name converted to lower case with underscores.
+ * @param size  The size of queues in the ROS middleware (depth)
+ *              (copied to field size).
+ * @param latch If true, new subscribers will see old messages published before, i.e.
+ *              set durability to transient local (copied to field init)
  */
 static RTT::ConnPolicy topicDirect(
   std::string topic, int size, bool latch = false)
 {
-  RTT::ConnPolicy policy = RTT::ConnPolicy::data();
+  RTT::ConnPolicy policy = RTT::ConnPolicy::buffer(size);
   policy.init = latch;
   policy.name_id = std::move(topic);
   policy.transport = ORO_ROS2_PROTOCOL_ID;

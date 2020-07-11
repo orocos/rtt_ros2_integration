@@ -8,8 +8,6 @@ This repository contains ROS 2 packages necessary for building [Orocos Real-Time
 libraries, plugins, and components to communicate with ROS 2 nodes and to integrate with
 higher-level ROS concepts.
 
-It is the successor of [rtt_ros_integration](https://github.com/orocos/rtt_ros_integration) for ROS 1.
-
 ## Packages
 
 The packages in this repository provide:
@@ -51,7 +49,10 @@ be under the Apache 2 License, as dictated by that
 
 ## Acknowledgement
 
-Many thanks to all contributors to the original [rtt_ros_integration](https://github.com/orocos/rtt_ros_integration) for ROS 1 over the years:
+Many thanks to [all previous contributors](https://github.com/orocos/rtt_ros2_integration/graphs/contributors) to this repository.
+
+It is the successor of [rtt_ros_integration](https://github.com/orocos/rtt_ros_integration) for ROS 1, and many ideas
+and some code snippets have been taken from contributions made by the following people over the years:
 
 - Peter Soetens
 - Ruben Smits
@@ -60,4 +61,27 @@ Many thanks to all contributors to the original [rtt_ros_integration](https://gi
 - Antoine Hoarau
 - ...and [others](https://github.com/orocos/rtt_ros_integration/graphs/contributors).
 
-Your work and your ideas have been the foundation of this new implementation for ROS 2.
+This work has been funded with support from
+
+<a href="https://www.houstonmechatronics.com/">
+  <img src="https://s27934.pcdn.co/wp-content/uploads/2020/03/HMI_LOGO_OLD_Black_01-1.png"
+       alt="Houston Mechatronics Logo" height="60">
+
+  Houston Mechatronics
+</a>
+
+and
+
+<a href="http://rosin-project.eu">
+  <img src="http://rosin-project.eu/wp-content/uploads/rosin_ack_logo_wide.png" 
+       alt="rosin_logo" height="60" >
+</a>
+
+Supported by ROSIN - ROS-Industrial Quality-Assured Robot Software Components.  
+More information: <a href="http://rosin-project.eu">rosin-project.eu</a>
+
+<img src="http://rosin-project.eu/wp-content/uploads/rosin_eu_flag.jpg" 
+     alt="eu_flag" height="45" align="left" >  
+
+This project has received funding from the European Union’s Horizon 2020  
+research and innovation programme under grant agreement no. 732287. 
