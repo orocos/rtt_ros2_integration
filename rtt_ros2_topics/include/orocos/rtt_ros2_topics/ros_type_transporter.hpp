@@ -94,9 +94,6 @@ public:
       channel = new RosSubscriptionChannelElement<T>(port, policy, std::move(node));
       return channel;
     }
-
-    // unreachable
-    return RTT::base::ChannelElementBase::shared_ptr();
   }
 };
 

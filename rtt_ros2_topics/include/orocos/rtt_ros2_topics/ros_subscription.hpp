@@ -65,9 +65,6 @@ public:
 
   void callback(const typename T::SharedPtr msg)
   {
-    RTT::log(RTT::Info) << "Received message on topic " <<
-      subscription_->get_topic_name() <<
-      RTT::endlog();
     (void) this->write(*msg);
   }
 
