@@ -1,12 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rtt_ros2_test_msgs)
-
-# Skip building this package if BUILD_TESTING is OFF
-option(BUILD_TESTING "Build the testing tree." ON)
-if(NOT BUILD_TESTING)
-  ament_package()
-  return()
-endif()
+project(rtt_ros2_unique_identifier_msgs)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -26,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2_interfaces REQUIRED)
 
-rtt_ros2_generate_typekit_and_transports(test_msgs)
+rtt_ros2_generate_typekit_and_transports(unique_identifier_msgs)
 
 # linters
 if(BUILD_TESTING)

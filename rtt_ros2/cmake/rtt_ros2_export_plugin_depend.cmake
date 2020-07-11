@@ -23,5 +23,9 @@ macro(rtt_ros2_export_plugin_depend)
       "arguments. This is okay if you want to skip parsing package.xml for RTT "
       "plugin dependencies.")
   endif()
-  list(APPEND ${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS "${ARGN}")
+
+  list_append_unique(${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS "${ARGN}")
+
+  # Each plugin dependency is also a run-time (<exec_depend>) dependency.
+  list_append_unique(${PROJECT_NAME}_EXEC_DEPENDS "${ARGN}")
 endmacro()

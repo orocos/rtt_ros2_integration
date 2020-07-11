@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rtt_ros2_builtin_interfaces_typekit CXX)
+project(rtt_ros2_action_msgs)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -17,10 +17,9 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rtt_ros2_idl REQUIRED)
+find_package(rtt_ros2_interfaces REQUIRED)
 
-# generate typekit
-rtt_ros2_generate_typekit(builtin_interfaces)
+rtt_ros2_generate_typekit_and_transports(action_msgs)
 
 # linters
 if(BUILD_TESTING)
@@ -36,5 +35,5 @@ ament_package()
 # ament_export_interfaces() or ament_export_targets() when building with
 # ament_cmake.
 orocos_generate_package(
-  DEPENDS_TARGETS rtt_ros2_idl
+  DEPENDS_TARGETS rtt_ros2_interfaces
 )
