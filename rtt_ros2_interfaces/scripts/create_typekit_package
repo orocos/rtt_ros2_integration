@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+# Copyright 2020 Intermodalics BVBA
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import argparse
+from pathlib import Path
+import sys
+
+from ament_index_python.packages import get_package_share_directory
+from rosidl_cmake import expand_template
+
+TEMPLATE_DIR = Path(get_package_share_directory('rtt_ros2_interfaces')) / 'template'
+AVAILABLE_TRANSPORTS = (
+  'ros',
+)
+DEFAULT_TRANSPORTS = ['ros']
+
+
+def create_typekit_package(package, transports, **kwargs):
+    # Create package directory
+    if kwargs.get('destination_directory', None):
+        destination_directory = Path(kwargs['destination_directory'])
+    else:
+        destination_directory = Path.cwd()
+    destination_directory = destination_directory / f"rtt_ros2_{package}"
+    destination_directory.mkdir(parents=True)
+
+    # Generate files
+    data = kwargs
+    data.update({
+        'package': package,
+        'transports': transports,
+    })
+    for file in ('package.xml', 'CMakeLists.txt'):
+        expand_template(
+            file,
+            data=data,
+            output_file=(destination_directory / file),
+            template_basepath=TEMPLATE_DIR)
+
+
+def main(argv=sys.argv[1:]):
+    parser = argparse.ArgumentParser(
+        description='Generate an RTT typekit package.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        'package', metavar='PACKAGE',
+        help='The name of the interface package')
+
+    parser.add_argument(
+        '--destination-directory', '-d',
+        default='.',
+        help='Directory where to create the package directory (not including the package name)')
+
+    plugins_group = parser.add_argument_group('plugin options')
+    plugins_group.add_argument(
+        '--transports', nargs='+', metavar='TRANSPORT', choices=AVAILABLE_TRANSPORTS,
+        default=DEFAULT_TRANSPORTS,
+        help='Whether to add a ROS transport plugin (available: ' +
+             ' '.join(AVAILABLE_TRANSPORTS) + ')')
+    plugins_group.add_argument(
+        '--no-transport', action='store_const', dest='transports', const=[],
+        default=argparse.SUPPRESS,
+        help='Create a pure typekit package (no transport plugins)')
+
+    package_xml_group = parser.add_argument_group('package.xml options')
+    package_xml_group.add_argument(
+        '--description',
+        default=argparse.SUPPRESS,
+        help='The description given in the package.xml')
+    package_xml_group.add_argument(
+        '--license',
+        default='Apache License 2.0',
+        help='The license attached to this package')
+    package_xml_group.add_argument(
+        '--maintainer-email',
+        default='orocos-dev@orocos.org',
+        help='email address of the maintainer of this package')
+    package_xml_group.add_argument(
+        '--maintainer-name',
+        default='Orocos Developers',
+        help='name of the maintainer of this package')
+
+    args = parser.parse_args(argv)
+    return create_typekit_package(**vars(args))
+
+
+if __name__ == '__main__':
+    main()

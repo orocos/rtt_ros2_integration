@@ -63,7 +63,7 @@ protected:
 /**
  * @param tc The TaskContext instance for which to retrieve a Node pointer. If nullptr, consider
  *           only the global (process-wide) node.
- * @returns the Node instance loaded as a RTT service in the given TaskContext,
+ * @returns the Node instance loaded as an RTT service in the given TaskContext,
  * or falls back to the global (process-wide) Node loaded into the GlobalService.
  * If none of both is loaded, the function returns nullptr.
  */

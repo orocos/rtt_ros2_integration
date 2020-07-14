@@ -19,6 +19,8 @@
   <exec_depend>ocl</exec_depend>
   <depend>rtt</depend>
 
+  <build_depend>rclcpp</build_depend>  <!-- for generated version check macros -->
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

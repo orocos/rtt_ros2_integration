@@ -26,10 +26,6 @@ ament_python_install_package(${PROJECT_NAME}
 )
 
 # install
-install(PROGRAMS
-  bin/generate_typekit
-  DESTINATION lib/${PROJECT_NAME}
-)
 install(
   DIRECTORY include/
   DESTINATION include
@@ -42,17 +38,17 @@ if(BUILD_TESTING)
 endif()
 
 # export information to downstream packages
-ament_export_dependencies(rtt_ros2)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_generator_cpp)
 ament_export_dependencies(rosidl_typesupport_introspection_cpp)
+ament_export_dependencies(rtt_ros2)
 ament_export_include_directories(include/orocos)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package(
   CONFIG_EXTRAS
     cmake/${PROJECT_NAME}-extras.cmake.in
-    cmake/${PROJECT_NAME}_generate_typekit.cmake
+    cmake/${PROJECT_NAME}-generate_typekit.cmake
 )
 
 # orocos_generate_package() is deprecated for ROS 2.

@@ -56,8 +56,7 @@ public:
 
   std::string getName() override
   {
-    static const std::string name = "ros2-@(pkg_name)";
-    return name;
+    return "ros2-@(pkg_name)";
   }
 };
 

@@ -17,7 +17,7 @@
 
 #include "rtt/RTT.hpp"
 #include "rtt/internal/DataSources.hpp"
-#include "rtt/os/main.h"
+#include "rtt/os/startstop.h"
 #include "rtt/types/TypeInfoRepository.hpp"
 
 #include "rtt_ros2/rtt_ros2.hpp"
@@ -1293,9 +1293,17 @@ TEST_F(TestTypekit, WStrings)
     wstrings_msg.unbounded_sequence_of_wstrings.size());
 }
 
-int ORO_main(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
+
+  // __os_init() must be called after testing::InitGoogleTest(&argc, argv) because this function
+  // removes Google Test flags from argc/argv.
+  __os_init(argc, argv);
+
   const auto env = ::testing::AddGlobalTestEnvironment(new TestTypekitEnvironment);
-  return RUN_ALL_TESTS();
+  int ret = RUN_ALL_TESTS();
+
+  __os_exit();
+  return ret;
 }
