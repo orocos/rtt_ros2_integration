@@ -15,6 +15,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <deque>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -26,29 +27,9 @@
 
 #include "rtt_ros2/rtt_ros2.hpp"
 #include "rtt_ros2_node/rtt_ros2_node.hpp"
+#include "rtt_ros2_params/rtt_ros2_params.hpp"
 
 #include "gtest/gtest.h"
-
-// /* True if the version of test_msgs is at least major.minor.patch */
-// // (from https://github.com/ros2/rmw_cyclonedds/pull/51)
-// #define test_msgs_VERSION_GTE(major, minor, patch) ( \
-//     (major < test_msgs_VERSION_MAJOR) ? true \
-//     : (major > test_msgs_VERSION_MAJOR) ? false \
-//     : (minor < test_msgs_VERSION_MINOR) ? true \
-//     : (minor > test_msgs_VERSION_MINOR) ? false \
-//     : (patch < test_msgs_VERSION_PATCH) ? true \
-//     : (patch > test_msgs_VERSION_PATCH) ? false \
-//     : true)
-
-// MessageInitialization is an alias for        Either
-// rosidl_generator_cpp::MessageInitialization  Or
-// rosidl_runtime_cpp::MessageInitialization
-// depending on the ROS version.
-#ifdef ROSIDL_RUNTIME_CPP__MESSAGE_INITIALIZATION_HPP_
-using rosidl_runtime_cpp::MessageInitialization;
-#else
-using rosidl_generator_cpp::MessageInitialization;
-#endif
 
 class TestRosParamsEnvironment
   : public ::testing::Environment
@@ -68,20 +49,15 @@ public:
   : RTT::TaskContext("TestRosParams")
   {
     this->addProperty("int_property", int_member_);
+    this->addProperty("double_property", double_member_);
     this->addProperty("bool_property", bool_member_);
   }
 
 protected:
-  void assign_properties(int an_int, bool a_boolean)
-  {
-    int_member_ = an_int;
-    bool_member_ = a_boolean;
-    ASSERT_TRUE(true);
-  }
-
-protected:
-  int int_member_;
-  bool bool_member_;
+  int int_member_ = 42;
+  bool bool_member_ = true;
+  double double_member_ = 3.14159;
+  std::string string_member_ = std::string("answer to life and universe");
 };
 
 TEST_F(TestRosParams, TestGlobalNodeParams)
@@ -98,50 +74,68 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
   // Create a global (process-wide) Parameter service
-  // ASSERT_TRUE(RTT::internal::GlobalService::Instance()->provides("ros2-params"));
+  // ASSERT_TRUE(RTT::internal::GlobalService::Instance()->provides("rosparam"));
   RTT::Service::shared_ptr global_params =
     global_ros->getService("Params");
   ASSERT_TRUE(nullptr != global_params);
 
-  // Test member function
-  assign_properties(42, true);
-
   // Check set non-existant parameters
-  ASSERT_TRUE(global_params->getOperation("setParameter"));
-  ASSERT_FALSE(global_params->getOperation("nonExistantOperation"));
   RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
   setparam_operation = global_params->getOperation("setParameter");
-  ASSERT_FALSE(
+  ASSERT_TRUE(setparam_operation.ready());
+  EXPECT_FALSE(
     setparam_operation.call("fake_parameter", rclcpp::ParameterValue(42)));
 
   // Check get non-existant parameters
-  ASSERT_TRUE(global_params->getOperation("getParameter"));
   RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
   getparam_operation = global_params->getOperation("getParameter");
-  ASSERT_EQ(
+  ASSERT_TRUE(getparam_operation.ready());
+  EXPECT_EQ(
     rclcpp::PARAMETER_NOT_SET,
     getparam_operation.call("fake_parameter").get_type()
   );
 
   // Check setting a parameter (INTEGER)
   rtt_ros2_node::getNode(this)->declare_parameter("int_parameter");
-  ASSERT_TRUE(
+  EXPECT_TRUE(
     setparam_operation.call("int_parameter", rclcpp::ParameterValue(42)));
 
   // Check getting a parameter (INTEGER)
   rclcpp::ParameterValue new_int = getparam_operation.call("int_parameter");
-  ASSERT_EQ(rclcpp::PARAMETER_INTEGER, new_int.get_type());
-  ASSERT_EQ(new_int.get<int>(), 42);
+  EXPECT_EQ(rclcpp::PARAMETER_INTEGER, new_int.get_type());
+  EXPECT_EQ(new_int.get<int>(), 42);
+
+  // Check setting a parameter (DOUBLE)
+  rtt_ros2_node::getNode(this)->declare_parameter("double_parameter");
+  EXPECT_TRUE(
+    setparam_operation.call("double_parameter", rclcpp::ParameterValue(3.14159)));
+
+  // Check getting a parameter (DOUBLE)
+  rclcpp::ParameterValue new_double = getparam_operation.call("double_parameter");
+  EXPECT_EQ(rclcpp::PARAMETER_DOUBLE, new_double.get_type());
+  EXPECT_EQ(new_double.get<double>(), 3.14159);
 
   // Check setting a parameter (BOOL)
   rtt_ros2_node::getNode(this)->declare_parameter("bool_parameter");
-  ASSERT_TRUE(
+  EXPECT_TRUE(
     setparam_operation.call("bool_parameter", rclcpp::ParameterValue(true)));
 
   // Check getting a parameter (BOOL)
   rclcpp::ParameterValue new_bool = getparam_operation.call("bool_parameter");
-  ASSERT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
-  ASSERT_EQ(new_bool.get<bool>(), true);
+  EXPECT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
+  EXPECT_EQ(new_bool.get<bool>(), true);
+
+  // Check setting a parameter (STRING)
+  rtt_ros2_node::getNode(this)->declare_parameter("string_parameter");
+  EXPECT_TRUE(
+    setparam_operation.call(
+      "string_parameter",
+      rclcpp::ParameterValue("answer to life and universe")));
+
+  // Check getting a parameter (STRING)
+  rclcpp::ParameterValue new_string = getparam_operation.call("string_parameter");
+  EXPECT_EQ(rclcpp::PARAMETER_STRING, new_string.get_type());
+  EXPECT_EQ(new_string.get<std::string>().compare(std::string("answer to life and universe")), 0);
 }
 
 TEST_F(TestRosParams, TestComponentNodeParams)
@@ -152,88 +146,93 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
   // Get local service
-  ASSERT_TRUE(this->loadService("ros2-params"));
+  ASSERT_TRUE(this->loadService("rosparam"));
   RTT::Service::shared_ptr local_params =
     this->provides("Params");
   ASSERT_TRUE(nullptr != local_params);
 
-
-  // Test member function
-  assign_properties(42, true);
-
   // Check set non-existant parameters
-  ASSERT_TRUE(local_params->getOperation("setParameter"));
-  ASSERT_FALSE(local_params->getOperation("nonExistantOperation"));
   RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
   setparam_operation = local_params->getOperation("setParameter");
-  ASSERT_FALSE(
+  ASSERT_TRUE(setparam_operation.ready());
+  EXPECT_FALSE(
     setparam_operation.call("fake_parameter", rclcpp::ParameterValue(42)));
 
   // Check get non-existant parameters
-  ASSERT_TRUE(local_params->getOperation("getParameter"));
   RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
   getparam_operation = local_params->getOperation("getParameter");
-  ASSERT_EQ(
+  ASSERT_TRUE(getparam_operation.ready());
+  EXPECT_EQ(
     rclcpp::PARAMETER_NOT_SET,
     getparam_operation.call("fake_parameter").get_type()
   );
 
   // Check setting a parameter (INTEGER)
   rtt_ros2_node::getNode(this)->declare_parameter("int_parameter");
-  ASSERT_TRUE(
+  EXPECT_TRUE(
     setparam_operation.call("int_parameter", rclcpp::ParameterValue(41)));
 
   // Check getting a parameter (INTEGER)
   rclcpp::ParameterValue new_int = getparam_operation.call("int_parameter");
-  ASSERT_EQ(rclcpp::PARAMETER_INTEGER, new_int.get_type());
-  ASSERT_EQ(new_int.get<int>(), 41);
+  EXPECT_EQ(rclcpp::PARAMETER_INTEGER, new_int.get_type());
+  EXPECT_EQ(new_int.get<int>(), 41);
 
   // Check setting a parameter (BOOL)
   rtt_ros2_node::getNode(this)->declare_parameter("bool_parameter");
-  ASSERT_TRUE(
+  EXPECT_TRUE(
     setparam_operation.call("bool_parameter", rclcpp::ParameterValue(false)));
 
   // Check getting a parameter (BOOL)
   rclcpp::ParameterValue new_bool = getparam_operation.call("bool_parameter");
-  ASSERT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
-  ASSERT_EQ(new_bool.get<bool>(), false);
+  EXPECT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
+  EXPECT_EQ(new_bool.get<bool>(), false);
 
   // Check storing a parameter provoke failure
-  ASSERT_TRUE(local_params->getOperation("storeProperty"));
   RTT::OperationCaller<bool(std::string, std::string)>
   storeprop_operation = local_params->getOperation("storeProperty");
-  ASSERT_FALSE(storeprop_operation.call("fake_property", "int_parameter"));
-  ASSERT_FALSE(storeprop_operation.call("int_property", "fake_parameter"));
+  ASSERT_TRUE(storeprop_operation.ready());
+  EXPECT_FALSE(storeprop_operation.call("fake_property", "int_parameter"));
+  EXPECT_FALSE(storeprop_operation.call("int_property", "fake_parameter"));
 
   // Check storing a parameter (INTEGER)
-  ASSERT_EQ(getparam_operation.call("int_parameter").get<int>(), 41);
-  ASSERT_TRUE(storeprop_operation.call("int_property", "int_parameter"));
-  ASSERT_EQ(getparam_operation.call("int_parameter").get<int>(), 42);
+  EXPECT_EQ(getparam_operation.call("int_parameter").get<int>(), 41);
+  EXPECT_TRUE(storeprop_operation.call("int_property", "int_parameter"));
+  EXPECT_EQ(getparam_operation.call("int_parameter").get<int>(), 42);
 
   // Check storing a parameter (BOOL)
-  ASSERT_EQ(getparam_operation.call("bool_parameter").get<bool>(), false);
-  ASSERT_TRUE(storeprop_operation.call("bool_property", "bool_parameter"));
-  ASSERT_EQ(getparam_operation.call("bool_parameter").get<bool>(), true);
+  EXPECT_EQ(getparam_operation.call("bool_parameter").get<bool>(), false);
+  EXPECT_TRUE(storeprop_operation.call("bool_property", "bool_parameter"));
+  EXPECT_EQ(getparam_operation.call("bool_parameter").get<bool>(), true);
 
   // Check loading a parameter common
-  ASSERT_TRUE(local_params->getOperation("loadProperty"));
   RTT::OperationCaller<bool(std::string, std::string)>
   loadprop_operation = local_params->getOperation("loadProperty");
-  ASSERT_FALSE(loadprop_operation.call("fake_property", "fake_parameter"));
-  ASSERT_TRUE(loadprop_operation.call("fake_property", "int_parameter"));
-
-  // TODO(spd-intermodalics): Fix the loading of existing parameters
-  // which works OK in scripting, but NOK on C++
+  ASSERT_TRUE(loadprop_operation.ready());
+  EXPECT_FALSE(loadprop_operation.call("fake_property", "fake_parameter"));
+  EXPECT_TRUE(loadprop_operation.call("fake_property", "int_parameter"));
+  auto params_service = boost::dynamic_pointer_cast<rtt_ros2_params::Params>(
+    this->provides("Params"));
+  ASSERT_TRUE(params_service);
+  EXPECT_EQ(params_service->getOrphans()["fake_property"].get<int>(), 42);
 
   // Check loading a parameter (INTEGER)
   this->int_member_ = 41;
-  // ASSERT_TRUE(loadprop_operation.call("int_property", "int_parameter"));
-  // ASSERT_EQ(42, this->int_member_);
+  setparam_operation.call("int_parameter", rclcpp::ParameterValue(42));
+  EXPECT_TRUE(loadprop_operation.call("int_property", "int_parameter"));
+  EXPECT_EQ(42, this->int_member_);
 
   // Check loading a parameter (BOOL)
   this->bool_member_ = false;
-  // ASSERT_TRUE(loadprop_operation.call("bool_property", "bool_parameter"));
-  // ASSERT_EQ(true, this->bool_member_);
+  setparam_operation.call("bool_parameter", rclcpp::ParameterValue(true));
+  EXPECT_TRUE(loadprop_operation.call("bool_property", "bool_parameter"));
+  EXPECT_EQ(true, this->bool_member_);
+
+  // Check bad assignment
+  rtt_ros2_node::getNode(this)->declare_parameter("string_parameter");
+  EXPECT_TRUE(
+    setparam_operation.call("string_parameter", rclcpp::ParameterValue("string_value")));
+  EXPECT_FALSE(
+    loadprop_operation.call("bool_property", "string_parameter"));
 }
 
 int main(int argc, char ** argv)

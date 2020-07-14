@@ -78,16 +78,6 @@ Params::Params(RTT::TaskContext * owner)
 
 Params::~Params() = default;
 
-bool Params::check_ros2_node_in_component()
-{
-  return getOwner()->provides()->hasService("Node");
-}
-
-bool Params::check_ros2_node_in_global()
-{
-  return RTT::internal::GlobalService::Instance()->hasService("ros");
-}
-
 rclcpp::ParameterValue Params::getParameter(const std::string & name)
 {
   RTT::Logger::In in(getName());
@@ -98,8 +88,8 @@ rclcpp::ParameterValue Params::getParameter(const std::string & name)
 
   rclcpp::ParameterValue parameter_value;
 
-  rclcpp::Node::SharedPtr rosnode;
-  if (nullptr != (rosnode = rtt_ros2_node::getNode(getOwner()))) {
+  auto rosnode = rtt_ros2_node::getNode(getOwner());
+  if (nullptr != rosnode) {
     rosnode->get_parameter(name, parameter_value);
   } else {
     RTT::log(RTT::Error) <<
@@ -121,16 +111,8 @@ bool Params::setParameter(
     "Setting the parameter \"" << name << "\"" <<
     RTT::endlog();
 
-  rclcpp::Node::SharedPtr rosnode;
-  if (nullptr != (rosnode = rtt_ros2_node::getNode(getOwner()))) {
-    if (!rosnode->has_parameter(name)) {
-      // Create new parameter
-      RTT::log(RTT::Warning) <<
-        "The parameter did not exist" <<
-        RTT::endlog();
-      // rosnode->declare_parameter(name);
-    }
-
+  auto rosnode = rtt_ros2_node::getNode(getOwner());
+  if (nullptr != rosnode) {
     // Update the parameter
     try {
       const auto result = rosnode->set_parameter(
@@ -157,6 +139,52 @@ bool Params::setParameter(
   return true;
 }
 
+bool Params::setOrDeclareParameter(
+  const std::string & name,
+  const rclcpp::ParameterValue & value)
+{
+  RTT::Logger::In in(getName());
+
+  RTT::log(RTT::Debug) <<
+    "Setting the parameter \"" << name << "\"" <<
+    RTT::endlog();
+
+  auto rosnode = rtt_ros2_node::getNode(getOwner());
+  if (nullptr == rosnode) {
+    RTT::log(RTT::Error) <<
+      "No ROS node service from package rtt_ros2_node loaded into this "
+      "component or as a global service." <<
+      RTT::endlog();
+    return false;
+  }
+
+  if (!rosnode->has_parameter(name)) {
+    // Create new parameter
+    RTT::log(RTT::Info) <<
+      "The parameter did not exist" <<
+      RTT::endlog();
+    rosnode->declare_parameter(name);
+  }
+
+  // Update the parameter
+  try {
+    const auto result = rosnode->set_parameter(
+      rclcpp::Parameter(name, value));
+    if (!result.successful) {
+      RTT::log(RTT::Error) <<
+        "Failed to set ROS parameter " << name << ": " <<
+        result.reason << RTT::endlog();
+      return false;
+    }
+  } catch (rclcpp::exceptions::ParameterNotDeclaredException & e) {
+    RTT::log(RTT::Error) <<
+      "Failed to create parameter " << name << ": " <<
+      e.what() << RTT::endlog();
+    return false;
+  }
+  return true;
+}
+
 bool Params::loadProperty(
   const std::string & property_name,
   const std::string & param_name)
@@ -173,7 +201,7 @@ bool Params::loadProperty(
 
   if (nullptr == getOwner()) {
     // Case in which the service is GlobalService
-    RTT::log(RTT::Error) << "[" << getName() << "] No owner found, properties "
+    RTT::log(RTT::Error) << "No owner found, properties "
       "cannot be loaded in GlobalService" << RTT::endlog();
     return false;
   }
@@ -198,10 +226,10 @@ bool Params::loadProperty(
     // (previously loaded, without a component interface)
     if (orphan_properties_.find(property_name) == orphan_properties_.end()) {
       // When totally new, then create an orphan property,
-      // i.e. owned by the ros2-params service
+      // i.e. owned by the rosparam service
       orphan_properties_[property_name] = paramvalue;
       this->addProperty(property_name, orphan_properties_[property_name])
-      .doc("Property loaded from ROS2 param: " + param_name);
+      .doc("Property loaded from ROS parameter: " + param_name);
       prop = getProperty(property_name);
     } else {
       orphan_properties_[property_name] = paramvalue;
@@ -210,14 +238,11 @@ bool Params::loadProperty(
     return true;
   } else {
     // The property exists on the Owner's interface
-    RTT::log(RTT::Debug) <<
-      "The property " << property_name << " existed" <<
-      RTT::endlog();
-
     RTT::Property<rclcpp::ParameterValue> prop_paramvalue = prop;
     const auto property_ds = prop->getDataSource();
     RTT::internal::ReferenceDataSource<rclcpp::ParameterValue> param_rds(
       paramvalue);
+    param_rds.ref();
     try {
       if (property_ds->update(&param_rds)) {
         // conversion successful
@@ -236,12 +261,12 @@ bool Params::loadProperty(
           param_name << RTT::endlog();
         return false;
       }
-    } catch (const RTT::internal::bad_assignment & /*ba*/) {
+    } catch (const std::exception & e) {
       RTT::log(RTT::Error) <<
         "Failed to convert  " <<
         getOwner()->provides()->getName() << "." << property_name <<
-        " from ROS parameter " <<
-        param_name << RTT::endlog();
+        " from ROS parameter: " << param_name << "; error: " << e.what() <<
+        RTT::endlog();
       return false;
     }
     return false;
@@ -275,8 +300,29 @@ bool Params::storeProperty(
   RTT::base::DataSourceBase::shared_ptr property_bds = prop->getDataSource();
   RTT::internal::ValueDataSource<rclcpp::ParameterValue> param_vds;
 
-  // TODO(spdintermodalics): check whether the conversion was successful!
-  param_vds.update(property_bds.get());
+  try {
+    if (param_vds.update(property_bds.get())) {
+      // conversion successful
+      RTT::log(RTT::Debug) <<
+        "Property " <<
+        getOwner()->provides()->getName() << "." << property_name <<
+        " converted successfully to ROS parameter" << RTT::endlog();
+    } else {
+      // conversion failed
+      RTT::log(RTT::Warning) <<
+        "Property " <<
+        getOwner()->provides()->getName() << "." << property_name <<
+        " failed to convert to ROS parameter" << RTT::endlog();
+      return false;
+    }
+  } catch (const std::exception & e) {
+    RTT::log(RTT::Error) <<
+      "Failed to convert  " <<
+      getOwner()->provides()->getName() << "." << property_name <<
+      " into ROS parameter; error: " << e.what() <<
+      RTT::endlog();
+    return false;
+  }
 
   return setParameter(param_name, param_vds.get());
 }

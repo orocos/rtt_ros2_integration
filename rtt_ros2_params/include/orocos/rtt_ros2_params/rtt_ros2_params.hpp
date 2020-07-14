@@ -30,12 +30,18 @@ namespace rtt_ros2_params
 class Params : public RTT::Service
 {
 public:
+  typedef boost::shared_ptr<Params> shared_ptr;
+
   explicit Params(RTT::TaskContext * owner);
   virtual ~Params();
+  std::map<std::string, rclcpp::ParameterValue> getOrphans() {return orphan_properties_;}
 
 protected:
   rclcpp::ParameterValue getParameter(const std::string & name);
   bool setParameter(
+    const std::string & name,
+    const rclcpp::ParameterValue & value);
+  bool setOrDeclareParameter(
     const std::string & name,
     const rclcpp::ParameterValue & value);
   bool loadProperty(
@@ -46,10 +52,6 @@ protected:
     const std::string & param_name);
 
 private:
-  bool check_ros2_node_in_component();
-  bool check_ros2_node_in_global();
-  // bool get_ros2_node(rclcpp::Node::SharedPtr& node_ptr);
-
   std::map<std::string, rclcpp::ParameterValue> orphan_properties_;
 
   RTT::TaskContext * owner_;

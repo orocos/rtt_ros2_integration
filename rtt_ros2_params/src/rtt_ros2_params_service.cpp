@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "rtt/deployment/ComponentLoader.hpp"
 #include "rtt/internal/GlobalService.hpp"
 #include "rtt/plugin/ServicePlugin.hpp"
 
@@ -25,51 +26,49 @@
 namespace rtt_ros2_params
 {
 
-bool has_node()
+static bool loadGlobalROSService()
 {
-  return true;
-}
-
-static void loadGlobalROSService()
-{
+  // Check and load the ROS 2 service
   if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
+    RTT::ComponentLoader::Instance()->import("rtt_ros2", "");
     RTT::internal::GlobalService::Instance()->provides("ros");
     if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
       RTT::log(RTT::Error) <<
-        "ROS2 node needs to be loaded before loading ROS2 params" <<
-        RTT::endlog();
-      return;
+        "ros service (provided in rtt_ros2) is missing and it is needed "
+        "by rosparam" << RTT::endlog();
+      return false;
     }
   }
+
   auto ros = RTT::internal::GlobalService::Instance()->provides("ros");
   RTT::Service::shared_ptr params =
     boost::make_shared<rtt_ros2_params::Params>(nullptr);
-  params->doc("ROS2 params operations and services");
 
-  if (!ros->addService(params)) {
-    // No ROS, but we checked this earlier
-    RTT::log(RTT::Error) << "The global ROS service could not load paramter support" <<
-      RTT::endlog();
+  if (!ros->addService(std::move(params))) {
+    // addService() can fail if a service of the same name already exists in ros
+    RTT::log(RTT::Error) << "The global ROS service could not load rosparam "
+      "support" << RTT::endlog();
+    return false;
   }
 
   RTT::log(RTT::Info) <<
-    "Initializing interface to ROS2 params" <<
+    "Initializing interface to ROS params" <<
     RTT::endlog();
+  return true;
 }
 
 static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
 {
   if (tc->provides()->hasService("Params")) {
     RTT::log(RTT::Error) <<
-      "Another ROS params interface was already instantiated for component " <<
+      "Another rosparam interface was already instantiated for component " <<
       tc->getName() << "." <<
       RTT::endlog();
 
     return false;
   }
 
-  const auto params = boost::make_shared<Params>(tc);
-
+  auto params = boost::make_shared<Params>(tc);
   tc->provides()->addService(std::move(params));
   return true;
 }
@@ -78,13 +77,12 @@ extern "C" {
 bool loadRTTPlugin(RTT::TaskContext * tc)
 {
   if (tc == nullptr) {
-    loadGlobalROSService();
-    return true;
+    return loadGlobalROSService();
   } else {
     return loadROSServiceIntoTaskContext(tc);
   }
 }
-std::string getRTTPluginName() {return "ros2-params";}
+std::string getRTTPluginName() {return "rosparam";}
 std::string getRTTTargetName() {return OROCOS_TARGET_NAME;}
 
 }  // extern "C"
