@@ -299,6 +299,7 @@ bool Params::storeProperty(
 
   RTT::base::DataSourceBase::shared_ptr property_bds = prop->getDataSource();
   RTT::internal::ValueDataSource<rclcpp::ParameterValue> param_vds;
+  param_vds.ref();
 
   try {
     if (param_vds.update(property_bds.get())) {
