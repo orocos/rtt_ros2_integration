@@ -8,6 +8,19 @@ if(NOT BUILD_TESTING)
   return()
 endif()
 
+# The test_ros_transport fails with
+#
+#     double free or corruption (fasttop)
+#
+# during destruction in ROS dashing. This seems to be a known problem:
+# https://gitlab.com/ApexAI/performance_test/-/issues/87
+# ==> workaround: disable the test for dashing
+#
+set(ROS_DISTRO $ENV{ROS_DISTRO})
+if(ROS_DISTRO STREQUAL "dashing")
+  return()
+endif()
+
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
