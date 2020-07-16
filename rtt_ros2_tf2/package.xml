@@ -13,12 +13,14 @@
 
   <depend>ament_index_cpp</depend>
   <depend>rtt</depend>
+  <depend>rtt_ros2_interfaces</depend>
+  <depend>tf2_msgs</depend>
 
   <build_depend>rclcpp</build_depend>  <!-- for generated version check macros -->
   <build_depend>tf2</build_depend>
   <build_depend>rtt_ros2</build_depend>
   <build_depend>rtt_ros2_geometry_msgs</build_depend>
-  <!-- <build_depend>rtt_tf2_msgs</build_depend> -->
+  <!-- <build_depend>rtt_tf2_msgs</build_depend> --> <!-- Generated in this package -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

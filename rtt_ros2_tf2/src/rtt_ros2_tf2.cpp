@@ -17,21 +17,35 @@
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
+#include <rtt/TaskContext.hpp>
 
 #include "rtt/internal/GlobalService.hpp"
 
+// The main interface happens through tf2::BufferCore
+// http://docs.ros2.org/foxy/api/tf2/
+// http://docs.ros2.org/foxy/api/tf2/classtf2_1_1BufferCore.html
 namespace rtt_ros2_tf2
 {
 
 RTT_TF2::RTT_TF2(RTT::TaskContext * owner)
 : RTT::Service("TF2", owner),
-  clock_(boost::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME))
+  ip_stamped_transform_("ip_stamped_transform"),
+  ip_stamped_transform_static_("ip_stamped_transform_static"),
+  clock_(boost::make_shared<rclcpp::Clock>(rcl_clock_type_t::RCL_SYSTEM_TIME))
 {
   RTT::Logger::In in(getName());
 
-  RTT::log(RTT::Info) <<
-    "TF2 service instantiated! in " << getName() <<
-    RTT::endlog();
+  if (owner != nullptr) {
+    // Add the interface to the own service
+    addTf2Interface(this->provides("TF2"));
+    RTT::log(RTT::Info) <<
+      "TF2 service instantiated in: " << owner->getName() <<
+      RTT::endlog();
+  } else {
+    RTT::log(RTT::Info) <<
+      "TF2 service instantiated standalone without interface" <<
+      RTT::endlog();
+  }
 }
 
 RTT_TF2::~RTT_TF2() = default;
@@ -46,14 +60,19 @@ RTT_TF2::~RTT_TF2() = default;
 rclcpp::Time RTT_TF2::getLatestCommonTime(
     const std::string & target,
     const std::string & source) const {
-
   return clock_->now();
 }
 
 bool RTT_TF2::canTransform(
     const std::string & target,
     const std::string & source) const {
-
+  std::string ret_error;
+  // const tf2::TimePoint time_point_now = tf2::TimePoint(clock_->now());
+  // if (!tf2::BufferCore::canTransform(target, source, time_point_now, ret_error))
+  // {
+  //   RTT::log(RTT::Warning) << "Cannot transform from " <<
+  //     source << " to " << target << RTT::endlog();
+  // }
   return false;
 }
 
@@ -79,27 +98,81 @@ bool RTT_TF2::canTransformAtTime(
 // }
 
 void RTT_TF2::broadcastTransform(
-    const geometry_msgs::msg::TransformStamped & tform) {
-
+    const geometry_msgs::msg::TransformStamped & transform) {
+  RTT::Logger::In in(getName());
+  // tf2_msgs::msg::TFMessage converted_tf2_msg;
+  try {
+    setTransform(transform, "unknown_authority", false);
+  } catch (tf2::LookupException e) {
+    RTT::log(RTT::Error) << "Error when setting transform: " <<
+      e.what() << RTT::endlog();
+  }
 }
 
 void RTT_TF2::broadcastTransforms(
-    const std::vector<geometry_msgs::msg::TransformStamped> & tforms) {
-
+    const std::vector<geometry_msgs::msg::TransformStamped> & transforms) {
+  for(const auto & transform : transforms) {
+    broadcastTransform(transform);
+  }
 }
 
 void RTT_TF2::broadcastStaticTransform(
-    const geometry_msgs::msg::TransformStamped & tform) {
-
+    const geometry_msgs::msg::TransformStamped & transform) {
+  setTransform(transform, "unknown_authority", true);
 }
 
 void RTT_TF2::broadcastStaticTransforms(
-    const std::vector<geometry_msgs::msg::TransformStamped> & tforms) {
-
+    const std::vector<geometry_msgs::msg::TransformStamped> & transforms) {
+  for(const auto & transform : transforms) {
+    broadcastStaticTransform(transform);
+  }
 }
 
-void RTT_TF2::addTFOperations(RTT::Service::shared_ptr service) {
+void RTT_TF2::addTf2Interface(RTT::Service::shared_ptr service) {
+  // Add ports
+  service->addEventPort(ip_stamped_transform_,
+    boost::bind(&RTT_TF2::stamped_message_callback, this, _1))
+    .doc("Reception of stamped transform to broadcast through TF2");
+  service->addEventPort(ip_stamped_transform_static_,
+    boost::bind(&RTT_TF2::stamped_message_static_callback, this, _1))
+    .doc("Reception of stamped transform to broadcast through TF2 static");
+  // Add operations
+  service->addOperation("broadcastTransform",
+    &RTT_TF2::broadcastTransform, this, RTT::OwnThread)
+    .doc("Broadcasts a stamped transform as TF2");
+  service->addOperation("broadcastTransforms",
+    &RTT_TF2::broadcastTransforms, this, RTT::OwnThread)
+    .doc("Broadcasts a vector of stamped transforms as TF2");
+  service->addOperation("broadcastStaticTransform",
+    &RTT_TF2::broadcastStaticTransform, this, RTT::OwnThread)
+    .doc("Broadcasts a stamped transform as TF2 static");
+  service->addOperation("broadcastStaticTransforms",
+    &RTT_TF2::broadcastStaticTransforms, this, RTT::OwnThread)
+    .doc("Broadcasts a vector of stamped transforms as TF2 static");
+}
 
+void RTT_TF2::stamped_message_callback(RTT::base::PortInterface * in_port) {
+  RTT::Logger::In in(getName());
+  RTT::log(RTT::Warning) << "Callback called" << RTT::endlog();
+  geometry_msgs::msg::TransformStamped in_msg;
+  if (ip_stamped_transform_.read(in_msg) != RTT::NewData) {
+    RTT::log(RTT::Warning) << "Received an event without new data" <<
+      RTT::endlog();
+  } else {
+    broadcastTransform(in_msg);
+  }
+}
+
+void RTT_TF2::stamped_message_static_callback(RTT::base::PortInterface * in_port) {
+  RTT::Logger::In in(getName());
+  RTT::log(RTT::Warning) << "Callback called" << RTT::endlog();
+  geometry_msgs::msg::TransformStamped in_msg;
+  if (ip_stamped_transform_static_.read(in_msg) != RTT::NewData) {
+    RTT::log(RTT::Warning) << "Received an event without new data" <<
+      RTT::endlog();
+  } else {
+    broadcastStaticTransform(in_msg);
+  }
 }
 
 } // namespace rtt_ros2_tf2

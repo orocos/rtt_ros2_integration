@@ -23,7 +23,11 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/time.hpp"
 #include "tf2/buffer_core.h"
-#include "geometry_msgs/typekit/msg/transform_stamped_Types.hpp"
+// #include "geometry_msgs/typekit/msg/transform_stamped_Types.hpp"
+#include "geometry_msgs/typekit/Types.hpp"
+// #include "tf2_msgs/typekit/msg/tf_message_Types.hpp"
+// #include "tf2_msgs/typekit/Types.hpp"
+#include "tf2_msgs/msg/tf_message.hpp"
 
 namespace rtt_ros2_tf2
 {
@@ -64,24 +68,24 @@ protected:
   //     const rclcpp::Time& common_time) const;
 
   void broadcastTransform(
-      const geometry_msgs::msg::TransformStamped & tform);
+      const geometry_msgs::msg::TransformStamped & transform);
 
   void broadcastTransforms(
-      const std::vector<geometry_msgs::msg::TransformStamped> & tforms);
+      const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
   void broadcastStaticTransform(
-      const geometry_msgs::msg::TransformStamped & tform);
+      const geometry_msgs::msg::TransformStamped & transform);
 
   void broadcastStaticTransforms(
-      const std::vector<geometry_msgs::msg::TransformStamped> & tforms);
+      const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
-  void addTFOperations(RTT::Service::shared_ptr service);
+  void addTf2Interface(RTT::Service::shared_ptr service);
 
+protected:
   ///! Communication ports
-  // RTT::InputPort<tf2_msgs::TFMessage> port_tf_in;
-  // RTT::InputPort<tf2_msgs::TFMessage> port_tf_static_in;
-  // RTT::OutputPort<tf2_msgs::TFMessage> port_tf_out;
-  // RTT::OutputPort<tf2_msgs::TFMessage> port_tf_static_out;
+  // Input ports
+  RTT::InputPort<geometry_msgs::msg::TransformStamped> ip_stamped_transform_;
+  RTT::InputPort<geometry_msgs::msg::TransformStamped> ip_stamped_transform_static_;
 
 private:
   // Constant
@@ -105,6 +109,9 @@ private:
   //   tf2_msgs::TFMessage & msg,
   //   RTT::InputPort<tf2_msgs::TFMessage> & port,
   //   bool is_static);
+  tf2_msgs::msg::TFMessage tf_msgs_;
+  void stamped_message_callback(RTT::base::PortInterface * port);
+  void stamped_message_static_callback(RTT::base::PortInterface * port);
 
 };  // class RTT_TF2
 
