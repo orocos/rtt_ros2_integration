@@ -26,7 +26,7 @@
 // #include "geometry_msgs/typekit/msg/transform_stamped_Types.hpp"
 #include "geometry_msgs/typekit/Types.hpp"
 // #include "tf2_msgs/typekit/msg/tf_message_Types.hpp"
-// #include "tf2_msgs/typekit/Types.hpp"
+#include "tf2_msgs/typekit/Types.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
 
 namespace rtt_ros2_tf2
@@ -43,26 +43,21 @@ public:
   virtual ~RTT_TF2();
 
 protected:
+  using tf2::BufferCore::canTransform;
   ///! Operations
-
-  rclcpp::Time getLatestCommonTime(
-      const std::string & target,
-      const std::string & source) const;
+  // rclcpp::Time getLatestCommonTime(
+  //     const std::string & target,
+  //     const std::string & source) const;
 
   bool canTransform(
       const std::string & target,
       const std::string & source) const;
 
-  bool canTransformAtTime(
+  geometry_msgs::msg::TransformStamped lookupTransform(
       const std::string & target,
-      const std::string & source,
-      const rclcpp::Time & common_time) const;
+      const std::string & source) const;
 
-  // geometry_msgs::TransformStamped lookupTransform(
-  //     const std::string & target,
-  //     const std::string & source) const;
-
-  // geometry_msgs::TransformStamped lookupTransformAtTime(
+  // geometry_msgs::msg::TransformStamped lookupTransformAtTime(
   //     const std::string & target,
   //     const std::string & source,
   //     const rclcpp::Time& common_time) const;
@@ -79,6 +74,8 @@ protected:
   void broadcastStaticTransforms(
       const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
+  void clear();
+
   void addTf2Interface(RTT::Service::shared_ptr service);
 
 protected:
@@ -86,6 +83,7 @@ protected:
   // Input ports
   RTT::InputPort<geometry_msgs::msg::TransformStamped> ip_stamped_transform_;
   RTT::InputPort<geometry_msgs::msg::TransformStamped> ip_stamped_transform_static_;
+  RTT::InputPort<tf2_msgs::msg::TFMessage> ip_tf_port_;
 
 private:
   // Constant

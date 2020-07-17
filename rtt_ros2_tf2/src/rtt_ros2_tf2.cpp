@@ -31,6 +31,7 @@ RTT_TF2::RTT_TF2(RTT::TaskContext * owner)
 : RTT::Service("TF2", owner),
   ip_stamped_transform_("ip_stamped_transform"),
   ip_stamped_transform_static_("ip_stamped_transform_static"),
+  ip_tf_port_("pi_tf_port"),
   clock_(boost::make_shared<rclcpp::Clock>(rcl_clock_type_t::RCL_SYSTEM_TIME))
 {
   RTT::Logger::In in(getName());
@@ -57,10 +58,14 @@ RTT_TF2::~RTT_TF2() = default;
 
 // }
 
-rclcpp::Time RTT_TF2::getLatestCommonTime(
-    const std::string & target,
-    const std::string & source) const {
-  return clock_->now();
+// rclcpp::Time RTT_TF2::getLatestCommonTime(
+//     const std::string & target,
+//     const std::string & source) const {
+//   return clock_->now();
+// }
+
+void RTT_TF2::clear() {
+  tf2::BufferCore::clear();
 }
 
 bool RTT_TF2::canTransform(
@@ -68,29 +73,36 @@ bool RTT_TF2::canTransform(
     const std::string & source) const {
   std::string ret_error;
   // const tf2::TimePoint time_point_now = tf2::TimePoint(clock_->now());
-  // if (!tf2::BufferCore::canTransform(target, source, time_point_now, ret_error))
-  // {
-  //   RTT::log(RTT::Warning) << "Cannot transform from " <<
-  //     source << " to " << target << RTT::endlog();
-  // }
-  return false;
+  try {
+    if (!tf2::BufferCore::canTransform(target,
+        source, tf2::TimePoint(),
+        &ret_error))
+    {
+      RTT::log(RTT::Warning) << "Cannot transform from " <<
+        source << " to " << target << RTT::endlog();
+      return false;
+    }
+  } catch (std::exception e) {
+    RTT::log(RTT::Error) << "canTransform() produced an exception: " <<
+        e.what() << RTT::endlog();
+      return false;
+  }
+  return true;
 }
 
-bool RTT_TF2::canTransformAtTime(
-    const std::string& target,
-    const std::string& source,
-    const rclcpp::Time& common_time) const {
-
-  return false;
+geometry_msgs::msg::TransformStamped RTT_TF2::lookupTransform(
+    const std::string & target,
+    const std::string & source) const {
+  try {
+    return tf2::BufferCore::lookupTransform(target, source, tf2::TimePoint());
+  } catch (std::exception e) {
+    RTT::log(RTT::Error) << "lookupTransform() produced an exception: " <<
+        e.what() << RTT::endlog();
+    return geometry_msgs::msg::TransformStamped();
+  }
 }
 
-// geometry_msgs::TransformStamped RTT_TF2::lookupTransform(
-//     const std::string & target,
-//     const std::string & source) const {
-
-// }
-
-// geometry_msgs::TransformStamped RTT_TF2::lookupTransformAtTime(
+// geometry_msgs::msg::TransformStamped RTT_TF2::lookupTransformAtTime(
 //     const std::string & target,
 //     const std::string & source,
 //     const rclcpp::Time & common_time) const {
@@ -118,7 +130,12 @@ void RTT_TF2::broadcastTransforms(
 
 void RTT_TF2::broadcastStaticTransform(
     const geometry_msgs::msg::TransformStamped & transform) {
-  setTransform(transform, "unknown_authority", true);
+  try {
+    setTransform(transform, "unknown_authority", true);
+  } catch (tf2::LookupException e) {
+    RTT::log(RTT::Error) << "Error when setting static transform: " <<
+      e.what() << RTT::endlog();
+  }
 }
 
 void RTT_TF2::broadcastStaticTransforms(
@@ -151,7 +168,7 @@ void RTT_TF2::addTf2Interface(RTT::Service::shared_ptr service) {
     .doc("Broadcasts a vector of stamped transforms as TF2 static");
 }
 
-void RTT_TF2::stamped_message_callback(RTT::base::PortInterface * in_port) {
+void RTT_TF2::stamped_message_callback(RTT::base::PortInterface * /*in_port*/) {
   RTT::Logger::In in(getName());
   RTT::log(RTT::Warning) << "Callback called" << RTT::endlog();
   geometry_msgs::msg::TransformStamped in_msg;
@@ -163,7 +180,7 @@ void RTT_TF2::stamped_message_callback(RTT::base::PortInterface * in_port) {
   }
 }
 
-void RTT_TF2::stamped_message_static_callback(RTT::base::PortInterface * in_port) {
+void RTT_TF2::stamped_message_static_callback(RTT::base::PortInterface * /*in_port*/) {
   RTT::Logger::In in(getName());
   RTT::log(RTT::Warning) << "Callback called" << RTT::endlog();
   geometry_msgs::msg::TransformStamped in_msg;
