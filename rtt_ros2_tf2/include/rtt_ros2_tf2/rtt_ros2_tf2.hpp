@@ -46,7 +46,6 @@ protected:
   // rclcpp::Time getLatestCommonTime(
   //     const std::string & target,
   //     const std::string & source) const;
-  boost::shared_ptr<tf2::BufferCore> buffer_core_;
 
   bool canTransform(
       const std::string & target,
@@ -90,6 +89,11 @@ private:
 
   // Clock
   boost::shared_ptr<rclcpp::Clock> clock_;
+  boost::shared_ptr<tf2::BufferCore> buffer_core_;
+  boost::shared_ptr<tf2_ros::BufferClient> buffer_client_;
+  boost::shared_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster_;
+  boost::shared_ptr<tf2_ros::StaticTransformBroadcaster>
+    static_transform_broadcaster_;
 
   // Example members
 

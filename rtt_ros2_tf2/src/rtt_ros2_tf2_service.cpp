@@ -15,7 +15,7 @@
 #include <string>
 #include <utility>
 
-#include "rtt/deployment/ComponentLoader.hpp"
+// #include "rtt/deployment/ComponentLoader.hpp"
 #include "rtt/internal/GlobalService.hpp"
 #include "rtt/plugin/ServicePlugin.hpp"
 
@@ -28,10 +28,37 @@ namespace rtt_ros2_tf2
 {
 
 static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc) {
+  if (tc->provides()->hasService("tf2")) {
+    RTT::log(RTT::Error) <<
+      "Another rosparam interface was already instantiated for component " <<
+      tc->getName() << "." << RTT::endlog();
+    return false;
+  }
+
+  auto tf_service = boost::make_shared<rtt_ros2_tf2::RTT_TF2>(tc);
+  // tf_service->addTf2Interface(tc->provides());
+  tc->provides()->addService(std::move(tf_service));
   return true;
 }
 
 static bool loadGlobalROSService() {
+  RTT::Service::shared_ptr ros =
+    RTT::internal::GlobalService::Instance()->provides("ros");
+  ros->doc("ROS operations and services");
+    rtt_ros2_tf2::RTT_TF2::shared_ptr tf_service =
+    boost::make_shared<rtt_ros2_tf2::RTT_TF2>(nullptr);
+
+  // tf_service->addTf2Interface(tf_service);
+  if (!ros->addService(std::move(tf_service))) {
+    // addService() can fail if a service of the same name already exists in ros
+    RTT::log(RTT::Error) << "The global ROS service could not load tf2 "
+      "support" << RTT::endlog();
+    return false;
+  }
+
+  RTT::log(RTT::Info) <<
+    "Initializing interface to ROS TF2" <<
+    RTT::endlog();
   return true;
 }
 
