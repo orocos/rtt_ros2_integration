@@ -29,6 +29,7 @@ namespace rtt_ros2_tf2
 
 RTT_TF2::RTT_TF2(RTT::TaskContext * owner)
 : RTT::Service("TF2", owner),
+  buffer_core_(boost::make_shared<tf2::BufferCore>()),
   ip_stamped_transform_("ip_stamped_transform"),
   ip_stamped_transform_static_("ip_stamped_transform_static"),
   ip_tf_port_("pi_tf_port"),
@@ -65,7 +66,7 @@ RTT_TF2::~RTT_TF2() = default;
 // }
 
 void RTT_TF2::clear() {
-  tf2::BufferCore::clear();
+  buffer_core_->clear();
 }
 
 bool RTT_TF2::canTransform(
@@ -74,7 +75,7 @@ bool RTT_TF2::canTransform(
   std::string ret_error;
   // const tf2::TimePoint time_point_now = tf2::TimePoint(clock_->now());
   try {
-    if (!tf2::BufferCore::canTransform(target,
+    if (!buffer_core_->canTransform(target,
         source, tf2::TimePoint(),
         &ret_error))
     {
@@ -94,7 +95,7 @@ geometry_msgs::msg::TransformStamped RTT_TF2::lookupTransform(
     const std::string & target,
     const std::string & source) const {
   try {
-    return tf2::BufferCore::lookupTransform(target, source, tf2::TimePoint());
+    return buffer_core_->lookupTransform(target, source, tf2::TimePoint());
   } catch (std::exception e) {
     RTT::log(RTT::Error) << "lookupTransform() produced an exception: " <<
         e.what() << RTT::endlog();
@@ -114,7 +115,7 @@ void RTT_TF2::broadcastTransform(
   RTT::Logger::In in(getName());
   // tf2_msgs::msg::TFMessage converted_tf2_msg;
   try {
-    setTransform(transform, "unknown_authority", false);
+    buffer_core_->setTransform(transform, "unknown_authority", false);
   } catch (tf2::LookupException e) {
     RTT::log(RTT::Error) << "Error when setting transform: " <<
       e.what() << RTT::endlog();
@@ -131,7 +132,7 @@ void RTT_TF2::broadcastTransforms(
 void RTT_TF2::broadcastStaticTransform(
     const geometry_msgs::msg::TransformStamped & transform) {
   try {
-    setTransform(transform, "unknown_authority", true);
+    buffer_core_->setTransform(transform, "unknown_authority", true);
   } catch (tf2::LookupException e) {
     RTT::log(RTT::Error) << "Error when setting static transform: " <<
       e.what() << RTT::endlog();

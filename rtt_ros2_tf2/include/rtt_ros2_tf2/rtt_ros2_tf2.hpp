@@ -32,9 +32,8 @@
 namespace rtt_ros2_tf2
 {
 
-class RTT_TF2 : public RTT::Service, protected tf2::BufferCore
+class RTT_TF2 : public RTT::Service
 {
-
 
 public:
   typedef boost::shared_ptr<RTT_TF2> shared_ptr;
@@ -43,11 +42,11 @@ public:
   virtual ~RTT_TF2();
 
 protected:
-  using tf2::BufferCore::canTransform;
   ///! Operations
   // rclcpp::Time getLatestCommonTime(
   //     const std::string & target,
   //     const std::string & source) const;
+  boost::shared_ptr<tf2::BufferCore> buffer_core_;
 
   bool canTransform(
       const std::string & target,
