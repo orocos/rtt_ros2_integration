@@ -64,9 +64,9 @@ target_include_directories(rtt_ros2_tf2 PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/orocos/${PROJECT_NAME}>
 )
-target_link_libraries(rtt_ros2_tf2
-  rtt_tf2_msgs_typekit # typekit generated in this package (target name)
-)
+# target_link_libraries(rtt_ros2_tf2
+#   rtt_tf2_msgs_typekit # typekit generated in this package (target name)
+# )
 
 # Target: orocos plugin
 orocos_plugin(rtt_ros2_tf2_service

@@ -30,7 +30,7 @@
 // #include "geometry_msgs/typekit/msg/transform_stamped_Types.hpp"
 #include "geometry_msgs/typekit/Types.hpp"
 // #include "tf2_msgs/typekit/msg/tf_message_Types.hpp"
-#include "tf2_msgs/typekit/Types.hpp"
+// #include "tf2_msgs/typekit/Types.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
 
 namespace rtt_ros2_tf2
@@ -84,7 +84,7 @@ protected:
   // Input ports
   RTT::InputPort<geometry_msgs::msg::TransformStamped> ip_stamped_transform_;
   RTT::InputPort<geometry_msgs::msg::TransformStamped> ip_stamped_transform_static_;
-  RTT::InputPort<tf2_msgs::msg::TFMessage> ip_tf_port_;
+  // RTT::InputPort<tf2_msgs::msg::TFMessage> ip_tf_port_;
 
 private:
   // Constant

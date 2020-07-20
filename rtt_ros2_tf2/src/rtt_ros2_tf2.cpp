@@ -33,7 +33,7 @@ RTT_TF2::RTT_TF2(RTT::TaskContext * owner)
 : RTT::Service("tf2", owner),
   ip_stamped_transform_("ip_stamped_transform"),
   ip_stamped_transform_static_("ip_stamped_transform_static"),
-  ip_tf_port_("pi_tf_port"),
+  // ip_tf_port_("pi_tf_port"),
   rosnode(nullptr),
 // clock_(boost::make_shared<rclcpp::Clock>(rcl_clock_type_t::RCL_SYSTEM_TIME)),
   buffer_core_(boost::make_shared<tf2::BufferCore>()),
