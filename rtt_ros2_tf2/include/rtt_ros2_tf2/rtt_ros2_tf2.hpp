@@ -23,6 +23,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/time.hpp"
 #include "tf2/buffer_core.h"
+#include "tf2_ros/static_transform_broadcaster.h"
+#include "tf2_ros/transform_broadcaster.h"
+#include "tf2_ros/transform_listener.h"
 // #include "geometry_msgs/typekit/msg/transform_stamped_Types.hpp"
 #include "geometry_msgs/typekit/Types.hpp"
 // #include "tf2_msgs/typekit/msg/tf_message_Types.hpp"
@@ -88,10 +91,12 @@ private:
   static constexpr int kDefaultBufferSize = 100;
 
   // Clock
+  rclcpp::Node::SharedPtr rosnode;
   boost::shared_ptr<rclcpp::Clock> clock_;
   boost::shared_ptr<tf2::BufferCore> buffer_core_;
-  boost::shared_ptr<tf2_ros::BufferClient> buffer_client_;
+  // boost::shared_ptr<tf2_ros::BufferClient> buffer_client_;
   boost::shared_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster_;
+  boost::shared_ptr<tf2_ros::TransformListener> transform_listener_;
   boost::shared_ptr<tf2_ros::StaticTransformBroadcaster>
     static_transform_broadcaster_;
 
@@ -113,6 +118,8 @@ private:
   tf2_msgs::msg::TFMessage tf_msgs_;
   void stamped_message_callback(RTT::base::PortInterface * port);
   void stamped_message_static_callback(RTT::base::PortInterface * port);
+
+  bool rosReady();
 
 };  // class RTT_TF2
 

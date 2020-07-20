@@ -18,7 +18,9 @@
 
   <build_depend>rclcpp</build_depend>  <!-- for generated version check macros -->
   <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
   <build_depend>rtt_ros2</build_depend>
+  <build_depend>rtt_ros2_node</build_depend>
   <build_depend>rtt_ros2_geometry_msgs</build_depend>
   <!-- <build_depend>rtt_tf2_msgs</build_depend> --> <!-- Generated in this package -->
 
