@@ -27,7 +27,8 @@
 namespace rtt_ros2_tf2
 {
 
-static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc) {
+static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
+{
   if (tc->provides()->hasService("tf2")) {
     RTT::log(RTT::Error) <<
       "Another rosparam interface was already instantiated for component " <<
@@ -41,11 +42,12 @@ static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc) {
   return true;
 }
 
-static bool loadGlobalROSService() {
+static bool loadGlobalROSService()
+{
   RTT::Service::shared_ptr ros =
     RTT::internal::GlobalService::Instance()->provides("ros");
   ros->doc("ROS operations and services");
-    rtt_ros2_tf2::RTT_TF2::shared_ptr tf_service =
+  rtt_ros2_tf2::RTT_TF2::shared_ptr tf_service =
     boost::make_shared<rtt_ros2_tf2::RTT_TF2>(nullptr);
 
   // tf_service->addTf2Interface(tf_service);
@@ -75,4 +77,4 @@ std::string getRTTPluginName() {return "tf2";}
 std::string getRTTTargetName() {return OROCOS_TARGET_NAME;}
 }  // extern "C"
 
-} // namespace rtt_ros2_tf2
+}  // namespace rtt_ros2_tf2

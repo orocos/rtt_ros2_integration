@@ -17,6 +17,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "rtt/Service.hpp"
 
@@ -37,7 +38,6 @@ namespace rtt_ros2_tf2
 
 class RTT_TF2 : public RTT::Service
 {
-
 public:
   typedef boost::shared_ptr<RTT_TF2> shared_ptr;
 
@@ -51,12 +51,12 @@ protected:
   //     const std::string & source) const;
 
   bool canTransform(
-      const std::string & target,
-      const std::string & source) const;
+    const std::string & target,
+    const std::string & source) const;
 
   geometry_msgs::msg::TransformStamped lookupTransform(
-      const std::string & target,
-      const std::string & source) const;
+    const std::string & target,
+    const std::string & source) const;
 
   // geometry_msgs::msg::TransformStamped lookupTransformAtTime(
   //     const std::string & target,
@@ -64,16 +64,16 @@ protected:
   //     const rclcpp::Time& common_time) const;
 
   void broadcastTransform(
-      const geometry_msgs::msg::TransformStamped & transform);
+    const geometry_msgs::msg::TransformStamped & transform);
 
   void broadcastTransforms(
-      const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
+    const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
   void broadcastStaticTransform(
-      const geometry_msgs::msg::TransformStamped & transform);
+    const geometry_msgs::msg::TransformStamped & transform);
 
   void broadcastStaticTransforms(
-      const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
+    const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
   void clear();
 
@@ -98,7 +98,7 @@ private:
   boost::shared_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster_;
   boost::shared_ptr<tf2_ros::TransformListener> transform_listener_;
   boost::shared_ptr<tf2_ros::StaticTransformBroadcaster>
-    static_transform_broadcaster_;
+  static_transform_broadcaster_;
 
   // Example members
 
@@ -120,9 +120,8 @@ private:
   void stamped_message_static_callback(RTT::base::PortInterface * port);
 
   bool rosReady();
-
 };  // class RTT_TF2
 
-} // namespace rtt_ros2_tf2
+}  // namespace rtt_ros2_tf2
 
-#endif // OROCOS__RTT_ROS2_TF2__RTT_ROS2_TF2_HPP_
+#endif  // OROCOS__RTT_ROS2_TF2__RTT_ROS2_TF2_HPP_

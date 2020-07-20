@@ -14,13 +14,15 @@
 
 #include "rtt_ros2_tf2/rtt_ros2_tf2_component.hpp"
 
-#include <rtt/Component.hpp>
+#include <string>
+
+#include "rtt/Component.hpp"
 
 namespace rtt_ros2_tf2
 {
-  
-TF2_Component::TF2_Component(const std::string& name) :
-  RTT::TaskContext(name, PreOperational)
+
+TF2_Component::TF2_Component(const std::string & name)
+: RTT::TaskContext(name, PreOperational)
 {
   RTT::Logger::In(this->getName());
   RTT::log(RTT::Info) << "Constructing component!" << RTT::endlog();
@@ -40,7 +42,6 @@ void TF2_Component::updateHook()
 {
   RTT::Logger::In(this->getName());
   RTT::log(RTT::Info) << "Running component!" << RTT::endlog();
-
 }
 
 void TF2_Component::cleanupHook()
@@ -48,13 +49,12 @@ void TF2_Component::cleanupHook()
   RTT::Logger::In(this->getName());
   RTT::log(RTT::Info) << "Cleaning up component!" << RTT::endlog();
 }
-
-} //namespace rtt_ros2_tf2
+}  // namespace rtt_ros2_tf2
 
 /*
  * Using this macro, only one component may live
  * in one library *and* you may *not* link this library
- * with another component library. Use 
+ * with another component library. Use
  * ORO_CREATE_COMPONENT_TYPE()
  * ORO_LIST_COMPONENT_TYPE(Rtt_tf)
  * In case you want to link with another library that

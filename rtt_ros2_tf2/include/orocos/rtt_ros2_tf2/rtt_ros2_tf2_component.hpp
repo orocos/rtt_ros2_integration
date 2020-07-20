@@ -12,28 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OROCOS_RTT_ROS2_TF2_COMPONENT_HPP
-#define OROCOS_RTT_ROS2_TF2_COMPONENT_HPP
+#ifndef OROCOS__RTT_ROS2_TF2__RTT_ROS2_TF2_COMPONENT_HPP_
+#define OROCOS__RTT_ROS2_TF2__RTT_ROS2_TF2_COMPONENT_HPP_
 
-#include <rtt/RTT.hpp>
-// #include <tf2_msgs/TFMessage.h>
-// #include <tf2/buffer_core.h>
+#include <string>
+
+#include "rtt/RTT.hpp"
+// #include "tf2_msgs/TFMessage.h"
+// #include "tf2/buffer_core.h"
 
 namespace rtt_ros2_tf2
 {
-  // Inherit from TaskContext
-  class TF2_Component: public RTT::TaskContext
-  {
-  public:
-    TF2_Component(std::string const& name);
+// Inherit from TaskContext
+class TF2_Component : public RTT::TaskContext
+{
+public:
+  explicit TF2_Component(std::string const & name);
 
-    bool configureHook();
+  bool configureHook();
 
-    void updateHook();
+  void updateHook();
 
-    void cleanupHook();
-  };
+  void cleanupHook();
+};
 
-}//namespace rtt_ros2_tf2
+}  // namespace rtt_ros2_tf2
 
-#endif //OROCOS_RTT_ROS2_TF2_COMPONENT_HPP
+#endif  // OROCOS__RTT_ROS2_TF2__RTT_ROS2_TF2_COMPONENT_HPP_
