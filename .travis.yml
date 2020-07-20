@@ -25,11 +25,11 @@ branches:
 env:
   global: # global settings for all jobs
     - CCACHE_DIR=$HOME/.ccache # enables C/C++ caching in industrial_ci
-    - ROSDEP_SKIP_KEYS="log4cpp rtt ocl rtt_ros2_common_interfaces rtt_ros2_geometry_msgs" # preinstalled in the docker images
+    - ROSDEP_SKIP_KEYS="log4cpp rtt ocl" # preinstalled in the docker images
   matrix: # each line is a job
-    - ROS_DISTRO="dashing" DOCKER_IMAGE="orocos/ros2_integration:dashing-ros-base-bionic"
-    - ROS_DISTRO="eloquent" DOCKER_IMAGE="orocos/ros2_integration:eloquent-ros-base-bionic"
-    - ROS_DISTRO="foxy" DOCKER_IMAGE="orocos/ros2_integration:foxy-ros-base-focal"
+    - ROS_DISTRO="dashing" DOCKER_IMAGE="orocos/ros2:dashing-ros-base-bionic"
+    - ROS_DISTRO="eloquent" DOCKER_IMAGE="orocos/ros2:eloquent-ros-base-bionic"
+    - ROS_DISTRO="foxy" DOCKER_IMAGE="orocos/ros2:foxy-ros-base-focal"
 
 # allow failures, e.g. for unsupported distros
 # matrix:
@@ -39,5 +39,6 @@ env:
 # clone and run industrial_ci
 install:
   - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
+  - git clone --quiet --depth 50 https://github.com/orocos/rtt_ros2_common_interfaces.git src/rtt_ros2_common_interfaces -b master
 script:
   - .industrial_ci/travis.sh
