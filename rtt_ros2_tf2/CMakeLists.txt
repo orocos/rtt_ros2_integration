@@ -27,13 +27,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(rtt_ros2_node REQUIRED)
-find_package(rtt_ros2_geometry_msgs REQUIRED)
 find_package(rtt_ros2_interfaces REQUIRED)
-# find_package(rtt_tf2_msgs REQUIRED) # Will be generated here
 
 # Include rtt_ros2 for the macro: rtt_ros2_export_plugin_depend()
 find_package(rtt_ros2 REQUIRED)
@@ -45,7 +44,6 @@ include_directories(include/orocos)
 # Target: library
 # message(AUTHOR_WARNING "The tf2 includes are in: ${tf2_INCLUDE_DIRS}")
 # message(AUTHOR_WARNING "The rclcpp includes are in: ${rclcpp_INCLUDE_DIRS}")
-# message(AUTHOR_WARNING "The rtt_ros2_geometry_msgs includes are in: ${rtt_ros2_geometry_msgs_INCLUDE_DIRS}")
 # message(AUTHOR_WARNING "The rtt_ros2_interfaces includes are in: ${rtt_ros2_interfaces_INCLUDE_DIRS}")
 # message(AUTHOR_WARNING "The tf2_msgs includes are in: ${tf2_msgs_INCLUDE_DIRS}")
 orocos_library(rtt_ros2_tf2
@@ -56,10 +54,10 @@ orocos_library(rtt_ros2_tf2
 # target_link_libraries(rtt_ros2_tf2 tf2)
 # target_include_directories(rtt_ros2_tf2 tf2)
 ament_target_dependencies(rtt_ros2_tf2
-  rclcpp tf2 tf2_ros tf2_msgs rtt_ros2_node rtt_ros2_geometry_msgs
+  rclcpp tf2 tf2_ros tf2_msgs rtt_ros2_node geometry_msgs
 )
 target_link_libraries(rtt_ros2_tf2
-  rtt_ros2_geometry_msgs::rtt_geometry_msgs_typekit
+  # rtt_ros2_geometry_msgs::rtt_geometry_msgs_typekit
   rtt_ros2_node::rtt_ros2_node
 )
 
@@ -110,20 +108,17 @@ endif()
 
 # export information to downstream packages
 # ament_export_dependencies(rtt_ros2)
-ament_export_dependencies(rclcpp tf2)
+ament_export_dependencies(rclcpp
+  tf2 tf2_ros tf2_msgs
+  rtt_ros2_topics
+)
 ament_export_include_directories(include/${PROJECT_NAME})
 if(COMMAND ament_export_targets)
   ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 else()
   ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 endif()
-rtt_ros2_export_plugin_depend(rclcpp)
-rtt_ros2_export_plugin_depend(tf2)
-rtt_ros2_export_plugin_depend(tf2_msgs)
-rtt_ros2_export_plugin_depend(rtt_ros2_tf2)
 rtt_ros2_export_plugin_depend(rtt_ros2_node)
-rtt_ros2_export_plugin_depend(rtt_ros2_geometry_msgs)
-rtt_ros2_export_plugin_depend(rtt_tf2_msgs_typekit) # If typekit is generated and used
 
 # orocos_generate_package(
 #   INCLUDE_DIRS include

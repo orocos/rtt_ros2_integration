@@ -39,6 +39,5 @@ env:
 # clone and run industrial_ci
 install:
   - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
-  - git clone --quiet --depth 50 https://github.com/orocos/rtt_ros2_common_interfaces.git src/rtt_ros2_common_interfaces -b master
 script:
   - .industrial_ci/travis.sh

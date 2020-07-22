@@ -36,7 +36,7 @@ static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
     return false;
   }
 
-  auto tf_service = boost::make_shared<rtt_ros2_tf2::RTT_TF2>(tc);
+  auto tf_service = boost::make_shared<rtt_ros2_tf2::Tf2Service>(tc);
   // tf_service->addTf2Interface(tc->provides());
   tc->provides()->addService(std::move(tf_service));
   return true;
@@ -47,8 +47,8 @@ static bool loadGlobalROSService()
   RTT::Service::shared_ptr ros =
     RTT::internal::GlobalService::Instance()->provides("ros");
   ros->doc("ROS operations and services");
-  rtt_ros2_tf2::RTT_TF2::shared_ptr tf_service =
-    boost::make_shared<rtt_ros2_tf2::RTT_TF2>(nullptr);
+  rtt_ros2_tf2::Tf2Service::shared_ptr tf_service =
+    boost::make_shared<rtt_ros2_tf2::Tf2Service>(nullptr);
 
   // tf_service->addTf2Interface(tf_service);
   if (!ros->addService(std::move(tf_service))) {

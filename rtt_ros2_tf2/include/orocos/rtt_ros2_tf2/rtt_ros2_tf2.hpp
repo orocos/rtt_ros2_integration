@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "rtt/Service.hpp"
-
+#include "rtt/InputPort.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/time.hpp"
 #include "tf2/buffer_core.h"
@@ -28,7 +28,8 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2_ros/transform_listener.h"
 // #include "geometry_msgs/typekit/msg/transform_stamped_Types.hpp"
-#include "geometry_msgs/typekit/Types.hpp"
+// #include "geometry_msgs/typekit/Types.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 // #include "tf2_msgs/typekit/msg/tf_message_Types.hpp"
 // #include "tf2_msgs/typekit/Types.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
@@ -36,13 +37,13 @@
 namespace rtt_ros2_tf2
 {
 
-class RTT_TF2 : public RTT::Service
+class Tf2Service : public RTT::Service
 {
 public:
-  typedef boost::shared_ptr<RTT_TF2> shared_ptr;
+  typedef boost::shared_ptr<Tf2Service> shared_ptr;
 
-  explicit RTT_TF2(RTT::TaskContext * owner);
-  virtual ~RTT_TF2();
+  explicit Tf2Service(RTT::TaskContext * owner);
+  virtual ~Tf2Service();
 
 protected:
   ///! Operations
@@ -120,7 +121,7 @@ private:
   void stamped_message_static_callback(RTT::base::PortInterface * port);
 
   bool rosReady();
-};  // class RTT_TF2
+};  // class Tf2Service
 
 }  // namespace rtt_ros2_tf2
 
