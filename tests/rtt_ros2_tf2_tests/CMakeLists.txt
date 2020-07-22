@@ -37,10 +37,11 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(rtt_ros2 REQUIRED)
 find_package(rtt_ros2_node REQUIRED)
 find_package(rtt_ros2_tf2 REQUIRED)
-find_package(rtt_ros2_geometry_msgs REQUIRED)
+# find_package(rtt_ros2_geometry_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -60,5 +61,5 @@ orocos_configure_executable(test_ros_tf2)
 #   rtt_ros2_tf2::rtt_ros2_tf2
 # )
 ament_target_dependencies(test_ros_tf2
-  rtt_ros2 rtt_ros2_node rtt_ros2_tf2 rtt_ros2_geometry_msgs
+  rtt_ros2 rtt_ros2_node rtt_ros2_tf2 geometry_msgs
 )

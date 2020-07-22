@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "rtt/RTT.hpp"
+#include "rtt/OperationCaller.hpp"
 #include "rtt/internal/GlobalService.hpp"
 #include "rtt/internal/GlobalEngine.hpp"
 #include "rtt/os/startstop.h"
@@ -31,7 +32,8 @@
 #include "rtt_ros2_tf2/rtt_ros2_tf2.hpp"
 
 
-#include "geometry_msgs/typekit/Types.hpp"
+// #include "geometry_msgs/typekit/Types.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
 #include "gtest/gtest.h"
 
