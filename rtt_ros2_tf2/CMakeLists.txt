@@ -56,10 +56,11 @@ orocos_library(rtt_ros2_tf2
 # target_link_libraries(rtt_ros2_tf2 tf2)
 # target_include_directories(rtt_ros2_tf2 tf2)
 ament_target_dependencies(rtt_ros2_tf2
-  rclcpp tf2 tf2_ros tf2_msgs rtt_ros2_node
+  rclcpp tf2 tf2_ros tf2_msgs rtt_ros2_node rtt_ros2_geometry_msgs
 )
 target_link_libraries(rtt_ros2_tf2
   rtt_ros2_geometry_msgs::rtt_geometry_msgs_typekit
+  rtt_ros2_node::rtt_ros2_node
 )
 
 # Extra include_directories to find the own generated typekits from inside
