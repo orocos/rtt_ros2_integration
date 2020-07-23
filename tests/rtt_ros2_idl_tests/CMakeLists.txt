@@ -4,6 +4,7 @@ project(rtt_ros2_idl_tests)
 # Skip building this package if BUILD_TESTING is OFF
 option(BUILD_TESTING "Build the testing tree." ON)
 if(NOT BUILD_TESTING)
+  find_package(ament_cmake REQUIRED)
   ament_package()
   return()
 endif()
