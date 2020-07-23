@@ -24,7 +24,7 @@ find_package(rtt_ros2_idl REQUIRED)
 @[end if]@
 
 @[if transports]@
-rtt_ros2_generate_typekit_and_transports(@(package))
+rtt_ros2_generate_interfaces_plugins(@(package))
 @[else]@
 rtt_ros2_generate_typekit(@(package))
 @[end if]@

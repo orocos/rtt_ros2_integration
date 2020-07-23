@@ -13,9 +13,17 @@
 # limitations under the License.
 
 #
-# Generate an RTT typekit and ROS transport plugin for ROS interface packages.
+# Generate an RTT typekit, ROS transport and ROS service plugins for all messages, services and
+# actions defined in a ROS interface packages.
 #
-macro(rtt_ros2_generate_typekit_and_transports _package)
+macro(rtt_ros2_generate_interfaces_plugins _package)
   rtt_ros2_generate_typekit(${_package} ${ARGN})
   rtt_ros2_generate_ros_transport(${_package} ${ARGN})
+endmacro()
+
+macro(rtt_ros2_generate_typekit_and_transports _package)
+  message(WARNING
+    "rtt_ros2_generate_typekit_and_transports() is deprecated. Please use macro"
+    "rtt_ros2_generate_interfaces_plugins() instead.")
+    rtt_ros2_generate_interfaces_plugins(${_package} ${ARGN})
 endmacro()
