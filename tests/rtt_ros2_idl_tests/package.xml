@@ -11,13 +11,13 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rtt_ros2</depend>
-  <depend>rtt_ros2_idl</depend>
+  <test_depend>rtt_ros2</test_depend>
+  <test_depend>rtt_ros2_idl</test_depend>
+  <test_depend>rtt_ros2_test_msgs</test_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-  <test_depend>rtt_ros2_test_msgs</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
