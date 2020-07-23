@@ -30,7 +30,7 @@ namespace rtt_ros2_params
 {
 
 Params::Params(RTT::TaskContext * owner)
-: RTT::Service("Params", owner)
+: RTT::Service("rosparam", owner)
 {
   RTT::Logger::In in(getName());
 
@@ -222,20 +222,7 @@ bool Params::loadProperty(
   }
 
   if (nullptr == prop) {
-    // Try to find it among orphan parameters
-    // (previously loaded, without a component interface)
-    if (orphan_properties_.find(property_name) == orphan_properties_.end()) {
-      // When totally new, then create an orphan property,
-      // i.e. owned by the rosparam service
-      orphan_properties_[property_name] = paramvalue;
-      this->addProperty(property_name, orphan_properties_[property_name])
-      .doc("Property loaded from ROS parameter: " + param_name);
-      prop = getProperty(property_name);
-    } else {
-      orphan_properties_[property_name] = paramvalue;
-      prop = getProperty(property_name);
-    }
-    return true;
+    return false;
   } else {
     // The property exists on the Owner's interface
     RTT::Property<rclcpp::ParameterValue> prop_paramvalue = prop;

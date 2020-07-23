@@ -28,19 +28,10 @@ namespace rtt_ros2_params
 
 static bool loadGlobalROSService()
 {
-  // Check and load the ROS 2 service
-  if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
-    RTT::ComponentLoader::Instance()->import("rtt_ros2", "");
+  RTT::Service::shared_ptr ros =
     RTT::internal::GlobalService::Instance()->provides("ros");
-    if (!RTT::internal::GlobalService::Instance()->hasService("ros")) {
-      RTT::log(RTT::Error) <<
-        "ros service (provided in rtt_ros2) is missing and it is needed "
-        "by rosparam" << RTT::endlog();
-      return false;
-    }
-  }
+  ros->doc("ROS operations and services");
 
-  auto ros = RTT::internal::GlobalService::Instance()->provides("ros");
   RTT::Service::shared_ptr params =
     boost::make_shared<rtt_ros2_params::Params>(nullptr);
 
@@ -59,7 +50,7 @@ static bool loadGlobalROSService()
 
 static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
 {
-  if (tc->provides()->hasService("Params")) {
+  if (tc->provides()->hasService("rosparam")) {
     RTT::log(RTT::Error) <<
       "Another rosparam interface was already instantiated for component " <<
       tc->getName() << "." <<

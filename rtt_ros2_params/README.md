@@ -9,9 +9,9 @@ The main difference is that there is no longer a centralized parameter server, b
 
 ## `ros2-params` service
 
-This package provides a new Orocos service called `ros2_params` that can be loaded globally and per Orocos component. The service provides 4 operations:
+This package provides a new Orocos service called `rosparam` that can be loaded globally and per Orocos component. The service provides 4 operations:
 * `getParameter()`: loads a parameter from the ROS2 node parameter facility and returns its value.
-* `loadProperty()`:  loads a parameter from the ROS2 node parameter facility into an Orocos property. If the property doesn't exist, in creates a new one owned by the `Params` service.
+* `loadProperty()`:  loads a parameter from the ROS2 node parameter facility into an Orocos property. If the property doesn't exist, in creates a new one owned by the `rosparam` service.
 * `setParameter()`: sets a parameter into the ROS2 node parameter facility. If the parameter does not exist, it declares a new one.
 * `storeProperty()`: sets a parameter into the ROS2 node parameter facility from the value of an Orocos property. If the parameter doesn't exists, it declares a new one.
 
@@ -24,15 +24,15 @@ import("rtt_ros2_params")
 
 Then, the service can be loaded into a component named `<component>` with:
 ```
-<component>.loadService('ros2-params')
+<component>.loadService('rosparam')
 ```
 
 `<component>` will have a new service named `Params` that provides the operations described. These operations can be called with:
 ```
-<component>.Params.setParameter( <args> )
-<component>.Params.getParameter( <args> )
-<component>.Params.loadProperty( <args> )
-<component>.Params.storeProperty( <args> )
+<component>.rosparam.setParameter( <args> )
+<component>.rosparam.getParameter( <args> )
+<component>.rosparam.loadProperty( <args> )
+<component>.rosparam.storeProperty( <args> )
 ```
 
 ## Requirements

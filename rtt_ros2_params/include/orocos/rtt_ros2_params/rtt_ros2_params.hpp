@@ -34,7 +34,6 @@ public:
 
   explicit Params(RTT::TaskContext * owner);
   virtual ~Params();
-  std::map<std::string, rclcpp::ParameterValue> getOrphans() {return orphan_properties_;}
 
 protected:
   rclcpp::ParameterValue getParameter(const std::string & name);
@@ -52,8 +51,6 @@ protected:
     const std::string & param_name);
 
 private:
-  std::map<std::string, rclcpp::ParameterValue> orphan_properties_;
-
   RTT::TaskContext * owner_;
 };  // class Params
 

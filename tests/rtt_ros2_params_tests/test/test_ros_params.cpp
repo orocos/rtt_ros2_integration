@@ -76,7 +76,7 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
   // Create a global (process-wide) Parameter service
   // ASSERT_TRUE(RTT::internal::GlobalService::Instance()->provides("rosparam"));
   RTT::Service::shared_ptr global_params =
-    global_ros->getService("Params");
+    global_ros->getService("rosparam");
   ASSERT_TRUE(nullptr != global_params);
 
   // Check set non-existant parameters
@@ -148,7 +148,7 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   // Get local service
   ASSERT_TRUE(this->loadService("rosparam"));
   RTT::Service::shared_ptr local_params =
-    this->provides("Params");
+    this->provides("rosparam");
   ASSERT_TRUE(nullptr != local_params);
 
   // Check set non-existant parameters
@@ -209,11 +209,10 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   loadprop_operation = local_params->getOperation("loadProperty");
   ASSERT_TRUE(loadprop_operation.ready());
   EXPECT_FALSE(loadprop_operation.call("fake_property", "fake_parameter"));
-  EXPECT_TRUE(loadprop_operation.call("fake_property", "int_parameter"));
+  EXPECT_FALSE(loadprop_operation.call("fake_property", "int_parameter"));
   auto params_service = boost::dynamic_pointer_cast<rtt_ros2_params::Params>(
-    this->provides("Params"));
+    this->provides("rosparam"));
   ASSERT_TRUE(params_service);
-  EXPECT_EQ(params_service->getOrphans()["fake_property"].get<int>(), 42);
 
   // Check loading a parameter (INTEGER)
   this->int_member_ = 41;
