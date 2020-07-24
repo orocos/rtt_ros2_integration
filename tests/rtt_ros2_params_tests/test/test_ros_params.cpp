@@ -141,7 +141,7 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
 TEST_F(TestRosParams, TestComponentNodeParams)
 {
   // Create a component-local ROS node
-  ASSERT_TRUE(loadService("ros2-node"));
+  ASSERT_TRUE(loadService("rosnode"));
   ASSERT_TRUE(rtt_ros2_node::getNodeService(this) != nullptr);
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
