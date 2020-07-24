@@ -44,7 +44,8 @@ std::string default_node_name_from_owner(RTT::TaskContext * owner)
 
 Node::Node(
   RTT::TaskContext * owner)
-: Node(default_node_name_from_owner(owner), {}, rclcpp::NodeOptions(), owner)
+: Node(default_node_name_from_owner(owner), {},
+    rclcpp::NodeOptions().allow_undeclared_parameters(true), owner)
 {
 }
 

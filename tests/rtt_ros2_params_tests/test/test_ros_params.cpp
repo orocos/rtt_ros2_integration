@@ -155,8 +155,9 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
   setparam_operation = local_params->getOperation("setParameter");
   ASSERT_TRUE(setparam_operation.ready());
-  EXPECT_FALSE(
-    setparam_operation.call("fake_parameter", rclcpp::ParameterValue(42)));
+  // True because rosnode is created with allow_undeclared_parameters(true)
+  EXPECT_TRUE(
+    setparam_operation.call("new_fake_parameter", rclcpp::ParameterValue(42)));
 
   // Check get non-existant parameters
   RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
@@ -192,7 +193,8 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   storeprop_operation = local_params->getOperation("storeProperty");
   ASSERT_TRUE(storeprop_operation.ready());
   EXPECT_FALSE(storeprop_operation.call("fake_property", "int_parameter"));
-  EXPECT_FALSE(storeprop_operation.call("int_property", "fake_parameter"));
+  // True because rosnode is created with allow_undeclared_parameters(true)
+  EXPECT_TRUE(storeprop_operation.call("int_property", "new_parameter_autodeclared"));
 
   // Check storing a parameter (INTEGER)
   EXPECT_EQ(getparam_operation.call("int_parameter").get<int>(), 41);
