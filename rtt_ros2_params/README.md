@@ -7,7 +7,7 @@
 ROS2 provides a slightly different infrastructure to deal with parameters compared to ROS 1. An introduction guide can be found in [Understanding ROS2 parameters](https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/).
 The main difference is that there is no longer a centralized parameter server, but instead, parameters are maintained per node.
 
-## `ros2-params` service
+## `rospara` service
 
 This package provides a new Orocos service called `rosparam` that can be loaded globally and per Orocos component. The service provides 4 operations:
 * `getParameter()`: loads a parameter from the ROS2 node parameter facility and returns its value.
