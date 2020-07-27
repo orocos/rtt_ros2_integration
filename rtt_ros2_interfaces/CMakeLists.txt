@@ -28,7 +28,7 @@ ament_export_dependencies(rtt_ros2_topics)
 # must be called *after* the targets to check exported libraries etc.
 ament_package(
   CONFIG_EXTRAS
-    cmake/${PROJECT_NAME}-generate_typekit_and_transports.cmake
+    cmake/${PROJECT_NAME}-generate_interfaces_plugins.cmake
 )
 
 # orocos_generate_package() is deprecated for ROS 2.
