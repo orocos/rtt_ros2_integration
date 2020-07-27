@@ -299,7 +299,7 @@ TEST_F(TestRosTransport, PublishSubscribeGlobalNode)
 TEST_F(TestRosTransport, PublishSubscribeComponentNode)
 {
   // Create a component-local ROS node
-  ASSERT_TRUE(loadService("ros2-node"));
+  ASSERT_TRUE(loadService("rosnode"));
   ASSERT_TRUE(rtt_ros2_node::getNodeService(this) != nullptr);
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
@@ -318,7 +318,7 @@ TEST_F(TestRosTransport, PublishSubscribeComponentNode)
 TEST_F(TestRosTransport, PublishSubscribeQueue)
 {
   // Create a component-local ROS node
-  ASSERT_TRUE(loadService("ros2-node"));
+  ASSERT_TRUE(loadService("rosnode"));
   ASSERT_TRUE(rtt_ros2_node::getNodeService(this) != nullptr);
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
@@ -346,7 +346,7 @@ TEST_F(TestRosTransport, PublishSubscribeQueue)
 TEST_F(TestRosTransport, PublishSubscribeLatched)
 {
   // Create a component-local ROS node
-  ASSERT_TRUE(loadService("ros2-node"));
+  ASSERT_TRUE(loadService("rosnode"));
   ASSERT_TRUE(rtt_ros2_node::getNodeService(this) != nullptr);
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
