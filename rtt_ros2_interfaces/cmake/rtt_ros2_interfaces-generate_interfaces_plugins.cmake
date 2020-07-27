@@ -19,6 +19,7 @@
 macro(rtt_ros2_generate_interfaces_plugins _package)
   rtt_ros2_generate_typekit(${_package} ${ARGN})
   rtt_ros2_generate_ros_transport(${_package} ${ARGN})
+  rtt_ros2_generate_ros_service_plugin(${_package} ${ARGN})
 endmacro()
 
 macro(rtt_ros2_generate_typekit_and_transports _package)

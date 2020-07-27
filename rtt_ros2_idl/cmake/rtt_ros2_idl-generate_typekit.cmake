@@ -25,7 +25,7 @@ endif()
 function(_rtt_ros2_generate_typekit _package)
   cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES;SERVICES;ACTIONS;EXCLUDE_MESSAGES;EXCLUDE_SERVICES;EXCLUDE_ACTIONS" ${ARGN})
 
-  # Find the requested package if it was not found before,
+  # Find the requested package if it was not found before
   if(NOT ${_package}_FOUND)
     find_package(${_package} REQUIRED)
   endif()

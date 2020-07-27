@@ -18,10 +18,10 @@ if(NOT COMMAND string_camel_case_to_lower_case_underscore)
 endif()
 
 #
-# Generate an RTT transport plugin for ROS message types.
+# Generate an RTT service plugin for ROS service types.
 #
-function(_rtt_ros2_generate_ros_transport _package)
-  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES;EXCLUDE_MESSAGES" ${ARGN})
+function(_rtt_ros2_generate_ros_service_plugin _package)
+  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "SERVICES;EXCLUDE_SERVICES" ${ARGN})
 
   # Find the requested package if it was not found before
   if(NOT ${_package}_FOUND)
@@ -43,20 +43,20 @@ function(_rtt_ros2_generate_ros_transport _package)
     set(CMAKE_BUILD_TYPE ${ARG_BUILD_TYPE})
   elseif(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE MinSizeRel)
-    message(STATUS "[rtt_ros2_topics] Setting CMAKE_BUILD_TYPE to ${CMAKE_BUILD_TYPE} for target ${_target}")
+    message(STATUS "[rtt_ros2_services] Setting CMAKE_BUILD_TYPE to ${CMAKE_BUILD_TYPE} for target ${_target}")
   endif()
 
   # Add plugin dependencies
   rtt_ros2_export_plugin_depend(rtt_ros2_node)
-  rtt_ros2_export_plugin_depend(rtt_ros2_topics)
+  rtt_ros2_export_plugin_depend(rtt_ros2_services)
   set(${PROJECT_NAME}_EXEC_DEPENDS "${${PROJECT_NAME}_EXEC_DEPENDS}" PARENT_SCOPE)
   set(${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS "${${PROJECT_NAME}_RTT_ROS2_PLUGIN_DEPENDS}" PARENT_SCOPE)
 
   # Find all (selected) types in the given package.
   set(_include_dir "${${_package}_DIR}/../../../include/${_package}")
   normalize_path(_include_dir "${_include_dir}")
-  set(_output_dir "${CMAKE_CURRENT_BINARY_DIR}/rtt_ros2_topics/${_package}/ros_transport")
-  set(_messages "")
+  set(_output_dir "${CMAKE_CURRENT_BINARY_DIR}/rtt_ros2_services/${_package}/ros_service_plugin")
+  set(_services "")
   set(_cpp_headers "")
   set(_generated_header_files "")
   set(_generated_source_files "")
@@ -65,32 +65,37 @@ function(_rtt_ros2_generate_ros_transport _package)
     get_filename_component(_extension "${_file}" EXT)
     get_filename_component(_type "${_file}" NAME_WE)
     string_camel_case_to_lower_case_underscore("${_type}" _header_name)
-    if(_path STREQUAL "msg" AND _extension STREQUAL ".msg")
-      if((NOT DEFINED ARG_MESSAGES OR ${_type} IN_LIST ARG_MESSAGES)
-          AND NOT ${_type} IN_LIST ARG_EXCLUDE_MESSAGES)
-        list(APPEND _messages ${_type})
+    if(_path STREQUAL "srv" AND _extension STREQUAL ".srv")
+      if((NOT DEFINED ARG_SERVICES OR ${_type} IN_LIST ARG_SERVICES)
+          AND NOT ${_type} IN_LIST ARG_EXCLUDE_SERVICES)
+        list(APPEND _services ${_type})
       endif()
     endif()
   endforeach()
-  list(APPEND _generated_source_files "${_output_dir}/ros_transport_plugin.cpp")
+  list(APPEND _generated_source_files "${_output_dir}/ros_service_plugin.cpp")
+
+  # Do nothing if _services is empty.
+  if(NOT _services)
+    return()
+  endif()
 
   # Generate source and header files
   add_custom_command(
     OUTPUT ${_generated_header_files} ${_generated_source_files}
-    COMMAND ${PYTHON_EXECUTABLE} -m rtt_ros2_topics
+    COMMAND ${PYTHON_EXECUTABLE} -m rtt_ros2_services
       --package "${_package}"
-      --messages ${_messages}
+      --services ${_services}
       --output-dir "${_output_dir}"
     DEPENDS
-      ${rtt_ros2_topics_GENERATOR_FILES}
-      "${rtt_ros2_topics_TEMPLATE_DIR}/ros_transport_plugin.cpp.em"
+      ${rtt_ros2_services_GENERATOR_FILES}
+      "${rtt_ros2_services_TEMPLATE_DIR}/ros_service_plugin.cpp.em"
       "${_cpp_headers}"
-    COMMENT "Generating RTT ROS transport plugin for ${_package}"
+    COMMENT "Generating RTT ROS service plugin for ${_package}"
     VERBATIM
   )
 
   # Build the transport library target
-  orocos_typekit(${_target}
+  orocos_plugin(${_target}
     ${_generated_header_files}
     ${_generated_source_files}
     EXPORT ${_export}
@@ -102,22 +107,13 @@ function(_rtt_ros2_generate_ros_transport _package)
   )
   ament_target_dependencies(${_target}
     ${_package}
-    rclcpp
-    rtt_ros2_node
-    rtt_ros2_topics
+    rtt_ros2_services
   )
   # Note: Not sure why this is required. It should not be required anymore in ROS foxy and upwards.
   target_link_libraries(${_target}
     ${rtt_ros2_node_INTERFACES}
+    ${rtt_ros2_services_INTERFACES}
   )
-
-  # Install headers
-  install(
-    DIRECTORY ${_output_dir}/
-    DESTINATION include/orocos/${_package}/typekit
-    FILES_MATCHING PATTERN "*.hpp"
-  )
-  ament_export_include_directories(include/orocos)
 
   # Set variables in PARENT_SCOPE necessary for .pc file generation (orocos_generate_package())
   set(OROCOS_DEFINED_TYPES ${OROCOS_DEFINED_TYPES} PARENT_SCOPE)
@@ -125,17 +121,17 @@ function(_rtt_ros2_generate_ros_transport _package)
   set(${PROJECT_NAME}_EXPORTED_LIBRARY_DIRS ${${PROJECT_NAME}_EXPORTED_LIBRARY_DIRS} PARENT_SCOPE)
 endfunction()
 
-macro(rtt_ros2_generate_ros_transport _package)
+macro(rtt_ros2_generate_ros_service_plugin _package)
   cmake_parse_arguments(ARG "" "TARGET" "" ${ARGN})
 
-  # Target name defaults to ${_package}_ros_transport.
+  # Target name defaults to ${_package}_ros_services.
   if(NOT ARG_TARGET)
-    set(_target "rtt_${_package}_ros_transport")
+    set(_target "rtt_${_package}_ros_services")
   else()
     set(_target ${ARG_TARGET})
   endif()
 
-  _rtt_ros2_generate_ros_transport(${_package}
+  _rtt_ros2_generate_ros_service_plugin(${_package}
     TARGET ${_target}
     ${ARG_UNPARSED_ARGUMENTS}
   )
