@@ -27,9 +27,9 @@ env:
     - CCACHE_DIR=$HOME/.ccache # enables C/C++ caching in industrial_ci
     - ROSDEP_SKIP_KEYS="log4cpp rtt ocl" # preinstalled in the docker images
   matrix: # each line is a job
-    - ROS_DISTRO="dashing" DOCKER_IMAGE="orocos/ros2:dashing-ros-base-bionic"
-    - ROS_DISTRO="eloquent" DOCKER_IMAGE="orocos/ros2:eloquent-ros-base-bionic"
-    - ROS_DISTRO="foxy" DOCKER_IMAGE="orocos/ros2:foxy-ros-base-focal"
+    - ROS_DISTRO="dashing" DOCKER_IMAGE="orocos/ros2-ci:dashing-ros-base-bionic"
+    - ROS_DISTRO="eloquent" DOCKER_IMAGE="orocos/ros2-ci:eloquent-ros-base-bionic"
+    - ROS_DISTRO="foxy" DOCKER_IMAGE="orocos/ros2-ci:foxy-ros-base-focal"
 
 # allow failures, e.g. for unsupported distros
 # matrix:
