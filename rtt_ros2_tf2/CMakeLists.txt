@@ -87,8 +87,7 @@ orocos_component(rtt_ros2_tf2_component
 # Now made with ament_target_dependencies()
 
 # Target: typekit (from tf2_msgs)
-# ros_generate_rtt_typekit(tf2_msgs)
-rtt_ros2_generate_typekit_and_transports(tf2_msgs)
+rtt_ros2_generate_interfaces_plugins(tf2_msgs)
 
 # install
 # orocos_install_headers(include/rtt_ros2_tf2/rtt_ros2_tf2.hpp)
@@ -112,7 +111,7 @@ ament_export_dependencies(rclcpp
   tf2 tf2_ros tf2_msgs
   rtt_ros2_topics
 )
-ament_export_include_directories(include/${PROJECT_NAME})
+ament_export_include_directories(include/orocos)
 if(COMMAND ament_export_targets)
   ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 else()
