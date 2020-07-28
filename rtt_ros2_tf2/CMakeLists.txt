@@ -15,36 +15,22 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Include RTT, this should include orocos_*() macros
-find_package(OROCOS-RTT REQUIRED)
-if(NOT OROCOS-RTT_FOUND)
-  message(FATAL_ERROR "\n   RTT not found")
-else()
-  include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
-endif()
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2_msgs REQUIRED)
-find_package(rtt_ros2_node REQUIRED)
-find_package(rtt_ros2_interfaces REQUIRED)
-
-# Include rtt_ros2 for the macro: rtt_ros2_export_plugin_depend()
+find_package(rclcpp REQUIRED)
 find_package(rtt_ros2 REQUIRED)
+find_package(rtt_ros2_node REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 # setup targets
-include_directories(include)
 include_directories(include/orocos)
 
 # Target: library
 # message(AUTHOR_WARNING "The tf2 includes are in: ${tf2_INCLUDE_DIRS}")
 # message(AUTHOR_WARNING "The rclcpp includes are in: ${rclcpp_INCLUDE_DIRS}")
-# message(AUTHOR_WARNING "The rtt_ros2_interfaces includes are in: ${rtt_ros2_interfaces_INCLUDE_DIRS}")
 # message(AUTHOR_WARNING "The tf2_msgs includes are in: ${tf2_msgs_INCLUDE_DIRS}")
 orocos_library(rtt_ros2_tf2
   src/rtt_ros2_tf2.cpp
@@ -54,45 +40,31 @@ orocos_library(rtt_ros2_tf2
 # target_link_libraries(rtt_ros2_tf2 tf2)
 # target_include_directories(rtt_ros2_tf2 tf2)
 ament_target_dependencies(rtt_ros2_tf2
-  rclcpp tf2 tf2_ros tf2_msgs rtt_ros2_node geometry_msgs
+  geometry_msgs
+  rclcpp
+  rtt_ros2
+  rtt_ros2_node
+  tf2
+  tf2_msgs
+  tf2_ros
 )
 target_link_libraries(rtt_ros2_tf2
-  # rtt_ros2_geometry_msgs::rtt_geometry_msgs_typekit
   rtt_ros2_node::rtt_ros2_node
 )
-
-# Extra include_directories to find the own generated typekits from inside
-target_include_directories(rtt_ros2_tf2 PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include/orocos/${PROJECT_NAME}>
-)
-# target_link_libraries(rtt_ros2_tf2
-#   rtt_tf2_msgs_typekit # typekit generated in this package (target name)
-# )
 
 # Target: orocos plugin
 orocos_plugin(rtt_ros2_tf2_service
   src/rtt_ros2_tf2_service.cpp
 )
-
 target_link_libraries(rtt_ros2_tf2_service rtt_ros2_tf2)
 
 # Target: orocos component
 orocos_component(rtt_ros2_tf2_component
-  src/rtt_ros2_tf2_component.cpp)
-  ament_target_dependencies(rtt_ros2_tf2_component
-  OROCOS-RTT
+  src/rtt_ros2_tf2_component.cpp
 )
-# target_link_libraries(rtt_ros2_tf2_component ${catkin_LIBRARIES})
-# Now made with ament_target_dependencies()
-
-# Target: typekit (from tf2_msgs)
-rtt_ros2_generate_interfaces_plugins(tf2_msgs)
+target_link_libraries(rtt_ros2_tf2_component rtt_ros2_tf2)
 
 # install
-# orocos_install_headers(include/rtt_ros2_tf2/rtt_ros2_tf2.hpp)
-# orocos_install_headers(include/rtt_ros2_tf2/tf2_interface.h)
-# orocos_install_headers(include/rtt_ros2_tf2/rtt_ros2_tf2_component.hpp)
 install(
   DIRECTORY include/
   DESTINATION include
@@ -104,12 +76,14 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-
 # export information to downstream packages
 # ament_export_dependencies(rtt_ros2)
-ament_export_dependencies(rclcpp
-  tf2 tf2_ros tf2_msgs
-  rtt_ros2_topics
+ament_export_dependencies(
+  geometry_msgs
+  rclcpp
+  tf2_msgs
+  tf2_ros
+  tf2
 )
 ament_export_include_directories(include/orocos)
 if(COMMAND ament_export_targets)
