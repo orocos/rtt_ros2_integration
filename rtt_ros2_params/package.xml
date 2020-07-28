@@ -1,16 +1,21 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rtt_ros2_test_msgs</name>
+  <name>rtt_ros2_params</name>
   <version>0.0.0</version>
-  <description>RTT typekit and transport plugins for test_msgs</description>
+  <description>
+    RTT service plugin to use ROS 2 parameters from Orocos components.
+  </description>
   <maintainer email="orocos-dev@orocos.org">Orocos Developers</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <test_depend>rtt_ros2_interfaces</test_depend>
-  <test_depend>test_msgs</test_depend>
+  <depend>rclcpp</depend>
+  <depend>rtt_ros2</depend>
+  <depend>rtt_ros2_node</depend>
+
+  <exec_depend>rtt_ros2_rclcpp_typekit</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

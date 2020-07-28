@@ -67,7 +67,7 @@ bool loadRTTPlugin(RTT::TaskContext * tc)
   loadGlobalROSService();
   return true;
 }
-std::string getRTTPluginName() {return "ros2-topics";}
+std::string getRTTPluginName() {return "rostopic";}
 std::string getRTTTargetName() {return OROCOS_TARGET_NAME;}
 }
 

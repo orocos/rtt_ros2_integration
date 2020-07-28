@@ -4,7 +4,9 @@ project(rtt_ros2_idl_tests)
 # Skip building this package if BUILD_TESTING is OFF
 option(BUILD_TESTING "Build the testing tree." ON)
 if(NOT BUILD_TESTING)
-  ament_package()
+  install(CODE
+    "message(STATUS \"Skipping installation of package ${PROJECT_NAME} because BUILD_TESTING is OFF.\")"
+  )
   return()
 endif()
 

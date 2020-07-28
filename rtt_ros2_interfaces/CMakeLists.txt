@@ -4,6 +4,7 @@ project(rtt_ros2_interfaces)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2_idl REQUIRED)
+find_package(rtt_ros2_services REQUIRED)
 find_package(rtt_ros2_topics REQUIRED)
 
 # install typekit package template and create_typekit_package script
@@ -24,11 +25,12 @@ endif()
 # export information to downstream packages
 ament_export_dependencies(rtt_ros2_idl)
 ament_export_dependencies(rtt_ros2_topics)
+ament_export_dependencies(rtt_ros2_services)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package(
   CONFIG_EXTRAS
-    cmake/${PROJECT_NAME}-generate_typekit_and_transports.cmake
+    cmake/${PROJECT_NAME}-generate_interfaces_plugins.cmake
 )
 
 # orocos_generate_package() is deprecated for ROS 2.
@@ -38,5 +40,6 @@ ament_package(
 orocos_generate_package(
   DEPENDS_TARGETS
     rtt_ros2_idl
+    rtt_ros2_services
     rtt_ros2_topics
 )

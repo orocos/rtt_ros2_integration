@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2_interfaces REQUIRED)
 
-rtt_ros2_generate_typekit_and_transports(action_msgs)
+rtt_ros2_generate_interfaces_plugins(action_msgs)
 
 # linters
 if(BUILD_TESTING)

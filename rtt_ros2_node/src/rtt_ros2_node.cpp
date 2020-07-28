@@ -44,7 +44,8 @@ std::string default_node_name_from_owner(RTT::TaskContext * owner)
 
 Node::Node(
   RTT::TaskContext * owner)
-: Node(default_node_name_from_owner(owner), {}, rclcpp::NodeOptions(), owner)
+: Node(default_node_name_from_owner(owner), {},
+    rclcpp::NodeOptions().allow_undeclared_parameters(true), owner)
 {
 }
 
@@ -68,7 +69,7 @@ Node::Node(
   const std::string & namespace_,
   const rclcpp::NodeOptions & options,
   RTT::TaskContext * owner)
-: RTT::Service("Node", owner)
+: RTT::Service("rosnode", owner)
 {
   node_ = std::make_shared<rclcpp::Node>(
     !node_name.empty() ? node_name : default_node_name_from_owner(owner),
@@ -151,7 +152,7 @@ Node::shared_ptr getNodeService(RTT::TaskContext * tc)
   // Try global service ros.Node
   RTT::Service::shared_ptr ros = RTT::internal::GlobalService::Instance()->getService("ros");
   if (ros != nullptr) {
-    node = boost::dynamic_pointer_cast<Node>(ros->getService("Node"));
+    node = boost::dynamic_pointer_cast<Node>(ros->getService("rosnode"));
     if (node != nullptr) {
       return node;
     }

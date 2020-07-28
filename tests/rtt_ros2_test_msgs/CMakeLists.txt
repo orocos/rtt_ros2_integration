@@ -4,7 +4,9 @@ project(rtt_ros2_test_msgs)
 # Skip building this package if BUILD_TESTING is OFF
 option(BUILD_TESTING "Build the testing tree." ON)
 if(NOT BUILD_TESTING)
-  ament_package()
+  install(CODE
+    "message(STATUS \"Skipping installation of package ${PROJECT_NAME} because BUILD_TESTING is OFF.\")"
+  )
   return()
 endif()
 
@@ -26,7 +28,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2_interfaces REQUIRED)
 
-rtt_ros2_generate_typekit_and_transports(test_msgs)
+include_directories(include/orocos)
+rtt_ros2_generate_interfaces_plugins(test_msgs
+  EXTRA_INCLUDES
+    ${PROJECT_NAME}/srv/empty.hpp
+)
 
 # linters
 if(BUILD_TESTING)

@@ -36,7 +36,7 @@ static bool create_named_node_with_options(
   RTT::Service::shared_ptr ros =
     RTT::internal::GlobalService::Instance()->provides("ros");
 
-  if (ros->hasService("Node")) {
+  if (ros->hasService("rosnode")) {
     RTT::log(RTT::Error) <<
       "Another process-wide ROS node was already instantiated." <<
       RTT::endlog();
@@ -105,7 +105,7 @@ static void loadGlobalROSService()
 
 static bool loadROSServiceIntoTaskContext(RTT::TaskContext * tc)
 {
-  if (tc->provides()->hasService("Node")) {
+  if (tc->provides()->hasService("rosnode")) {
     RTT::log(RTT::Error) <<
       "Another ROS node was already instantiated for component " <<
       tc->getName() << "." <<
@@ -129,7 +129,7 @@ bool loadRTTPlugin(RTT::TaskContext * tc)
     return loadROSServiceIntoTaskContext(tc);
   }
 }
-std::string getRTTPluginName() {return "ros2-node";}
+std::string getRTTPluginName() {return "rosnode";}
 std::string getRTTTargetName() {return OROCOS_TARGET_NAME;}
 }
 

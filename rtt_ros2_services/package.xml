@@ -1,16 +1,22 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rtt_ros2_test_msgs</name>
+  <name>rtt_ros2_services</name>
   <version>0.0.0</version>
-  <description>RTT typekit and transport plugins for test_msgs</description>
+  <description>
+    This package provides a CMake function and templates to generate ROS 2 service plugins
+    for existing ROS 2 interface (messages, services, actions) packages.
+  </description>
   <maintainer email="orocos-dev@orocos.org">Orocos Developers</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_export_depend>rosidl_cmake</build_export_depend>
 
-  <test_depend>rtt_ros2_interfaces</test_depend>
-  <test_depend>test_msgs</test_depend>
+  <depend>rclcpp</depend>
+  <depend>rcpputils</depend>
+  <depend>rtt_ros2</depend>
+  <depend>rtt_ros2_node</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

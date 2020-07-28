@@ -23,7 +23,7 @@ endif()
 function(_rtt_ros2_generate_ros_transport _package)
   cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "MESSAGES;EXCLUDE_MESSAGES" ${ARGN})
 
-  # Find the requested package if it was not found before,
+  # Find the requested package if it was not found before
   if(NOT ${_package}_FOUND)
     find_package(${_package} REQUIRED)
   endif()
@@ -141,11 +141,13 @@ macro(rtt_ros2_generate_ros_transport _package)
   )
 
   # Export dependencies, include directories and interface
-  ament_export_dependencies(${_package})
-  ament_export_include_directories(include/orocos)
-  if(COMMAND ament_export_targets)
-    ament_export_targets(${_target} HAS_LIBRARY_TARGET)
-  else()
-    ament_export_interfaces(${_target} HAS_LIBRARY_TARGET)
+  if(TARGET ${_target})
+    ament_export_dependencies(${_package})
+    ament_export_include_directories(include/orocos)
+    if(COMMAND ament_export_targets)
+      ament_export_targets(${_target} HAS_LIBRARY_TARGET)
+    else()
+      ament_export_interfaces(${_target} HAS_LIBRARY_TARGET)
+    endif()
   endif()
 endmacro()

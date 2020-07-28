@@ -13,6 +13,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rtt_ros2_idl</depend>
+  <depend>rtt_ros2_services</depend>
   <depend>rtt_ros2_topics</depend>
 
   <!-- for create_typekit_package script -->
