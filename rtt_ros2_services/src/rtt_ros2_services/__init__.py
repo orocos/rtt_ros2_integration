@@ -21,12 +21,13 @@ from rosidl_cmake import expand_template
 from .resource import TEMPLATE_DIR
 
 
-def generate_service_plugin(package, output_dir, services=[]):
+def generate_service_plugin(package, output_dir, services=[], extra_includes=[]):
     output_dir = pathlib.Path(output_dir)
 
     data = {
         'pkg_name': package,
         'services': services,
+        'extra_includes': extra_includes,
     }
     expand_template(
         'ros_service_plugin.cpp.em',
@@ -48,6 +49,9 @@ def main(argv=sys.argv[1:]):
     parser.add_argument(
         '--output-dir', required=True,
         help='The base directory for generated source files')
+    parser.add_argument(
+        '--extra-includes', metavar='MESSAGE', nargs='*',
+        help='Additional files to be included in each generated source file')
     args = parser.parse_args(argv)
 
     return generate_service_plugin(**vars(args))

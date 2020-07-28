@@ -13,6 +13,9 @@ from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 @[for service in services]@
 #include "@(pkg_name)/srv/@(convert_camel_case_to_lower_case_underscore(service)).hpp"
 @[end for]@
+@[for extra_include in extra_includes]@
+#include "@(extra_include)"
+@[end for]@
 
 namespace rtt_ros2_services
 {

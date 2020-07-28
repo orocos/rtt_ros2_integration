@@ -69,7 +69,10 @@ public:
   using Response = typename ServiceT::Response;
   using Ptr = std::unique_ptr<RosServiceServerOperationCallerBase<ServiceT>>;
   virtual ~RosServiceServerOperationCallerBase() {}
-  virtual void call(const std::shared_ptr<Request>, std::shared_ptr<Response>) const = 0;
+  virtual void dispatch(
+    std::shared_ptr<rmw_request_id_t>,
+    std::shared_ptr<Request>,
+    std::shared_ptr<Response>) const = 0;
 };
 
 template<class ServiceT, int variant = 0>
@@ -82,7 +85,7 @@ struct RosServiceServerOperationCallerWrapper
 // that have the default void(Request&, Response&) signature. You can add more variants of this
 // class to add support for custom operation types.
 //
-// See package std_srvs for an example.
+// See package rtt_ros2_std_srvs for an example.
 //
 template<class ServiceT>
 struct RosServiceServerOperationCallerWrapper<ServiceT, 0>
@@ -92,9 +95,10 @@ struct RosServiceServerOperationCallerWrapper<ServiceT, 0>
   using Signature = void (Request &, Response &);
   using ProxyOperationCallerType = RTT::OperationCaller<Signature>;
   template<typename Callable>
-  static void call(
+  static void dispatch(
     Callable & call,
-    const std::shared_ptr<Request> request,
+    std::shared_ptr<rmw_request_id_t> request_header,
+    std::shared_ptr<Request> request,
     std::shared_ptr<Response> response)
   {
     call(*request, *response);
@@ -118,13 +122,20 @@ public:
 
   static Ptr connect(RTT::OperationInterfacePart * operation);
 
-  virtual void call(std::shared_ptr<Request> request, std::shared_ptr<Response> response) const
+  void dispatch(
+    std::shared_ptr<rmw_request_id_t> request_header,
+    std::shared_ptr<Request> request,
+    std::shared_ptr<Response> response) const override
   {
     // Check if the operation caller is ready, and then call it.
     if (!proxy_operation_caller_->ready()) {
       throw std::runtime_error("OperationCaller not ready");
     }
-    Wrapper::call(*proxy_operation_caller_, std::move(request), std::move(response));
+    Wrapper::dispatch(
+      *proxy_operation_caller_,
+      std::move(request_header),
+      std::move(request),
+      std::move(response));
   }
 
 private:
@@ -148,7 +159,7 @@ template<class ServiceT, int variant>
 struct RosServiceServerOperationCallerWrapperNextVariant<
   ServiceT, variant, typename std::enable_if<!std::is_void<
     typename RosServiceServerOperationCallerWrapper<ServiceT, variant + 1>
-    ::ProxyOperationCallerType>::value>>
+    ::ProxyOperationCallerType>::value>::type>
 {
   using Ptr = typename RosServiceServerOperationCallerBase<ServiceT>::Ptr;
   static Ptr connect(RTT::OperationInterfacePart * operation)
@@ -207,8 +218,11 @@ public:
 
     server_ = node->create_service<ServiceT>(
       service_name_,
-      [this](std::shared_ptr<Request> request, std::shared_ptr<Response> response) {
-        impl_->call(std::move(request), std::move(response));
+      [this](
+        std::shared_ptr<rmw_request_id_t> request_header,
+        std::shared_ptr<Request> request,
+        std::shared_ptr<Response> response) {
+        impl_->dispatch(std::move(request_header), std::move(request), std::move(response));
       });
 
     return true;
@@ -243,12 +257,8 @@ public:
   using Response = typename ServiceT::Response;
   using Signature = void (Request &, Response &);
 
-  //! The proxy RTT operation type for this ROS service
-  using ProxyOperationType = RTT::Operation<Signature>;
-
   explicit RosServiceClientProxy(const std::string & service_name)
-  : RosServiceClientProxyBase(service_name),
-    proxy_operation_("ROS_SERVICE_CLIENT_PROXY")
+  : RosServiceClientProxyBase(service_name)
   {
   }
 
@@ -269,18 +279,14 @@ public:
         auto result_future = client->async_send_request(std::make_shared<Request>(request));
         response = *(result_future.get());
       };
-    proxy_operation_.calls(std::move(func), RTT::ClientThread);
-    if (!proxy_operation_.ready()) {return false;}
 
     return operation_caller->setImplementation(
-      proxy_operation_.getImplementation(),
+      boost::make_shared<RTT::internal::LocalOperationCaller<Signature>>(
+        std::move(func), nullptr, nullptr, RTT::ClientThread),
       owner->engine());
   }
 
 private:
-  //! The underlying RTT operation
-  ProxyOperationType proxy_operation_;
-
   //! The ROS service client
   typename rclcpp::Client<ServiceT>::SharedPtr client_;
 };

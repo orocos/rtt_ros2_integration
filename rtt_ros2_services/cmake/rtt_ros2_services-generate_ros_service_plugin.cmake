@@ -21,7 +21,12 @@ endif()
 # Generate an RTT service plugin for ROS service types.
 #
 function(_rtt_ros2_generate_ros_service_plugin _package)
-  cmake_parse_arguments(ARG "" "BUILD_TYPE;TARGET;EXPORT" "SERVICES;EXCLUDE_SERVICES" ${ARGN})
+  cmake_parse_arguments(ARG
+    ""
+    "BUILD_TYPE;TARGET;EXPORT"
+    "SERVICES;EXCLUDE_SERVICES;EXTRA_INCLUDES"
+    ${ARGN}
+  )
 
   # Find the requested package if it was not found before
   if(NOT ${_package}_FOUND)
@@ -86,6 +91,7 @@ function(_rtt_ros2_generate_ros_service_plugin _package)
       --package "${_package}"
       --services ${_services}
       --output-dir "${_output_dir}"
+      --extra-includes ${ARG_EXTRA_INCLUDES}
     DEPENDS
       ${rtt_ros2_services_GENERATOR_FILES}
       "${rtt_ros2_services_TEMPLATE_DIR}/ros_service_plugin.cpp.em"
