@@ -4,20 +4,9 @@ project(rtt_ros2_tf2_tests)
 # Skip building this package if BUILD_TESTING is OFF
 option(BUILD_TESTING "Build the testing tree." ON)
 if(NOT BUILD_TESTING)
-  ament_package()
-  return()
-endif()
-
-# The test_ros_transport fails with
-#
-#     double free or corruption (fasttop)
-#
-# during destruction in ROS dashing. This seems to be a known problem:
-# https://gitlab.com/ApexAI/performance_test/-/issues/87
-# ==> workaround: disable the test for dashing
-#
-set(ROS_DISTRO $ENV{ROS_DISTRO})
-if(ROS_DISTRO STREQUAL "dashing")
+  install(CODE
+    "message(STATUS \"Skipping installation of package ${PROJECT_NAME} because BUILD_TESTING is OFF.\")"
+  )
   return()
 endif()
 
@@ -53,13 +42,26 @@ ament_package()
 # unit tests
 find_package(ament_cmake_gtest REQUIRED)
 
+# The test_ros_tf2 fails with
+#
+#     double free or corruption (fasttop)
+#
+# during destruction in ROS dashing. This seems to be a known problem:
+# https://gitlab.com/ApexAI/performance_test/-/issues/87
+# ==> workaround: disable the test for dashing
+#
+set(ROS_DISTRO $ENV{ROS_DISTRO})
+if(ROS_DISTRO STREQUAL "dashing")
+  return()
+endif()
+
 ament_add_gtest(test_ros_tf2 test/test_ros_tf2.cpp)
 orocos_configure_executable(test_ros_tf2)
-# target_link_libraries(test_ros_tf2
-#   rtt_ros2::rtt_ros2
-#   rtt_ros2_node::rtt_ros2_node
+target_link_libraries(test_ros_tf2
+  rtt_ros2::rtt_ros2
+  rtt_ros2_node::rtt_ros2_node
 #   rtt_ros2_tf2::rtt_ros2_tf2
-# )
+)
 ament_target_dependencies(test_ros_tf2
   rtt_ros2 rtt_ros2_node rtt_ros2_tf2 geometry_msgs
 )
