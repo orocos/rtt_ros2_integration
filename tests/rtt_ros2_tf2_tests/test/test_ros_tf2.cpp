@@ -43,7 +43,6 @@ class TestRosTf2Environment
   void SetUp() override
   {
     EXPECT_TRUE(rtt_ros2::import("rtt_ros2_tf2"));
-    EXPECT_TRUE(rtt_ros2::import("rtt_ros2_geometry_msgs"));
   }
 };
 
