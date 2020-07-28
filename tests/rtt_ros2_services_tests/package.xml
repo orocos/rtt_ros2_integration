@@ -1,25 +1,21 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rtt_ros2_interfaces</name>
+  <name>rtt_ros2_services_tests</name>
   <version>0.0.0</version>
   <description>
-    All-in-one package which provides a CMake function to generate ROS 2 typekit and transport
-    plugins for ROS 2 interface packages (messages, services, actions).
+    Unit tests for rtt_ros2_services
   </description>
   <maintainer email="orocos-dev@orocos.org">Orocos Developers</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rtt_ros2_idl</depend>
-  <depend>rtt_ros2_services</depend>
-  <depend>rtt_ros2_topics</depend>
+  <test_depend>rtt_ros2</test_depend>
+  <test_depend>rtt_ros2_services</test_depend>
+  <test_depend>rtt_ros2_test_msgs</test_depend>
 
-  <!-- for create_typekit_package script -->
-  <exec_depend>ament_index_python</exec_depend>
-  <exec_depend>rosidl_cmake</exec_depend>
-
+  <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

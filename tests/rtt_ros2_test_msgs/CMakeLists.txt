@@ -28,7 +28,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rtt_ros2_interfaces REQUIRED)
 
-rtt_ros2_generate_interfaces_plugins(test_msgs)
+include_directories(include/orocos)
+rtt_ros2_generate_interfaces_plugins(test_msgs
+  EXTRA_INCLUDES
+    ${PROJECT_NAME}/srv/empty.hpp
+)
 
 # linters
 if(BUILD_TESTING)
