@@ -26,6 +26,9 @@
 namespace rtt_ros2_node
 {
 
+/// Return the default rclcpp::NodeOptions to be used within RTT and rtt_ros2_integration.
+rclcpp::NodeOptions getDefaultNodeOptions();
+
 /// Wrap a rclcpp::Node instance in an RTT::Service.
 struct Node : public RTT::Service
 {
@@ -34,16 +37,16 @@ public:
 
   explicit Node(RTT::TaskContext * owner = nullptr);
   Node(
-    const rclcpp::NodeOptions & options = rclcpp::NodeOptions(),
+    const rclcpp::NodeOptions & options = getDefaultNodeOptions(),
     RTT::TaskContext * owner = nullptr);
   Node(
     const std::string & node_name,
-    const rclcpp::NodeOptions & options = rclcpp::NodeOptions(),
+    const rclcpp::NodeOptions & options = getDefaultNodeOptions(),
     RTT::TaskContext * owner = nullptr);
   Node(
     const std::string & node_name,
     const std::string & namespace_,
-    const rclcpp::NodeOptions & options = rclcpp::NodeOptions(),
+    const rclcpp::NodeOptions & options = getDefaultNodeOptions(),
     RTT::TaskContext * owner = nullptr);
   virtual ~Node();
 

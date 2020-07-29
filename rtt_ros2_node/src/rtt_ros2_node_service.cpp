@@ -52,18 +52,18 @@ static bool create_named_node_with_namespace(
   const std::string & node_name,
   const std::string & namespace_)
 {
-  return create_named_node_with_options(node_name, namespace_, rclcpp::NodeOptions());
+  return create_named_node_with_options(node_name, namespace_, getDefaultNodeOptions());
 }
 
 static bool create_named_node(
   const std::string & node_name)
 {
-  return create_named_node_with_options(node_name, {}, rclcpp::NodeOptions());
+  return create_named_node_with_options(node_name, {}, getDefaultNodeOptions());
 }
 
 static bool create_node()
 {
-  return create_named_node_with_options({}, {}, rclcpp::NodeOptions());
+  return create_named_node_with_options({}, {}, getDefaultNodeOptions());
 }
 
 static void loadGlobalROSService()
