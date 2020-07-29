@@ -72,14 +72,14 @@ Node::Node(
 
 Node::Node(
   const std::string & node_name,
-  const std::string & namespace_,
+  const std::string & _namespace,
   const rclcpp::NodeOptions & options,
   RTT::TaskContext * owner)
 : RTT::Service("rosnode", owner)
 {
   node_ = std::make_shared<rclcpp::Node>(
     !node_name.empty() ? node_name : default_node_name_from_owner(owner),
-    namespace_, options);
+    _namespace, options);
 
   this->addOperation("spin", &Node::spin, this)
   .doc("Start a single or multi-threaded spinner for this node")

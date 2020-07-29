@@ -45,7 +45,7 @@ public:
     RTT::TaskContext * owner = nullptr);
   Node(
     const std::string & node_name,
-    const std::string & namespace_,
+    const std::string & _namespace,
     const rclcpp::NodeOptions & options = getDefaultNodeOptions(),
     RTT::TaskContext * owner = nullptr);
   virtual ~Node();
