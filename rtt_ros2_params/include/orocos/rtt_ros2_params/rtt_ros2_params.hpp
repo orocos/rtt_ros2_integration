@@ -49,9 +49,6 @@ protected:
   bool storeProperty(
     const std::string & property_name,
     const std::string & param_name);
-
-private:
-  RTT::TaskContext * owner_;
 };  // class Params
 
 }  // namespace rtt_ros2_params
