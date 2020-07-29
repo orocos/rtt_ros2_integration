@@ -27,7 +27,7 @@
 
 #include "rtt_ros2/rtt_ros2.hpp"
 #include "rtt_ros2_node/rtt_ros2_node.hpp"
-#include "rtt_ros2_params/rtt_ros2_params.hpp"
+#include "rtt_ros2_params/rosparam.hpp"
 
 #include "gtest/gtest.h"
 
@@ -79,61 +79,58 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
     global_ros->getService("rosparam");
   ASSERT_TRUE(nullptr != global_params);
 
-  // Check set non-existant parameters
-  RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
-  setparam_operation = global_params->getOperation("setParameter");
-  ASSERT_TRUE(setparam_operation.ready());
-  EXPECT_FALSE(
-    setparam_operation.call("fake_parameter", rclcpp::ParameterValue(42)));
+  rtt_ros2_params::RosParam rosparam(this);
+  ASSERT_TRUE(rosparam.connectTo(global_params));
 
-  // Check get non-existant parameters
-  RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
-  getparam_operation = global_params->getOperation("getParameter");
-  ASSERT_TRUE(getparam_operation.ready());
+  // Check set non-existent parameters
+  EXPECT_FALSE(
+    rosparam.setParameter("fake_parameter", rclcpp::ParameterValue(42)));
+
+  // Check get non-existent parameters
   EXPECT_EQ(
     rclcpp::PARAMETER_NOT_SET,
-    getparam_operation.call("fake_parameter").get_type()
+    rosparam.getParameter("fake_parameter").get_type()
   );
 
   // Check setting a parameter (INTEGER)
   rtt_ros2_node::getNode(this)->declare_parameter("int_parameter");
   EXPECT_TRUE(
-    setparam_operation.call("int_parameter", rclcpp::ParameterValue(42)));
+    rosparam.setParameter("int_parameter", rclcpp::ParameterValue(42)));
 
   // Check getting a parameter (INTEGER)
-  rclcpp::ParameterValue new_int = getparam_operation.call("int_parameter");
+  rclcpp::ParameterValue new_int = rosparam.getParameter("int_parameter");
   EXPECT_EQ(rclcpp::PARAMETER_INTEGER, new_int.get_type());
   EXPECT_EQ(new_int.get<int>(), 42);
 
   // Check setting a parameter (DOUBLE)
   rtt_ros2_node::getNode(this)->declare_parameter("double_parameter");
   EXPECT_TRUE(
-    setparam_operation.call("double_parameter", rclcpp::ParameterValue(3.14159)));
+    rosparam.setParameter("double_parameter", rclcpp::ParameterValue(3.14159)));
 
   // Check getting a parameter (DOUBLE)
-  rclcpp::ParameterValue new_double = getparam_operation.call("double_parameter");
+  rclcpp::ParameterValue new_double = rosparam.getParameter("double_parameter");
   EXPECT_EQ(rclcpp::PARAMETER_DOUBLE, new_double.get_type());
   EXPECT_EQ(new_double.get<double>(), 3.14159);
 
   // Check setting a parameter (BOOL)
   rtt_ros2_node::getNode(this)->declare_parameter("bool_parameter");
   EXPECT_TRUE(
-    setparam_operation.call("bool_parameter", rclcpp::ParameterValue(true)));
+    rosparam.setParameter("bool_parameter", rclcpp::ParameterValue(true)));
 
   // Check getting a parameter (BOOL)
-  rclcpp::ParameterValue new_bool = getparam_operation.call("bool_parameter");
+  rclcpp::ParameterValue new_bool = rosparam.getParameter("bool_parameter");
   EXPECT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
   EXPECT_EQ(new_bool.get<bool>(), true);
 
   // Check setting a parameter (STRING)
   rtt_ros2_node::getNode(this)->declare_parameter("string_parameter");
   EXPECT_TRUE(
-    setparam_operation.call(
+    rosparam.setParameter(
       "string_parameter",
       rclcpp::ParameterValue("answer to life and universe")));
 
   // Check getting a parameter (STRING)
-  rclcpp::ParameterValue new_string = getparam_operation.call("string_parameter");
+  rclcpp::ParameterValue new_string = rosparam.getParameter("string_parameter");
   EXPECT_EQ(rclcpp::PARAMETER_STRING, new_string.get_type());
   EXPECT_EQ(new_string.get<std::string>().compare(std::string("answer to life and universe")), 0);
 }
@@ -146,94 +143,80 @@ TEST_F(TestRosParams, TestComponentNodeParams)
   ASSERT_TRUE(rtt_ros2_node::getNode(this) != nullptr);
 
   // Get local service
-  ASSERT_TRUE(this->loadService("rosparam"));
-  RTT::Service::shared_ptr local_params =
-    this->provides("rosparam");
-  ASSERT_TRUE(nullptr != local_params);
+  auto rosparam_ptr = this->getProvider<rtt_ros2_params::RosParam>("rosparam");
+  ASSERT_TRUE(rosparam_ptr);
+  auto & rosparam = *rosparam_ptr;
 
-  // Check set non-existant parameters
-  RTT::OperationCaller<bool(std::string, rclcpp::ParameterValue)>
-  setparam_operation = local_params->getOperation("setParameter");
-  ASSERT_TRUE(setparam_operation.ready());
+  // Check set non-existent parameters
   // True because rosnode is created with allow_undeclared_parameters(true)
   EXPECT_TRUE(
-    setparam_operation.call("new_fake_parameter", rclcpp::ParameterValue(42)));
+    rosparam.setParameter("new_fake_parameter", rclcpp::ParameterValue(42)));
 
-  // Check get non-existant parameters
-  RTT::OperationCaller<rclcpp::ParameterValue(std::string)>
-  getparam_operation = local_params->getOperation("getParameter");
-  ASSERT_TRUE(getparam_operation.ready());
+  // Check get non-existent parameters
   EXPECT_EQ(
     rclcpp::PARAMETER_NOT_SET,
-    getparam_operation.call("fake_parameter").get_type()
+    rosparam.getParameter("fake_parameter").get_type()
   );
 
   // Check setting a parameter (INTEGER)
   rtt_ros2_node::getNode(this)->declare_parameter("int_parameter");
   EXPECT_TRUE(
-    setparam_operation.call("int_parameter", rclcpp::ParameterValue(41)));
+    rosparam.setParameter("int_parameter", rclcpp::ParameterValue(41)));
 
   // Check getting a parameter (INTEGER)
-  rclcpp::ParameterValue new_int = getparam_operation.call("int_parameter");
+  rclcpp::ParameterValue new_int = rosparam.getParameter("int_parameter");
   EXPECT_EQ(rclcpp::PARAMETER_INTEGER, new_int.get_type());
   EXPECT_EQ(new_int.get<int>(), 41);
 
   // Check setting a parameter (BOOL)
   rtt_ros2_node::getNode(this)->declare_parameter("bool_parameter");
   EXPECT_TRUE(
-    setparam_operation.call("bool_parameter", rclcpp::ParameterValue(false)));
+    rosparam.setParameter("bool_parameter", rclcpp::ParameterValue(false)));
 
   // Check getting a parameter (BOOL)
-  rclcpp::ParameterValue new_bool = getparam_operation.call("bool_parameter");
+  rclcpp::ParameterValue new_bool = rosparam.getParameter("bool_parameter");
   EXPECT_EQ(rclcpp::PARAMETER_BOOL, new_bool.get_type());
   EXPECT_EQ(new_bool.get<bool>(), false);
 
   // Check storing a parameter provoke failure
-  RTT::OperationCaller<bool(std::string, std::string)>
-  storeprop_operation = local_params->getOperation("storeProperty");
-  ASSERT_TRUE(storeprop_operation.ready());
-  EXPECT_FALSE(storeprop_operation.call("fake_property", "int_parameter"));
+  EXPECT_FALSE(rosparam.storeProperty("fake_property", "int_parameter"));
   // True because rosnode is created with allow_undeclared_parameters(true)
-  EXPECT_TRUE(storeprop_operation.call("int_property", "new_parameter_autodeclared"));
+  EXPECT_TRUE(rosparam.storeProperty("int_property", "new_parameter_autodeclared"));
 
   // Check storing a parameter (INTEGER)
-  EXPECT_EQ(getparam_operation.call("int_parameter").get<int>(), 41);
-  EXPECT_TRUE(storeprop_operation.call("int_property", "int_parameter"));
-  EXPECT_EQ(getparam_operation.call("int_parameter").get<int>(), 42);
+  EXPECT_EQ(rosparam.getParameter("int_parameter").get<int>(), 41);
+  EXPECT_TRUE(rosparam.storeProperty("int_property", "int_parameter"));
+  EXPECT_EQ(rosparam.getParameter("int_parameter").get<int>(), 42);
 
   // Check storing a parameter (BOOL)
-  EXPECT_EQ(getparam_operation.call("bool_parameter").get<bool>(), false);
-  EXPECT_TRUE(storeprop_operation.call("bool_property", "bool_parameter"));
-  EXPECT_EQ(getparam_operation.call("bool_parameter").get<bool>(), true);
+  EXPECT_EQ(rosparam.getParameter("bool_parameter").get<bool>(), false);
+  EXPECT_TRUE(rosparam.storeProperty("bool_property", "bool_parameter"));
+  EXPECT_EQ(rosparam.getParameter("bool_parameter").get<bool>(), true);
 
   // Check loading a parameter common
-  RTT::OperationCaller<bool(std::string, std::string)>
-  loadprop_operation = local_params->getOperation("loadProperty");
-  ASSERT_TRUE(loadprop_operation.ready());
-  EXPECT_FALSE(loadprop_operation.call("fake_property", "fake_parameter"));
-  EXPECT_FALSE(loadprop_operation.call("fake_property", "int_parameter"));
-  auto params_service = boost::dynamic_pointer_cast<rtt_ros2_params::Params>(
-    this->provides("rosparam"));
+  EXPECT_FALSE(rosparam.loadProperty("fake_property", "fake_parameter"));
+  EXPECT_FALSE(rosparam.loadProperty("fake_property", "int_parameter"));
+  auto params_service = this->getProvider<rtt_ros2_params::RosParam>("rosparam");
   ASSERT_TRUE(params_service);
 
   // Check loading a parameter (INTEGER)
   this->int_member_ = 41;
-  setparam_operation.call("int_parameter", rclcpp::ParameterValue(42));
-  EXPECT_TRUE(loadprop_operation.call("int_property", "int_parameter"));
+  rosparam.setParameter("int_parameter", rclcpp::ParameterValue(42));
+  EXPECT_TRUE(rosparam.loadProperty("int_property", "int_parameter"));
   EXPECT_EQ(42, this->int_member_);
 
   // Check loading a parameter (BOOL)
   this->bool_member_ = false;
-  setparam_operation.call("bool_parameter", rclcpp::ParameterValue(true));
-  EXPECT_TRUE(loadprop_operation.call("bool_property", "bool_parameter"));
+  rosparam.setParameter("bool_parameter", rclcpp::ParameterValue(true));
+  EXPECT_TRUE(rosparam.loadProperty("bool_property", "bool_parameter"));
   EXPECT_EQ(true, this->bool_member_);
 
   // Check bad assignment
   rtt_ros2_node::getNode(this)->declare_parameter("string_parameter");
   EXPECT_TRUE(
-    setparam_operation.call("string_parameter", rclcpp::ParameterValue("string_value")));
+    rosparam.setParameter("string_parameter", rclcpp::ParameterValue("string_value")));
   EXPECT_FALSE(
-    loadprop_operation.call("bool_property", "string_parameter"));
+    rosparam.loadProperty("bool_property", "string_parameter"));
 }
 
 int main(int argc, char ** argv)
