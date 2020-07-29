@@ -27,6 +27,14 @@ The packages in this repository provide:
   [ROS 2 topics](https://index.ros.org/doc/ros2/Tutorials/Topics/Understanding-ROS2-Topics/) for
   real-time safe inter-process communication.
 
+* [**rtt\_ros2\_services**](rtt_ros2_services) Provide
+  [ROS 2 services](https://index.ros.org/doc/ros2/Tutorials/Services/Understanding-ROS2-Services/)
+  that call Orocos operations or connect Orocos operation callers to ROS services provided by
+  other nodes.
+
+* [**rtt\_ros2\_interfaces**](rtt_ros2_interfaces) provides a convenience macro that generates
+  typekits and Orocos plugins for a given ROS 2 interface package, using all of the packages above.
+
 * [**rtt\_ros2\_params**](rtt_ros2_params) Provides ROS 2 parameters interface to manipulate
   parameters as in [ROS 2 parameters](https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/)
   and load/store them from/to Orocos properties.
