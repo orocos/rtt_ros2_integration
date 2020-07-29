@@ -96,12 +96,17 @@ endif()
 # for recursive dependencies
 ament_index_register_resource("rtt_ros2_plugin_depends" CONTENT "")
 
-# register environment hook to prepend to RTT_COMPONENT_PATH
+# register environment hooks to prepend to RTT_COMPONENT_PATH and PKG_CONFIG_PATH
 set(
   AMENT_CMAKE_ENVIRONMENT_HOOKS_DESC_rtt_component_path
   "prepend-non-duplicate;RTT_COMPONENT_PATH;lib/orocos"
 )
 ament_environment_hooks(env_hook/rtt_component_path.sh.in)
+set(
+  AMENT_CMAKE_ENVIRONMENT_HOOKS_DESC_pkg_config_path
+  "prepend-non-duplicate;PKG_CONFIG_PATH;lib/pkgconfig"
+)
+ament_environment_hooks(env_hook/pkg_config_path.sh.in)
 
 # must be called *after* the targets to check exported libraries etc.
 ament_package(
