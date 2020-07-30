@@ -39,7 +39,7 @@ install(TARGETS rtt_ros2_topics
 )
 
 orocos_plugin(rtt_ros2_topics_service
-  src/rtt_ros2_topics_service.cpp
+  src/rtt_ros2_topics_plugin.cpp
 )
 
 # install

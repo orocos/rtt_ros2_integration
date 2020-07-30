@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OROCOS__RTT_ROS2_TOPICS__TOPIC_HPP_
-#define OROCOS__RTT_ROS2_TOPICS__TOPIC_HPP_
+#ifndef OROCOS__RTT_ROS2_TOPICS__ROSTOPIC_HPP_
+#define OROCOS__RTT_ROS2_TOPICS__ROSTOPIC_HPP_
 
 #include <string>
 #include <utility>
@@ -100,4 +100,4 @@ static RTT::ConnPolicy topicDirect(
 
 }  // namespace rtt_ros2_topics
 
-#endif  // OROCOS__RTT_ROS2_TOPICS__TOPIC_HPP_
+#endif  // OROCOS__RTT_ROS2_TOPICS__ROSTOPIC_HPP_

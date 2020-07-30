@@ -21,7 +21,7 @@
 
 #include "rtt_ros2/rtt_ros2.hpp"
 #include "rtt_ros2_topics/protocol_id.h"
-#include "rtt_ros2_topics/topic.hpp"
+#include "rtt_ros2_topics/rostopic.hpp"
 
 #include "gtest/gtest.h"
 
