@@ -25,7 +25,7 @@ find_package(rtt_ros2_node REQUIRED)
 include_directories(include/orocos)
 
 orocos_library(rtt_ros2_params
-  src/rtt_ros2_params.cpp
+  src/rtt_ros2_params_service.cpp
   EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include/orocos
 )
@@ -35,7 +35,7 @@ ament_target_dependencies(rtt_ros2_params
 )
 
 orocos_plugin(rtt_ros2_params_service
-  src/rtt_ros2_params_service.cpp
+  src/rtt_ros2_params_plugin.cpp
 )
 target_link_libraries(rtt_ros2_params_service rtt_ros2_params)
 
