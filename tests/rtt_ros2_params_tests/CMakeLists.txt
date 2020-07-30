@@ -58,5 +58,5 @@ orocos_configure_executable(test_ros_params)
 target_link_libraries(test_ros_params
   rtt_ros2::rtt_ros2
   rtt_ros2_node::rtt_ros2_node
-  rtt_ros2_params::rtt_ros2_params
+#  rtt_ros2_params::rtt_ros2_params  # not needed thanks to RosParam service requester
 )
