@@ -61,6 +61,11 @@ Params::Params(RTT::TaskContext * owner)
   .arg("name", "Name of the parameter to set")
   .arg("value", "The value of the parameter to set");
 
+  addOperation("setOrDeclareParameter", &Params::setOrDeclareParameter, this, RTT::ClientThread)
+  .doc("Sets a parameter to the node parameter server and eventually declares it")
+  .arg("name", "Name of the parameter to set")
+  .arg("value", "The value of the parameter to set");
+
   if (nullptr != owner) {
     addOperation("loadProperty", &Params::loadProperty, this, RTT::ClientThread)
     .doc("Loads a parameter from the node parameter server into a Property")
