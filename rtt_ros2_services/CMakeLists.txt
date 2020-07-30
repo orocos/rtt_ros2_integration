@@ -43,7 +43,7 @@ target_link_libraries(rtt_ros2_services
 ament_target_dependencies(rtt_ros2_services rclcpp)
 
 orocos_plugin(rtt_ros2_services_service
-  src/rtt_ros2_services_service.cpp
+  src/rtt_ros2_services_plugin.cpp
 )
 target_link_libraries(rtt_ros2_services_service
   rtt_ros2_services
@@ -52,7 +52,7 @@ ament_target_dependencies(rtt_ros2_services_service rclcpp)
 ament_target_dependencies(rtt_ros2_services_service rcpputils)
 
 orocos_plugin(rtt_ros2_services_registry_service
-  src/rtt_ros2_services_registry_service.cpp
+  src/rtt_ros2_services_registry_plugin.cpp
 )
 target_link_libraries(rtt_ros2_services_registry_service
   rtt_ros2_services
