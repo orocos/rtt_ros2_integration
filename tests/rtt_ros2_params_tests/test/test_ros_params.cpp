@@ -83,8 +83,9 @@ TEST_F(TestRosParams, TestGlobalNodeParams)
   ASSERT_TRUE(rosparam.connectTo(global_params));
 
   // Check set non-existent parameters
-  EXPECT_FALSE(
-    rosparam.setParameter("fake_parameter", rclcpp::ParameterValue(42)));
+  // True because rosnode is created with allow_undeclared_parameters(true)
+  EXPECT_TRUE(
+    rosparam.setParameter("new_fake_parameter", rclcpp::ParameterValue(42)));
 
   // Check get non-existent parameters
   EXPECT_EQ(
