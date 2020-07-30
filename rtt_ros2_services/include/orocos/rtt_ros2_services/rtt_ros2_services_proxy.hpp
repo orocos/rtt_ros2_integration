@@ -276,6 +276,8 @@ public:
         const auto client = client_;
         if (!client) {return;}
 
+        // TODO(meyerj): std::make_shared<Request> is not real-time safe and executed in the thread
+        // that calls the operation.
         auto result_future = client->async_send_request(std::make_shared<Request>(request));
         response = *(result_future.get());
       };

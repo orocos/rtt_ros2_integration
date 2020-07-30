@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
-#define OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
+#ifndef OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_SERVICE_HPP_
+#define OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_SERVICE_HPP_
 
 #include <map>
 #include <string>
@@ -27,13 +27,13 @@
 namespace rtt_ros2_params
 {
 
-class Params : public RTT::Service
+class RosParamService : public RTT::Service
 {
 public:
-  typedef boost::shared_ptr<Params> shared_ptr;
+  typedef boost::shared_ptr<RosParamService> shared_ptr;
 
-  explicit Params(RTT::TaskContext * owner);
-  virtual ~Params();
+  explicit RosParamService(RTT::TaskContext * owner);
+  virtual ~RosParamService();
 
 protected:
   rclcpp::ParameterValue getParameter(const std::string & name);
@@ -49,8 +49,8 @@ protected:
   bool storeProperty(
     const std::string & property_name,
     const std::string & param_name);
-};  // class Params
+};  // class RosParamService
 
 }  // namespace rtt_ros2_params
 
-#endif  // OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_HPP_
+#endif  // OROCOS__RTT_ROS2_PARAMS__RTT_ROS2_PARAMS_SERVICE_HPP_

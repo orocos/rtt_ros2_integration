@@ -17,7 +17,7 @@
 #include "rtt/internal/GlobalService.hpp"
 #include "rtt/plugin/ServicePlugin.hpp"
 
-#include "rtt_ros2_topics/topic.hpp"
+#include "rtt_ros2_topics/rostopic.hpp"
 
 namespace rtt_ros2_topics
 {
