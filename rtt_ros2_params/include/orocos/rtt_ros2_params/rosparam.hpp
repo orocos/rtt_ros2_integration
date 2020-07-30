@@ -30,7 +30,7 @@ class RosParam : public RTT::ServiceRequester
 public:
   typedef boost::shared_ptr<RosParam> shared_ptr;
 
-  RosParam(RTT::TaskContext * owner)
+  explicit RosParam(RTT::TaskContext * owner)
   : RTT::ServiceRequester("rosparam", owner),
     getParameter("getParameter"),
     setParameter("setParameter"),
