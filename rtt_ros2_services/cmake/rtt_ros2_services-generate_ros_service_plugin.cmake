@@ -145,6 +145,7 @@ macro(rtt_ros2_generate_ros_service_plugin _package)
   # Export dependencies, include directories and interface
   if(TARGET ${_target})
     ament_export_dependencies(${_package})
+    ament_export_dependencies(rtt_ros2_services)
     ament_export_include_directories(include/orocos)
     if(COMMAND ament_export_targets)
       ament_export_targets(${_target} HAS_LIBRARY_TARGET)
