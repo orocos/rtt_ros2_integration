@@ -77,7 +77,7 @@ def main(argv=sys.argv[1:]):
     package_xml_group = parser.add_argument_group('package.xml options')
     package_xml_group.add_argument(
         '--description',
-        default=argparse.SUPPRESS,
+        default='Automatic-generated rtt typekit from ros2 interface',
         help='The description given in the package.xml')
     package_xml_group.add_argument(
         '--license',
