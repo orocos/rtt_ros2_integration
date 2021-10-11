@@ -34,6 +34,13 @@ The packages in this repository provide:
 
 * [**rtt\_ros2\_interfaces**](rtt_ros2_interfaces) provides a convenience macro that generates
   typekits and Orocos plugins for a given ROS 2 interface package, using all of the packages above.
+  
+  To a generate a typekit, run the command 
+  
+  ```
+  ros2 run rtt_ros2_interfaces create_typekit_package [PACKAGE]
+  ```
+  Where package is the package containing the messages or services.
 
 * [**rtt\_ros2\_params**](rtt_ros2_params) Provides ROS 2 parameters interface to manipulate
   parameters as in [ROS 2 parameters](https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/)
