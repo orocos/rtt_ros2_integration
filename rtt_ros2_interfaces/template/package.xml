@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>builtin_interfaces</depend>
+  <depend>@(package)</depend>
 @[if transports]@
   <depend>rtt_ros2_interfaces</depend>  <!-- typekit and transports -->
 @[else]@
