@@ -40,6 +40,9 @@ protected:
   bool setParameter(
     const std::string & name,
     const rclcpp::ParameterValue & value);
+  bool declareParameter(
+    const std::string & name,
+    const rclcpp::ParameterValue & default_value);
   bool setOrDeclareParameter(
     const std::string & name,
     const rclcpp::ParameterValue & value);
