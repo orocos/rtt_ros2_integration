@@ -34,12 +34,14 @@ public:
   : RTT::ServiceRequester("rosparam", owner),
     getParameter("getParameter"),
     setParameter("setParameter"),
+    declareParameter("declareParameter"),
     setOrDeclareParameter("setOrDeclareParameter"),
     loadProperty("loadProperty"),
     storeProperty("storeProperty")
   {
     this->addOperationCaller(getParameter);
     this->addOperationCaller(setParameter);
+    this->addOperationCaller(declareParameter);
     this->addOperationCaller(setOrDeclareParameter);
 
     // Operations loadProperty and storeProperty are only available if the requester is connected
@@ -61,6 +63,9 @@ public:
   RTT::OperationCaller<bool(
       const std::string & name,
       const rclcpp::ParameterValue & value)> setParameter;
+  RTT::OperationCaller<bool(
+      const std::string & name,
+      const rclcpp::ParameterValue & default_value)> declareParameter;
   RTT::OperationCaller<bool(
       const std::string & name,
       const rclcpp::ParameterValue & value)> setOrDeclareParameter;
