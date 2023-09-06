@@ -104,7 +104,7 @@ void Node::spin(unsigned int number_of_threads)
 {
   cancel();
   const auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>(
-    rclcpp::executor::ExecutorArgs(),
+    rclcpp::ExecutorOptions(),
     number_of_threads
   );
   executor->add_node(node_);

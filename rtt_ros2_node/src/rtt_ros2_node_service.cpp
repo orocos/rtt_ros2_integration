@@ -74,7 +74,7 @@ static void loadGlobalROSService()
 
   // Call rclcpp::init()
   rclcpp::InitOptions init_options;
-  init_options.shutdown_on_sigint = false;
+  init_options.shutdown_on_signal = false;
   RTT::log(RTT::Info) <<
     "Initializing ROS context with " << __os_main_argc() << " command-line arguments." <<
     RTT::endlog();
