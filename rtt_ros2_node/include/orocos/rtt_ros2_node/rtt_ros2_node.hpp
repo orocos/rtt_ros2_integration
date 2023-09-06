@@ -51,14 +51,14 @@ public:
   virtual ~Node();
 
   rclcpp::Node::SharedPtr node() {return node_;}
-  rclcpp::executor::Executor::SharedPtr executor() {return executor_;}
+  rclcpp::Executor::Executor::SharedPtr executor() {return executor_;}
 
   void spin(unsigned int number_of_threads = 1);
   void cancel();
 
 protected:
   rclcpp::Node::SharedPtr node_;
-  rclcpp::executor::Executor::SharedPtr executor_;
+  rclcpp::Executor::Executor::SharedPtr executor_;
   std::thread thread_;
 };
 
